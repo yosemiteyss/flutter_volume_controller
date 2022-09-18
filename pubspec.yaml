@@ -24,3 +24,5 @@ flutter:
         pluginClass: FlutterVolumeControllerPlugin
       ios:
         pluginClass: FlutterVolumeControllerPlugin
+      macos:
+        pluginClass: FlutterVolumeControllerPlugin
