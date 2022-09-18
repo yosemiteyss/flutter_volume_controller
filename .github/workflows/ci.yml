@@ -21,7 +21,9 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: '3.3.2'
-      - run: cd ./example
       - run: flutter pub get
-      - run: flutter build apk
+      - run: |
+          cd ./example
+          pwd
+          flutter build apk
       - run: echo "build success!"
