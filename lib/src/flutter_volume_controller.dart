@@ -23,6 +23,7 @@ class FlutterVolumeController {
 
   /// Control whether the system UI (volume bar) is visible when changing
   /// volume.
+  /// This settings only works on Android and iOS.
   static bool showSystemUI = true;
 
   /// Get the current volume percent.
@@ -43,7 +44,8 @@ class FlutterVolumeController {
   }) async {
     await methodChannel.invokeMethod(MethodName.setVolume, {
       MethodArg.volume: volume,
-      MethodArg.showSystemUI: showSystemUI,
+      if (Platform.isAndroid || Platform.isIOS)
+        MethodArg.showSystemUI: showSystemUI,
       if (Platform.isAndroid) MethodArg.audioStream: stream.index
     });
   }
@@ -57,7 +59,8 @@ class FlutterVolumeController {
     AudioStream stream = AudioStream.music,
   }) async {
     await methodChannel.invokeMethod(MethodName.raiseVolume, {
-      MethodArg.showSystemUI: showSystemUI,
+      if (Platform.isAndroid || Platform.isIOS)
+        MethodArg.showSystemUI: showSystemUI,
       if (step != null) MethodArg.step: step,
       if (Platform.isAndroid) MethodArg.audioStream: stream.index
     });
@@ -72,7 +75,8 @@ class FlutterVolumeController {
     AudioStream stream = AudioStream.music,
   }) async {
     await methodChannel.invokeMethod(MethodName.lowerVolume, {
-      MethodArg.showSystemUI: showSystemUI,
+      if (Platform.isAndroid || Platform.isIOS)
+        MethodArg.showSystemUI: showSystemUI,
       if (step != null) MethodArg.step: step,
       if (Platform.isAndroid) MethodArg.audioStream: stream.index
     });
