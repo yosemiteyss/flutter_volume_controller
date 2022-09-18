@@ -3,6 +3,7 @@
 A Flutter plugin to control system volume.
 
 ## Features
+Notes that some of the features may not be available to all supported platforms.
 
 ### Volume Controls
 
