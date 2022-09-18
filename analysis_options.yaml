@@ -1,0 +1,31 @@
+include: package:flutter_lints/flutter.yaml
+
+# Additional information about this file can be found at
+# https://dart.dev/guides/language/analysis-options
+linter:
+  rules:
+    sort_constructors_first: true
+    prefer_single_quotes: true
+    avoid_print: true
+    always_use_package_imports: true
+    require_trailing_commas: true
+    no_leading_underscores_for_local_identifiers: true
+    avoid_unused_constructor_parameters: true
+    constant_identifier_names: true
+    unawaited_futures: true
+    directives_ordering: true
+    implementation_imports: true
+    library_prefixes: true
+    no_leading_underscores_for_library_prefixes: true
+    slash_for_doc_comments: true
+    always_declare_return_types: true
+    avoid_void_async: true
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/assets.gen.dart"
+    - "**/generated_plugin_registrant.dart"
+  errors:
+    todo: ignore
+    invalid_annotation_target: ignore
