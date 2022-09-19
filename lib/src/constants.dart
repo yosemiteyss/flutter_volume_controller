@@ -3,6 +3,7 @@ class MethodName {
   static const String setVolume = 'setVolume';
   static const String raiseVolume = 'raiseVolume';
   static const String lowerVolume = 'lowerVolume';
+  static const String setAndroidAudioStream = 'setAndroidAudioStream';
 }
 
 class MethodArg {

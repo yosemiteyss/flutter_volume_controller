@@ -5,6 +5,7 @@ object MethodName {
     const val SET_VOLUME = "setVolume"
     const val RAISE_VOLUME = "raiseVolume"
     const val LOWER_VOLUME = "lowerVolume"
+    const val SET_ANDROID_AUDIO_STREAM = "setAndroidAudioStream"
 }
 
 object MethodArg {
