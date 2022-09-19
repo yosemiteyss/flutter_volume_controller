@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 
@@ -41,39 +43,41 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Center(
-              child: ElevatedButton(
-                child: const Text('Show or hide system ui'),
-                onPressed: () {
-                  FlutterVolumeController.showSystemUI =
-                      !FlutterVolumeController.showSystemUI;
-                  _scaffoldMessengerKey.currentState?.showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Show system ui: ${FlutterVolumeController.showSystemUI}',
+            if (Platform.isAndroid || Platform.isIOS)
+              Center(
+                child: ElevatedButton(
+                  child: const Text('Show or hide system ui'),
+                  onPressed: () {
+                    FlutterVolumeController.showSystemUI =
+                        !FlutterVolumeController.showSystemUI;
+                    _scaffoldMessengerKey.currentState?.showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Show system ui: ${FlutterVolumeController.showSystemUI}',
+                        ),
+                        duration: const Duration(seconds: 2),
                       ),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-            Center(
-              child: ElevatedButton(
-                child: const Text('Switch audio stream'),
-                onPressed: () {
-                  _audioStream = AudioStream.values[_audioStream.index ^ 1];
-                  _scaffoldMessengerKey.currentState?.showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Audio stream: ${_audioStream.name}',
+            if (Platform.isAndroid)
+              Center(
+                child: ElevatedButton(
+                  child: const Text('Switch audio stream'),
+                  onPressed: () {
+                    _audioStream = AudioStream.values[_audioStream.index ^ 1];
+                    _scaffoldMessengerKey.currentState?.showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Audio stream: ${_audioStream.name}',
+                        ),
+                        duration: const Duration(seconds: 2),
                       ),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
             Center(
               child: ElevatedButton(
                 child: const Text('Get Volume'),
