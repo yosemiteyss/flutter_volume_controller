@@ -107,4 +107,19 @@ class FlutterVolumeController {
     _volumeListener?.cancel();
     _volumeListener = null;
   }
+
+  /// Set the default audio stream on Android.
+  /// Consider calling this method before [addListener] to ensure the correct
+  /// audio stream is being controlled.
+  /// Note: audio stream setting only works on Android.
+  static Future<void> setAndroidAudioStream({
+    AudioStream stream = AudioStream.music,
+  }) async {
+    if (Platform.isAndroid) {
+      await methodChannel.invokeMethod(
+        MethodName.setAndroidAudioStream,
+        {MethodArg.audioStream: stream.index},
+      );
+    }
+  }
 }

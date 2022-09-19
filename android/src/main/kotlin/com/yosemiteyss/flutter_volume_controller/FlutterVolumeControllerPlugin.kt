@@ -3,6 +3,8 @@ package com.yosemiteyss.flutter_volume_controller
 import android.content.Context
 import android.content.IntentFilter
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -12,12 +14,14 @@ import io.flutter.plugin.common.MethodChannel.Result
 private const val METHOD_CHANNEL_NAME = "com.yosemiteyss.flutter_volume_controller/method"
 private const val EVENT_CHANNEL_NAME = "com.yosemiteyss.flutter_volume_controller/event"
 
-class FlutterVolumeControllerPlugin : FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler {
+class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
+    EventChannel.StreamHandler {
     private lateinit var methodChannel: MethodChannel
     private lateinit var eventChannel: EventChannel
     private lateinit var volumeController: VolumeController
     private lateinit var context: Context
 
+    private var activityPluginBinding: ActivityPluginBinding? = null
     private var volumeBroadcastReceiver: VolumeBroadcastReceiver? = null
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -94,6 +98,17 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, MethodCallHandler, EventCha
                     )
                 }
             }
+            MethodName.SET_ANDROID_AUDIO_STREAM -> {
+                try {
+                    val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
+                    activityPluginBinding?.activity?.volumeControlStream =
+                        AudioStream.values()[audioStream].streamType
+                } catch (e: Exception) {
+                    result.error(
+                        ErrorCode.DEFAULT, ErrorMessage.LOWER_VOLUME, e.message
+                    )
+                }
+            }
             else -> {
                 result.notImplemented()
             }
@@ -122,5 +137,21 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, MethodCallHandler, EventCha
     override fun onCancel(arguments: Any?) {
         volumeBroadcastReceiver?.let(context::unregisterReceiver)
         volumeBroadcastReceiver = null
+    }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activityPluginBinding = binding
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        activityPluginBinding = null
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        activityPluginBinding = binding
+    }
+
+    override fun onDetachedFromActivity() {
+        activityPluginBinding = null
     }
 }

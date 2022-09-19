@@ -1,6 +1,6 @@
 name: flutter_volume_controller
 description: A Flutter plugin to control system volume.
-version: 1.0.0+1
+version: 1.0.1
 homepage: https://github.com/yosemiteyss/flutter_volume_control
 
 environment:
