@@ -1,0 +1,1 @@
+enum AudioStream { system, music }
