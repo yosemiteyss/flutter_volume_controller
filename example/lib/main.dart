@@ -21,6 +21,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    FlutterVolumeController.setAndroidAudioStream(stream: AudioStream.music);
     FlutterVolumeController.addListener((volume) {
       debugPrint('Volume changed: $volume');
     });
