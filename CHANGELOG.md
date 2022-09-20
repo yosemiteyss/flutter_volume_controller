@@ -1,3 +1,6 @@
+## 1.0.1+1
+* Fix iOS resume audio stream when return to foreground
+
 ## 1.0.1
 * Add setAndroidAudioStream() to set the default audio stream on Android.
 
