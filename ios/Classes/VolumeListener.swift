@@ -7,23 +7,23 @@
 
 import Foundation
 import AVFoundation
-import MediaPlayer
 
 class VolumeListener: NSObject, FlutterStreamHandler {
     private let audioSession: AVAudioSession = AVAudioSession.sharedInstance()
-    private let outputVolumeKeyPath: String = "outputVolume"
-    private var eventSink: FlutterEventSink?
+    private var outputVolumeObservation: NSKeyValueObservation?
+    
+    var isListening: Bool {
+        get {
+            return outputVolumeObservation != nil
+        }
+    }
     
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        eventSink = events
         do {
             try audioSession.setActive(true)
-            audioSession.addObserver(
-                self,
-                forKeyPath: outputVolumeKeyPath,
-                options: [.new],
-                context: nil
-            )
+            outputVolumeObservation = audioSession.observe(\.outputVolume) { session, _ in
+                events(session.outputVolume)
+            }
         } catch {
             return FlutterError(
                 code: ErrorCode.default,
@@ -35,16 +35,8 @@ class VolumeListener: NSObject, FlutterStreamHandler {
         return nil
     }
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if keyPath == outputVolumeKeyPath {
-            guard let volume = change?[.newKey] as? Float else { return }
-            self.eventSink?(volume)
-        }
-    }
-    
     func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        eventSink = nil
-        audioSession.removeObserver(self, forKeyPath: outputVolumeKeyPath)
+        outputVolumeObservation = nil
         return nil
     }
 }

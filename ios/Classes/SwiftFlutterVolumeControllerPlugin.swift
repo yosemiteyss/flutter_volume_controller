@@ -1,8 +1,12 @@
 import Flutter
 import UIKit
+import AVFoundation
 
 public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
+    private let audioSession: AVAudioSession = AVAudioSession.sharedInstance()
     private let volumeController: VolumeController = VolumeController()
+    
+    private static let volumeListener: VolumeListener = VolumeListener()
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let methodChannel = FlutterMethodChannel(
@@ -17,8 +21,9 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
         let instance = SwiftFlutterVolumeControllerPlugin()
         registrar.addMethodCallDelegate(instance, channel: methodChannel)
         
-        let listener = VolumeListener()
-        eventChannel.setStreamHandler(listener)
+        eventChannel.setStreamHandler(volumeListener)
+        
+        registrar.addApplicationDelegate(instance)
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -50,5 +55,14 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
     }
 }
 
-
-
+extension SwiftFlutterVolumeControllerPlugin : FlutterApplicationLifeCycleDelegate {
+    public func applicationWillEnterForeground(_ application: UIApplication) {
+        if SwiftFlutterVolumeControllerPlugin.volumeListener.isListening {
+            do {
+                try audioSession.setActive(true)
+            } catch {
+                print("Error reactivating audio session")
+            }
+        }
+    }
+}
