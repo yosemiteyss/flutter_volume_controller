@@ -28,3 +28,5 @@ flutter:
         pluginClass: FlutterVolumeControllerPlugin
       windows:
         pluginClass: FlutterVolumeControllerPluginCApi
+      linux:
+        pluginClass: FlutterVolumeControllerPlugin
