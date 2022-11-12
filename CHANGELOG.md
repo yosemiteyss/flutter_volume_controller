@@ -1,3 +1,6 @@
+## 1.1.0
+* Add windows support
+
 ## 1.0.1+1
 * Fix iOS resume audio stream when return to foreground
 
