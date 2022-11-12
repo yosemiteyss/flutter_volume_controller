@@ -16,15 +16,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   AudioStream _audioStream = AudioStream.music;
+  double _currentVolume = 0.0;
 
   @override
   void initState() {
     super.initState();
     FlutterVolumeController.setAndroidAudioStream(stream: AudioStream.music);
-    FlutterVolumeController.addListener((volume) {
-      debugPrint('Volume changed: $volume');
-    });
   }
 
   @override
@@ -132,6 +131,39 @@ class _MyAppState extends State<MyApp> {
                 },
               ),
             ),
+            Center(
+              child: ElevatedButton(
+                child: const Text('Attach Volume Listener'),
+                onPressed: () {
+                  FlutterVolumeController.addListener((volume) {
+                    setState(() {
+                      _currentVolume = volume;
+                    });
+                  });
+                  _scaffoldMessengerKey.currentState?.showSnackBar(
+                    const SnackBar(
+                      content: Text('Volume listener attached.'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                child: const Text('Remove Volume Listener'),
+                onPressed: () {
+                  FlutterVolumeController.removeListener();
+                  _scaffoldMessengerKey.currentState?.showSnackBar(
+                    const SnackBar(
+                      content: Text('Volume listener removed.'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Text('Current Volume: $_currentVolume'),
           ],
         ),
       ),
