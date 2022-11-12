@@ -1,0 +1,120 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 74,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 77,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 80,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 84,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 92,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 95,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Runtime",
+			"destination" : "C:/Users/kevin/AndroidStudioProjects/flutter_volume_controller/example/windows/cmake-build-debug-visual-studio/runner",
+			"paths" : 
+			[
+				"runner/flutter_volume_controller_example.exe"
+			],
+			"targetId" : "flutter_volume_controller_example::@056c4f61b0156d1d9b06",
+			"targetIndex" : 1,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Runtime",
+			"destination" : "C:/Users/kevin/AndroidStudioProjects/flutter_volume_controller/example/windows/cmake-build-debug-visual-studio/runner/data",
+			"paths" : 
+			[
+				"flutter/ephemeral/icudtl.dat"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Runtime",
+			"destination" : "C:/Users/kevin/AndroidStudioProjects/flutter_volume_controller/example/windows/cmake-build-debug-visual-studio/runner",
+			"paths" : 
+			[
+				"flutter/ephemeral/flutter_windows.dll"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "Runtime",
+			"destination" : "C:/Users/kevin/AndroidStudioProjects/flutter_volume_controller/example/windows/cmake-build-debug-visual-studio/runner",
+			"paths" : 
+			[
+				"cmake-build-debug-visual-studio/plugins/flutter_volume_controller/flutter_volume_controller_plugin.dll"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 5,
+			"component" : "Runtime",
+			"type" : "code"
+		},
+		{
+			"backtrace" : 6,
+			"component" : "Runtime",
+			"destination" : "C:/Users/kevin/AndroidStudioProjects/flutter_volume_controller/example/windows/cmake-build-debug-visual-studio/runner/data",
+			"paths" : 
+			[
+				"C:/Users/kevin/AndroidStudioProjects/flutter_volume_controller/example/build//flutter_assets"
+			],
+			"type" : "directory"
+		}
+	],
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	}
+}

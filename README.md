@@ -3,7 +3,9 @@
 A Flutter plugin to control system volume.
 
 ## Features
-Notes that some of the features may not be available to all supported platforms.
+
+Notes that some of the features may not be available to all supported platforms. Please refers to
+the documentation in codes for more details.
 
 ### Volume Controls
 
@@ -16,7 +18,16 @@ Notes that some of the features may not be available to all supported platforms.
 
 ### Observe Volume
 
-- `FlutterVolumeController.addListener()`: Observe volume changes
+- `FlutterVolumeController.addListener()`: Observe platform volume changes
+
+## Platform Support
+
+- ✔️Android
+- ✔️iOS
+- ✔️macOS
+- ✔️Windows
+
+## Basic Usage
 
 ```dart
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
