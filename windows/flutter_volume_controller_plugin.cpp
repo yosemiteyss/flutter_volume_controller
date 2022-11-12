@@ -100,12 +100,12 @@ namespace flutter_volume_controller {
 		const double* step = std::get_if<double>(GetArgValue(arguments, constants::kArgStep));
 
 		if (!step) {
-			result->Error(constants::kErrorCode, constants::kErrorRaiseVolume, nullptr);
-			return;
+			if (!volume_controller.SetVolumeUpBySystemStep()) {
+				result->Error(constants::kErrorCode, constants::kErrorRaiseVolume, nullptr);
+				return;
+			}
 		}
-
-		if (!volume_controller.SetVolumeUp(static_cast<float>(*step))) {
-			result->Error(constants::kErrorCode, constants::kErrorRaiseVolume, nullptr);
+		else if (!volume_controller.SetVolumeUp(static_cast<float>(*step))) {
 			result->Error(constants::kErrorCode, constants::kErrorRaiseVolume, nullptr);
 			return;
 		}
@@ -119,11 +119,12 @@ namespace flutter_volume_controller {
 		const double* step = std::get_if<double>(GetArgValue(arguments, constants::kArgStep));
 
 		if (!step) {
-			result->Error(constants::kErrorCode, constants::kErrorLowerVolume, nullptr);
-			return;
+			if (!volume_controller.SetVolumeDownBySystemStep()) {
+				result->Error(constants::kErrorCode, constants::kErrorLowerVolume, nullptr);
+				return;
+			}
 		}
-
-		if (!volume_controller.SetVolumeDown(static_cast<float>(*step))) {
+		else if (!volume_controller.SetVolumeDown(static_cast<float>(*step))) {
 			result->Error(constants::kErrorCode, constants::kErrorLowerVolume, nullptr);
 			return;
 		}
