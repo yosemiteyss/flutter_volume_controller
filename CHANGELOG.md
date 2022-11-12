@@ -1,3 +1,6 @@
+## 1.1.1
+* Fix nullable step value not being handled in windows
+
 ## 1.1.0
 * Add windows support
 
