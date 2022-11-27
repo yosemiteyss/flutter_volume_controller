@@ -16,8 +16,11 @@ set(PLUGIN_NAME "flutter_volume_controller_plugin")
 #
 # Any new source files that you add to the plugin should be added here.
 add_library(${PLUGIN_NAME} SHARED
-  "flutter_volume_controller_plugin.cc"
-)
+        flutter_volume_controller_plugin.cc
+        support_log.cc
+        alsa.cc
+        method_handler.cc
+        )
 
 # Apply a standard set of build settings that are configured in the
 # application-level CMakeLists.txt. This can be removed for plugins that want
@@ -27,21 +30,27 @@ apply_standard_settings(${PLUGIN_NAME})
 # Symbols are hidden by default to reduce the chance of accidental conflicts
 # between plugins. This should not be removed; any symbols that should be
 # exported should be explicitly exported with the FLUTTER_PLUGIN_EXPORT macro.
-set_target_properties(${PLUGIN_NAME} PROPERTIES
-  CXX_VISIBILITY_PRESET hidden)
+set_target_properties(${PLUGIN_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
 target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 
 # Source include directories and library dependencies. Add any plugin-specific
 # dependencies here.
-target_include_directories(${PLUGIN_NAME} INTERFACE
-  "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(${PLUGIN_NAME} INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter)
 target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GTK)
+
+# Include ALSA
+find_package(ALSA REQUIRED)
+if (ALSA_FOUND)
+    message(${ALSA_LIBRARIES})
+    target_include_directories(${PLUGIN_NAME} PRIVATE ${ALSA_INCLUDE_DIRS})
+    target_link_libraries(${PLUGIN_NAME} PRIVATE ${ALSA_LIBRARIES})
+endif (ALSA_FOUND)
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
 set(flutter_volume_controller_bundled_libraries
-  ""
-  PARENT_SCOPE
-)
+        ""
+        PARENT_SCOPE
+        )
