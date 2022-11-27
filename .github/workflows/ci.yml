@@ -2,11 +2,15 @@ on:
   push:
     branches:
       - main
-      - 'releases/**'
+      - 'release/**'
   pull_request:
     branches:
       - main
-      - 'releases/**'
+      - 'release/**'
+
+env:
+  FLUTTER_CHANNEL: 'stable'
+  FLUTTER_VERSION: '3.3.8'
 
 jobs:
   build_example_android:
@@ -19,8 +23,20 @@ jobs:
           java-version: '11'
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
-          flutter-version: '3.3.2'
+          channel: env.FLUTTER_CHANNEL
+          flutter-version: env.FLUTTER_VERSION
       - run: flutter pub get
       - run: cd ./example && flutter build apk
+      - run: echo "build success!"
+
+  build_example_linux:
+    runs-on: [ self-hosted, linux ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: env.FLUTTER_CHANNEL
+          flutter-version: env.FLUTTER_VERSION
+      - run: flutter pub get
+      - run: cd ./example && flutter build linux
       - run: echo "build success!"
