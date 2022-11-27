@@ -58,6 +58,8 @@ static void flutter_volume_controller_plugin_dispose(GObject *object) {
     /* Dispose card instance */
     alsa_card_free(self->card);
 
+    g_object_unref(self->event_channel);
+
     G_OBJECT_CLASS(flutter_volume_controller_plugin_parent_class)->dispose(object);
 }
 
