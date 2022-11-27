@@ -26,6 +26,7 @@ the documentation in codes for more details.
 - ✔️iOS
 - ✔️macOS
 - ✔️Windows
+- ✔ Linux
 
 ## Basic Usage
 
