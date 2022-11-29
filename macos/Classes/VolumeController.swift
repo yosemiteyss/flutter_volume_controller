@@ -17,11 +17,15 @@ class VolumeController {
         try Sound.output.setVolume(volume)
     }
     
-    func raiseVolume(_ step: Float?) {
-        Sound.output.increaseVolume(by: step ?? 0.15)
+    func raiseVolume(_ step: Float?) throws {
+        try Sound.output.increaseVolume(by: step ?? 0.15)
     }
     
-    func lowerVolume(_ step: Float?) {
-        Sound.output.decreaseVolume(by: step ?? 0.15)
+    func lowerVolume(_ step: Float?) throws {
+        try Sound.output.decreaseVolume(by: step ?? 0.15)
+    }
+    
+    func setMute(_ isMuted: Bool) throws {
+        try Sound.output.mute(isMuted)
     }
 }

@@ -33,18 +33,38 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             do {
                 let args = call.arguments as! [String: Any]
                 let volume = Float(args[MethodArg.volume] as! Double)
-                try FlutterVolumeControllerPlugin.volumeController.setVolume(volume)
+
+                try FlutterVolumeControllerPlugin.setVolume(volume)
             } catch {
                 result(FlutterError(code: ErrorCode.default, message: ErrorMessage.setVolume, details: nil))
             }
         case MethodName.raiseVolume:
-            let args = call.arguments as! [String: Any]
-            let step = args[MethodArg.step] as? Float
-            FlutterVolumeControllerPlugin.volumeController.raiseVolume(step)
+            do {
+                let args = call.arguments as! [String: Any]
+                let step = args[MethodArg.step] as? Float
+
+                try FlutterVolumeControllerPlugin.volumeController.raiseVolume(step)
+            } catch {
+                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.raiseVolume, details: nil))
+            }
         case MethodName.lowerVolume:
-            let args = call.arguments as! [String: Any]
-            let step = args[MethodArg.step] as? Float
-            FlutterVolumeControllerPlugin.volumeController.lowerVolume(step)
+            do {
+                let args = call.arguments as! [String: Any]
+                let step = args[MethodArg.step] as? Float
+
+                try FlutterVolumeControllerPlugin.volumeController.lowerVolume(step)
+            } catch {
+                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.lowerVolume, details: nil))
+            }
+        case MethodName.setMute:
+            do {
+                let args = call.arguments as! [String: Any]
+                let isMuted = args[MethodArg.isMuted] as! Bool
+
+                try FlutterVolumeControllerPlugin.volumeController.setMute(isMuted)
+            } catch {
+                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.setMute, details: nil))
+            }
         default:
             result(FlutterMethodNotImplemented)
         }
