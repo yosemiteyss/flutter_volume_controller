@@ -1,6 +1,7 @@
 package com.yosemiteyss.flutter_volume_controller
 
 import android.media.AudioManager
+import android.os.Build
 
 class VolumeController(private val audioManager: AudioManager) {
     fun getVolume(audioStream: AudioStream): Double {
@@ -39,6 +40,19 @@ class VolumeController(private val audioManager: AudioManager) {
         } else {
             val target = getVolume(audioStream) - step
             setVolume(target, showSystemUI, audioStream)
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    fun setMute(isMuted: Boolean, showSystemUI: Boolean, audioStream: AudioStream) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            audioManager.adjustStreamVolume(
+                audioStream.streamType,
+                if (isMuted) AudioManager.ADJUST_MUTE else AudioManager.ADJUST_UNMUTE,
+                if (showSystemUI) AudioManager.FLAG_SHOW_UI else 0
+            )
+        } else {
+            audioManager.setStreamMute(audioStream.streamType, isMuted)
         }
     }
 }

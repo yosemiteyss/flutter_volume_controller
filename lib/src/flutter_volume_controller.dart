@@ -68,6 +68,19 @@ class FlutterVolumeController {
     });
   }
 
+  /// Set volume to mute or unmute state.
+  static Future<void> setMute(
+    bool isMuted, {
+    AudioStream stream = AudioStream.music,
+  }) async {
+    await methodChannel.invokeMethod(MethodName.setMute, {
+      MethodArg.isMuted: isMuted,
+      if (Platform.isAndroid || Platform.isIOS)
+        MethodArg.showSystemUI: showSystemUI,
+      if (Platform.isAndroid) MethodArg.audioStream: stream.index
+    });
+  }
+
   /// Reduce the volume percent by a given [step] from 0.0 to 1.0.
   /// When [step] is set to null, it will uses the default system stepping value
   /// on Android. On iOS, macOS, Linux, if [step] is not defined, the default

@@ -136,6 +136,28 @@ class _MyAppState extends State<MyApp> {
                 },
               ),
             ),
+            Center(
+              child: ElevatedButton(
+                child: const Text('Set mute'),
+                onPressed: () {
+                  FlutterVolumeController.setMute(
+                    true,
+                    stream: _audioStream,
+                  );
+                },
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                child: const Text('Set unmute'),
+                onPressed: () {
+                  FlutterVolumeController.setMute(
+                    false,
+                    stream: _audioStream,
+                  );
+                },
+              ),
+            ),
             Text('Current Volume: $_currentVolume'),
           ],
         ),
