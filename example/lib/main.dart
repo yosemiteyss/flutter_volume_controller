@@ -23,6 +23,11 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    FlutterVolumeController.addListener((volume) {
+      setState(() {
+        _currentVolume = volume;
+      });
+    });
     FlutterVolumeController.setAndroidAudioStream(stream: AudioStream.music);
   }
 
@@ -127,38 +132,6 @@ class _MyAppState extends State<MyApp> {
                   FlutterVolumeController.lowerVolume(
                     0.2,
                     stream: _audioStream,
-                  );
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton(
-                child: const Text('Attach Volume Listener'),
-                onPressed: () {
-                  FlutterVolumeController.addListener((volume) {
-                    setState(() {
-                      _currentVolume = volume;
-                    });
-                  });
-                  _scaffoldMessengerKey.currentState?.showSnackBar(
-                    const SnackBar(
-                      content: Text('Volume listener attached.'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton(
-                child: const Text('Remove Volume Listener'),
-                onPressed: () {
-                  FlutterVolumeController.removeListener();
-                  _scaffoldMessengerKey.currentState?.showSnackBar(
-                    const SnackBar(
-                      content: Text('Volume listener removed.'),
-                      duration: Duration(seconds: 1),
-                    ),
                   );
                 },
               ),
