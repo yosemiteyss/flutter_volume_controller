@@ -19,6 +19,7 @@ class FlutterVolumeController {
     'com.yosemiteyss.flutter_volume_controller/event',
   );
 
+  /// Stream for listening volume change events.
   static StreamSubscription<double>? _volumeListener;
 
   /// Control whether the system UI (volume bar) is visible when changing
@@ -27,7 +28,7 @@ class FlutterVolumeController {
   static bool showSystemUI = true;
 
   /// Get the current volume percent.
-  /// Note: audio stream setting only works on Android.
+  /// Use [stream] to set the audio stream type on Android.
   static Future<double?> getVolume({
     AudioStream stream = AudioStream.music,
   }) async {
@@ -36,8 +37,8 @@ class FlutterVolumeController {
     });
   }
 
-  /// Set the volume percent from 0.0 to 1.0.
-  /// Note: audio stream setting only works on Android.
+  /// Set the [volume] percent from 0.0 to 1.0.
+  /// Use [stream] to set the audio stream type on Android.
   static Future<void> setVolume(
     double volume, {
     AudioStream stream = AudioStream.music,
@@ -52,8 +53,9 @@ class FlutterVolumeController {
 
   /// Increase the volume percent by a given [step] from 0.0 to 1.0.
   /// When [step] is set to null, it will uses the default system stepping value
-  /// on Android. On iOS, the default stepping value is set to 0.15.
-  /// Note: audio stream setting only works on Android.
+  /// on Android. On iOS, macOS, Linux, if [step] is not defined, the default
+  /// stepping value is set to 0.15.
+  /// Use [stream] to set the audio stream type on Android.
   static Future<void> raiseVolume(
     double? step, {
     AudioStream stream = AudioStream.music,
@@ -68,8 +70,9 @@ class FlutterVolumeController {
 
   /// Reduce the volume percent by a given [step] from 0.0 to 1.0.
   /// When [step] is set to null, it will uses the default system stepping value
-  /// on Android. On iOS, the default stepping value is set to 0.15.
-  /// Note: audio stream setting only works on Android.
+  /// on Android. On iOS, macOS, Linux, if [step] is not defined, the default
+  /// stepping value is set to 0.15.
+  /// Use [stream] to set the audio stream type on Android.
   static Future<void> lowerVolume(
     double? step, {
     AudioStream stream = AudioStream.music,
@@ -83,9 +86,13 @@ class FlutterVolumeController {
   }
 
   /// Listen for volume changes.
+  /// Use [emitOnStart] to control whether volume value should be emitted
+  /// immediately right after the listener is attached.
+  /// Use [stream] to set the audio stream type on Android.
   static StreamSubscription<double> addListener(
     Function(double volume) onChanged, {
     AudioStream stream = AudioStream.music,
+    bool emitOnStart = true,
   }) {
     if (_volumeListener != null) {
       removeListener();
@@ -94,6 +101,7 @@ class FlutterVolumeController {
     final listener = eventChannel
         .receiveBroadcastStream({
           if (Platform.isAndroid) MethodArg.audioStream: stream.index,
+          MethodArg.emitOnStart: emitOnStart,
         })
         .map((volume) => volume as double)
         .listen(onChanged);
@@ -109,9 +117,9 @@ class FlutterVolumeController {
   }
 
   /// Set the default audio stream on Android.
-  /// Consider calling this method before [addListener] to ensure the correct
+  /// Should calling this method before [addListener] to ensure the correct
   /// audio stream is being controlled.
-  /// Note: audio stream setting only works on Android.
+  /// Use [stream] to set the audio stream type on Android.
   static Future<void> setAndroidAudioStream({
     AudioStream stream = AudioStream.music,
   }) async {
