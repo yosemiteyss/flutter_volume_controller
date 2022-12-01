@@ -8,6 +8,7 @@ constexpr char METHOD_LOWER_VOLUME[] = "lowerVolume";
 
 constexpr char ARG_VOLUME[] = "volume";
 constexpr char ARG_STEP[] = "step";
+constexpr char ARG_EMIT_ON_START[] = "emitOnStart";
 
 constexpr char ERROR_CODE_DEFAULT[] = "1000";
 

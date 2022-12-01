@@ -532,14 +532,19 @@ struct alsa_card {
     /* Card names */
     char *name; /* Real card name like 'HDA Intel PCH' */
     char *hctl; /* HTCL device name, like 'hw:0' */
+
     /* Alsa data pointers */
     snd_mixer_t *mixer; /* Alsa mixer */
     snd_mixer_elem_t *mixer_elem; /* Alsa mixer elem */
+
     /* Gio watch ids */
     guint *watch_ids;
+
     /* User callback, to notify when something happens */
     AlsaCb cb_func;
     gpointer cb_data;
+    gboolean cb_emit_on_start;
+    gboolean cb_first_emitted;
 };
 
 /**
@@ -613,9 +618,13 @@ poll_watch_cb(GIOChannel *source, GIOCondition condition, AlsaCard *card) {
 
     /* Arriving here, no errors happened.
      * We can safely notify that values changed.
+     * If emit_on_start is false, we will ignore the first volume change event.
      */
-    if (callback)
+    if (callback && (card->cb_emit_on_start || card->cb_first_emitted))
         callback(ALSA_CARD_VALUES_CHANGED, data);
+
+    if (!card->cb_emit_on_start && !card->cb_first_emitted)
+        card->cb_first_emitted = TRUE;
 
     return TRUE;
 }
@@ -731,11 +740,13 @@ alsa_card_set_volume(AlsaCard *card, gdouble value, int dir) {
  * @param card a Card instance.
  * @param callback the callback to be invoked.
  * @param user_data the user data passed to the callback.
+ * @param emit_on_start the callback should be invoked immediately on start
  */
 void
-alsa_card_install_callback(AlsaCard *card, AlsaCb callback, gpointer user_data) {
+alsa_card_install_callback(AlsaCard *card, AlsaCb callback, gpointer user_data, gboolean emit_on_start) {
     card->cb_func = callback;
     card->cb_data = user_data;
+    card->cb_emit_on_start = emit_on_start;
 }
 
 /**

@@ -117,6 +117,9 @@ static void method_call_cb(FlMethodChannel *channel,
 static FlMethodErrorResponse *event_listen_cb(FlEventChannel *channel, FlValue *args, gpointer user_data) {
     FlutterVolumeControllerPlugin *self = (FlutterVolumeControllerPlugin *) user_data;
     AlsaCard *card = self->card;
+    FlValue *emit_on_start_value = fl_value_lookup_string(args, ARG_EMIT_ON_START);
+
+    bool emit_on_start = fl_value_get_bool(emit_on_start_value);
 
     /* Check card is existed */
     if (card == NULL)
@@ -126,7 +129,7 @@ static FlMethodErrorResponse *event_listen_cb(FlEventChannel *channel, FlValue *
     if (alsa_card_add_watch(card) == FALSE)
         return fl_method_error_response_new(ERROR_CODE_DEFAULT, ERROR_MSG_REGISTER_LISTENER, NULL);
 
-    alsa_card_install_callback(card, on_alsa_event, user_data);
+    alsa_card_install_callback(card, on_alsa_event, user_data, emit_on_start);
 
     self->send_events = TRUE;
 
