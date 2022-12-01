@@ -18,6 +18,7 @@ struct MethodArg {
     static let volume = "volume"
     static let step = "step"
     static let showSystemUI = "showSystemUI"
+    static let emitOnStart = "emitOnStart"
 }
 
 struct ErrorCode {
