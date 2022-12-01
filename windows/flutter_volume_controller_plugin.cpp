@@ -141,11 +141,26 @@ namespace flutter_volume_controller {
 		const flutter::EncodableValue* arguments,
 		std::unique_ptr<flutter::EventSink<flutter::EncodableValue>>&& events) {
 		sink = std::move(events);
+		
 		auto callback = std::bind(&VolumeNotificationStreamHandler::OnVolumeChanged, this, std::placeholders::_1);
 
 		if (!volume_controller.RegisterNotification(callback)) {
 			return std::make_unique<flutter::StreamHandlerError<flutter::EncodableValue>>(
 				constants::kErrorCode, constants::kErrorRegisterListener, nullptr);
+		}
+
+		const auto* args = std::get_if<flutter::EncodableMap>(arguments);
+		const bool* emit_on_start = std::get_if<bool>(GetArgValue(*args, constants::kEmitOnStart));
+
+		if (*emit_on_start) {
+			auto current_volume = volume_controller.GetCurrentVolume();
+			if (current_volume.has_value()) {
+				sink->Success(flutter::EncodableValue(current_volume.value()));
+			}
+			else {
+				return std::make_unique<flutter::StreamHandlerError<flutter::EncodableValue>>(
+					constants::kErrorCode, constants::kErrorRegisterListener, nullptr);
+			}
 		}
 
 		return nullptr;

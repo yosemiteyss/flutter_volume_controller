@@ -35,4 +35,3 @@ namespace flutter_volume_controller {
 		return S_OK;
 	}
 }
-
