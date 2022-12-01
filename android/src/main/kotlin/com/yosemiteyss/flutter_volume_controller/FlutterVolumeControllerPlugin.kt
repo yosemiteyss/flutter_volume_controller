@@ -124,10 +124,16 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
         try {
             val args = arguments as Map<*, *>
             val audioStream = AudioStream.values()[args[MethodArg.AUDIO_STREAM] as Int]
+            val emitOnStart = args[MethodArg.EMIT_ON_START] as Boolean
+
             volumeBroadcastReceiver = VolumeBroadcastReceiver(events, audioStream).also {
                 context.registerReceiver(
                     it, IntentFilter("android.media.VOLUME_CHANGED_ACTION")
                 )
+            }
+
+            if (emitOnStart) {
+                events?.success(context.audioManager.getVolume(audioStream))
             }
         } catch (e: Exception) {
             events?.error(ErrorCode.DEFAULT, ErrorMessage.REGISTER_LISTENER, e.message)

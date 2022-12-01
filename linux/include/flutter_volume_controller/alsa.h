@@ -32,7 +32,7 @@ void alsa_card_remove_watch(AlsaCard *card);
 
 void alsa_card_free(AlsaCard *card);
 
-void alsa_card_install_callback(AlsaCard *card, AlsaCb callback, gpointer data);
+void alsa_card_install_callback(AlsaCard *card, AlsaCb callback, gpointer data, gboolean emit_on_start);
 
 const char *alsa_card_get_name(AlsaCard *card);
 

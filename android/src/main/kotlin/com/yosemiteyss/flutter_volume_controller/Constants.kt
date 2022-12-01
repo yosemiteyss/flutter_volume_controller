@@ -13,6 +13,7 @@ object MethodArg {
     const val STEP = "step"
     const val SHOW_SYSTEM_UI = "showSystemUI"
     const val AUDIO_STREAM = "audioStream"
+    const val EMIT_ON_START = "emitOnStart"
 }
 
 object ErrorCode {

@@ -10,6 +10,7 @@ namespace flutter_volume_controller {
 
 		constexpr char kArgVolume[] = "volume";
 		constexpr char kArgStep[] = "step";
+		constexpr char kEmitOnStart[] = "emitOnStart";
 
 		constexpr char kErrorCode[] = "1000";
 		constexpr char kErrorGetVolume[] = "Failed to get volume";

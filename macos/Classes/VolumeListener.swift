@@ -9,13 +9,25 @@ import Foundation
 import FlutterMacOS
 
 class VolumeListener: NSObject, FlutterStreamHandler {
+    private let volumeController: VolumeController
     private var eventSink: FlutterEventSink?
+    
+    required init(volumeController: VolumeController) {
+        self.volumeController = volumeController
+    }
     
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         eventSink = events
         do {
+            let args = arguments as! [String: Any]
+            let emitOnStart = args[MethodArg.emitOnStart] as! Bool
+            
             try Sound.output.addVolumeChangeObserver { volume in
                 events(volume)
+            }
+            
+            if emitOnStart {
+                events(try volumeController.getVolume())
             }
         } catch {
             return FlutterError(

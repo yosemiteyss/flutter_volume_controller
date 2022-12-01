@@ -20,9 +20,17 @@ class VolumeListener: NSObject, FlutterStreamHandler {
     
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         do {
+            let args = arguments as! [String: Any]
+            let emitOnStart = args[MethodArg.emitOnStart] as! Bool
+            
             try audioSession.setActive(true)
+            
             outputVolumeObservation = audioSession.observe(\.outputVolume) { session, _ in
                 events(session.outputVolume)
+            }
+            
+            if emitOnStart {
+                events(try audioSession.getVolume())
             }
         } catch {
             return FlutterError(

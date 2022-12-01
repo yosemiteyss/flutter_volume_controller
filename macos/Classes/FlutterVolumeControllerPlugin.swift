@@ -2,7 +2,7 @@ import Cocoa
 import FlutterMacOS
 
 public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
-    private let volumeController: VolumeController = VolumeController()
+    private static let volumeController: VolumeController = VolumeController()
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let methodChannel = FlutterMethodChannel(
@@ -17,15 +17,15 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
         let instance = FlutterVolumeControllerPlugin()
         registrar.addMethodCallDelegate(instance, channel: methodChannel)
         
-        let listner = VolumeListener()
-        eventChannel.setStreamHandler(listner)
+        let listener = VolumeListener(volumeController: volumeController)
+        eventChannel.setStreamHandler(listener)
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case MethodName.getVolume:
             do {
-                result(try volumeController.getVolume())
+                result(try FlutterVolumeControllerPlugin.volumeController.getVolume())
             } catch {
                 result(FlutterError(code: ErrorCode.default, message: ErrorMessage.getVolume, details: error.localizedDescription))
             }
@@ -33,18 +33,18 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             do {
                 let args = call.arguments as! [String: Any]
                 let volume = Float(args[MethodArg.volume] as! Double)
-                try volumeController.setVolume(volume)
+                try FlutterVolumeControllerPlugin.volumeController.setVolume(volume)
             } catch {
                 result(FlutterError(code: ErrorCode.default, message: ErrorMessage.setVolume, details: nil))
             }
         case MethodName.raiseVolume:
             let args = call.arguments as! [String: Any]
             let step = args[MethodArg.step] as? Float
-            volumeController.raiseVolume(step)
+            FlutterVolumeControllerPlugin.volumeController.raiseVolume(step)
         case MethodName.lowerVolume:
             let args = call.arguments as! [String: Any]
             let step = args[MethodArg.step] as? Float
-            volumeController.lowerVolume(step)
+            FlutterVolumeControllerPlugin.volumeController.lowerVolume(step)
         default:
             result(FlutterMethodNotImplemented)
         }
