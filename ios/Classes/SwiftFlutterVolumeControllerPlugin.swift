@@ -52,6 +52,12 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             volumeController.lowerVolume(step, showSystemUI: showSystemUI)
+        case MethodName.getMute:
+            do {
+                result(try volumeController.getMute())
+            } catch {
+                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.getMute, details: error.localizedDescription))
+            }
         case MethodName.setMute:
             let args = call.arguments as! [String: Any]
             let isMuted = args[MethodArg.isMuted] as! Bool

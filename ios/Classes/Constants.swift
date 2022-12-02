@@ -12,6 +12,7 @@ struct MethodName {
     static let setVolume = "setVolume"
     static let raiseVolume = "raiseVolume"
     static let lowerVolume = "lowerVolume"
+    static let getMute = "getMute"
     static let setMute = "setMute"
 }
 
@@ -33,5 +34,6 @@ struct ErrorMessage {
     static let raiseVolume = "Failed to raise volume"
     static let lowerVolume = "Failed to lower volume"
     static let registerListener = "Failed to register volume listener"
+    static let getMute = "Failed to get mute"
     static let setMute = "Failed to set mute"
 }

@@ -34,6 +34,10 @@ class VolumeController {
         volumeView.lowerVolume(step ?? 0.15)
     }
     
+    func getMute() throws -> Bool {
+        return try getVolume() == 0;
+    }
+    
     func setMute(_ isMuted: Bool, showSystemUI: Bool) throws {
         // Save current volume level before mute.
         if isMuted {
