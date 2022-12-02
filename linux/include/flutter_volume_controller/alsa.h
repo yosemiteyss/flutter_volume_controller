@@ -1,6 +1,6 @@
 /* alsa.h
  * The file is forked and modified from PNmixer written by Nick Lanham.
- * Source: http://github.com/nicklan/pnmixer
+ * Source: <http://github.com/nicklan/pnmixer>
  */
 
 /**
@@ -41,6 +41,8 @@ const char *alsa_card_get_channel(AlsaCard *card);
 gboolean alsa_card_has_mute(AlsaCard *card);
 
 gboolean alsa_card_is_muted(AlsaCard *card, gboolean *muted);
+
+gboolean alsa_card_set_mute(AlsaCard *card, gboolean muted);
 
 gboolean alsa_card_toggle_mute(AlsaCard *card);
 

@@ -7,10 +7,14 @@
 
 FlMethodResponse *get_volume(AlsaCard *card);
 
-FlMethodResponse *set_volume(AlsaCard *card, float volume);
+FlMethodResponse *set_volume(AlsaCard *card, gfloat volume);
 
-FlMethodResponse *raise_volume(AlsaCard *card, float step);
+FlMethodResponse *raise_volume(AlsaCard *card, gfloat step);
 
-FlMethodResponse *lower_volume(AlsaCard *card, float step);
+FlMethodResponse *lower_volume(AlsaCard *card, gfloat step);
+
+FlMethodResponse *get_mute(AlsaCard *card);
+
+FlMethodResponse *set_mute(AlsaCard *card, gboolean muted);
 
 #endif
