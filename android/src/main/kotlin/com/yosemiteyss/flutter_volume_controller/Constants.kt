@@ -6,6 +6,7 @@ object MethodName {
     const val RAISE_VOLUME = "raiseVolume"
     const val LOWER_VOLUME = "lowerVolume"
     const val SET_ANDROID_AUDIO_STREAM = "setAndroidAudioStream"
+    const val GET_MUTE = "getMute"
     const val SET_MUTE = "setMute"
 }
 
@@ -28,5 +29,6 @@ object ErrorMessage {
     const val RAISE_VOLUME = "Failed to raise volume"
     const val LOWER_VOLUME = "Failed to lower volume"
     const val REGISTER_LISTENER = "Failed to register volume listener"
+    const val GET_MUTE = "Failed to get mute"
     const val SET_MUTE = "Failed to set mute"
 }

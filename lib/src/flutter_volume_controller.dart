@@ -68,7 +68,18 @@ class FlutterVolumeController {
     });
   }
 
-  /// Set volume to mute or unmute state.
+  /// Check if volume is muted.
+  /// Use [stream] to set the audio stream type on Android.
+  static Future<bool?> getMute({
+    AudioStream stream = AudioStream.music,
+  }) async {
+    return await methodChannel.invokeMethod<bool>(MethodName.getMute, {
+      if (Platform.isAndroid) MethodArg.audioStream: stream.index,
+    });
+  }
+
+  /// Set volume to mute or unmute.
+  /// Use [stream] to set the audio stream type on Android.
   static Future<void> setMute(
     bool isMuted, {
     AudioStream stream = AudioStream.music,

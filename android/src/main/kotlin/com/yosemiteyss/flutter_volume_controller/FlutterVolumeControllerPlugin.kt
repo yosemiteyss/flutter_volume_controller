@@ -93,6 +93,16 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                     result.error(ErrorCode.DEFAULT, ErrorMessage.LOWER_VOLUME, e.message)
                 }
             }
+            MethodName.GET_MUTE -> {
+                try {
+                    val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
+                    result.success(
+                        volumeController.getMute(AudioStream.values()[audioStream])
+                    )
+                } catch (e: Exception) {
+                    result.error(ErrorCode.DEFAULT, ErrorMessage.GET_MUTE, e.message)
+                }
+            }
             MethodName.SET_MUTE -> {
                 try {
                     val isMuted = call.argument<Boolean>(MethodArg.IS_MUTED)!!

@@ -3,8 +3,9 @@ class MethodName {
   static const String setVolume = 'setVolume';
   static const String raiseVolume = 'raiseVolume';
   static const String lowerVolume = 'lowerVolume';
-  static const String setMute = 'setMute';
   static const String setAndroidAudioStream = 'setAndroidAudioStream';
+  static const String getMute = 'getMute';
+  static const String setMute = 'setMute';
 }
 
 class MethodArg {

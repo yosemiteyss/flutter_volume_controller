@@ -138,6 +138,20 @@ class _MyAppState extends State<MyApp> {
             ),
             Center(
               child: ElevatedButton(
+                child: const Text('Get mute'),
+                onPressed: () async {
+                  final isMuted = await FlutterVolumeController.getMute();
+                  _scaffoldMessengerKey.currentState?.showSnackBar(
+                    SnackBar(
+                      content: Text('Muted: $isMuted'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
                 child: const Text('Set mute'),
                 onPressed: () {
                   FlutterVolumeController.setMute(
