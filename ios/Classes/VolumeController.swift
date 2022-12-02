@@ -52,6 +52,11 @@ class VolumeController {
         
         savedVolume = nil
     }
+    
+    func toggleMute(showSystemUI: Bool) throws {
+        let isMuted = try getMute()
+        try setMute(!isMuted, showSystemUI: showSystemUI)
+    }
         
     private func setShowSystemUI(_ show: Bool) {
         if show {

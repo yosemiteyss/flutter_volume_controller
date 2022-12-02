@@ -34,8 +34,8 @@ class VolumeListener: NSObject, FlutterStreamHandler {
             }
         } catch {
             return FlutterError(
-                code: ErrorCode.default,
-                message: ErrorMessage.registerListener,
+                code: ErrorCode.registerVolumeListener,
+                message: ErrorMessage.registerVolumeListener,
                 details: error.localizedDescription
             )
         }

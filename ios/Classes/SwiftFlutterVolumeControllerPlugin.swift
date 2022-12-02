@@ -32,7 +32,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             do {
                 result(try volumeController.getVolume())
             } catch {
-                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.getVolume, details: error.localizedDescription))
+                result(FlutterError(code: ErrorCode.getVolume, message: ErrorMessage.getVolume, details: error.localizedDescription))
             }
         case MethodName.setVolume:
             let args = call.arguments as! [String: Any]
@@ -56,7 +56,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             do {
                 result(try volumeController.getMute())
             } catch {
-                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.getMute, details: error.localizedDescription))
+                result(FlutterError(code: ErrorCode.getMute, message: ErrorMessage.getMute, details: error.localizedDescription))
             }
         case MethodName.setMute:
             let args = call.arguments as! [String: Any]
@@ -66,7 +66,16 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             do {
                 try volumeController.setMute(isMuted, showSystemUI: showSystemUI)
             } catch {
-                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.setMute, details: error.localizedDescription))
+                result(FlutterError(code: ErrorCode.setMute, message: ErrorMessage.setMute, details: error.localizedDescription))
+            }
+        case MethodName.toggleMute:
+            let args = call.arguments as! [String: Any]
+            let showSystemUI = args[MethodArg.showSystemUI] as! Bool
+            
+            do {
+                try volumeController.toggleMute(showSystemUI: showSystemUI)
+            } catch {
+                result(FlutterError(code: ErrorCode.toggleMute, message: ErrorMessage.toggleMute, details: error.localizedDescription))
             }
         default:
             result(FlutterMethodNotImplemented)
