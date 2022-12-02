@@ -81,7 +81,7 @@ namespace flutter_volume_controller {
 			if (!SetMute(false)) {
 				return false;
 			}
-			
+
 			hr = endpoint_volume->SetMasterVolumeLevelScalar(volume, NULL);
 			if (FAILED(hr)) {
 				return false;
@@ -210,15 +210,17 @@ namespace flutter_volume_controller {
 	bool VolumeController::SetMute(bool is_mute) {
 		HRESULT hr = E_FAIL;
 
-		if (is_mute) {
-			hr = endpoint_volume->SetMute(TRUE, NULL);
-		}
-		else {
-			hr = endpoint_volume->SetMute(FALSE, NULL);
-		}
+		if (endpoint_volume) {
+			if (is_mute) {
+				hr = endpoint_volume->SetMute(TRUE, NULL);
+			}
+			else {
+				hr = endpoint_volume->SetMute(FALSE, NULL);
+			}
 
-		if (FAILED(hr)) {
-			return false;
+			if (FAILED(hr)) {
+				return false;
+			}
 		}
 
 		return true;
@@ -238,5 +240,19 @@ namespace flutter_volume_controller {
 		}
 
 		return current_volume;
+	}
+
+	std::optional<bool> VolumeController::GetMute() {
+		HRESULT hr = E_FAIL;
+		BOOL is_muted;
+
+		if (endpoint_volume) {
+			hr = endpoint_volume->GetMute(&is_muted);
+			if (FAILED(hr)) {
+				return std::nullopt;
+			}
+		}
+
+		return is_muted;
 	}
 }

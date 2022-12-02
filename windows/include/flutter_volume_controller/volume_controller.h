@@ -37,6 +37,8 @@ namespace flutter_volume_controller {
 
 		std::optional<float> GetCurrentVolume();
 
+		std::optional<bool> GetMute();
+
 	private:
 		VolumeController();
 

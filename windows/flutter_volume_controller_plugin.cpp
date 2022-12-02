@@ -61,6 +61,13 @@ namespace flutter_volume_controller {
 			const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
 			LowerVolumeHandler(*arguments, std::move(result));
 		}
+		else if (method_call.method_name().compare(constants::kMethodGetMute) == 0) {
+			GetMuteHandler(std::move(result));
+		}
+		else if (method_call.method_name().compare(constants::kMethodSetMute) == 0) {
+			const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+			SetMuteHandler(*arguments, std::move(result));
+		}
 		else {
 			result->NotImplemented();
 		}
@@ -132,6 +139,35 @@ namespace flutter_volume_controller {
 		result->Success();
 	}
 
+	void FlutterVolumeControllerPlugin::GetMuteHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+		auto is_muted = volume_controller.GetMute();
+
+		if (is_muted.has_value()) {
+			result->Success(flutter::EncodableValue(is_muted.value()));
+		}
+		else {
+			result->Error(constants::kErrorCode, constants::kErrorGetMute, nullptr);
+		}
+	}
+
+	void FlutterVolumeControllerPlugin::SetMuteHandler(
+		const flutter::EncodableMap& arguments,
+		std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+		const bool* is_muted = std::get_if<bool>(GetArgValue(arguments, constants::kArgIsMuted));
+
+		if (!is_muted) {
+			result->Error(constants::kErrorCode, constants::kErrorSetMute, nullptr);
+			return;
+		}
+
+		if (!volume_controller.SetMute(*is_muted)) {
+			result->Error(constants::kErrorCode, constants::kErrorSetMute, nullptr);
+			return;
+		}
+
+		result->Success();
+	}
+
 	VolumeNotificationStreamHandler::VolumeNotificationStreamHandler(
 		VolumeController& volume_controller) : volume_controller(volume_controller), sink(nullptr) {}
 
@@ -150,7 +186,7 @@ namespace flutter_volume_controller {
 		}
 
 		const auto* args = std::get_if<flutter::EncodableMap>(arguments);
-		const bool* emit_on_start = std::get_if<bool>(GetArgValue(*args, constants::kEmitOnStart));
+		const bool* emit_on_start = std::get_if<bool>(GetArgValue(*args, constants::kArgEmitOnStart));
 
 		if (*emit_on_start) {
 			auto current_volume = volume_controller.GetCurrentVolume();
