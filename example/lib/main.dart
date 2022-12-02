@@ -90,16 +90,14 @@ class _MyAppState extends State<MyApp> {
                   final volume = await FlutterVolumeController.getVolume(
                     stream: _audioStream,
                   );
-                  if (mounted) {
-                    _scaffoldMessengerKey.currentState?.showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Current Volume: $volume (${_audioStream.name})',
-                        ),
-                        duration: const Duration(seconds: 2),
+                  _scaffoldMessengerKey.currentState?.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Current Volume: $volume (${_audioStream.name})',
                       ),
-                    );
-                  }
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 },
               ),
             ),
