@@ -63,6 +63,11 @@ class VolumeController(private val audioManager: AudioManager) {
             audioManager.setStreamMute(audioStream.streamType, isMuted)
         }
     }
+
+    fun toggleMute(showSystemUI: Boolean, audioStream: AudioStream) {
+        val isMuted = getMute(audioStream)
+        setMute(!isMuted, showSystemUI, audioStream)
+    }
 }
 
 

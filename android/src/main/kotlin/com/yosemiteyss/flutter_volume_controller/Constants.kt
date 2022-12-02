@@ -8,6 +8,7 @@ object MethodName {
     const val SET_ANDROID_AUDIO_STREAM = "setAndroidAudioStream"
     const val GET_MUTE = "getMute"
     const val SET_MUTE = "setMute"
+    const val TOGGLE_MUTE = "toggleMute"
 }
 
 object MethodArg {
@@ -20,7 +21,15 @@ object MethodArg {
 }
 
 object ErrorCode {
-    const val DEFAULT = "1000"
+    const val GET_VOLUME = "1000"
+    const val SET_VOLUME = "1001"
+    const val RAISE_VOLUME = "1002"
+    const val LOWER_VOLUME = "1003"
+    const val REGISTER_VOLUME_LISTENER = "1004"
+    const val GET_MUTE = "1005"
+    const val SET_MUTE = "1006"
+    const val TOGGLE_MUTE = "1007"
+    const val SET_ANDROID_AUDIO_STREAM = "1008"
 }
 
 object ErrorMessage {
@@ -28,7 +37,9 @@ object ErrorMessage {
     const val SET_VOLUME = "Failed to set volume"
     const val RAISE_VOLUME = "Failed to raise volume"
     const val LOWER_VOLUME = "Failed to lower volume"
-    const val REGISTER_LISTENER = "Failed to register volume listener"
+    const val REGISTER_VOLUME_LISTENER = "Failed to register volume listener"
     const val GET_MUTE = "Failed to get mute"
     const val SET_MUTE = "Failed to set mute"
+    const val TOGGLE_MUTE = "Failed to toggle mute"
+    const val SET_ANDROID_AUDIO_STREAM = "Failed to set audio stream"
 }
