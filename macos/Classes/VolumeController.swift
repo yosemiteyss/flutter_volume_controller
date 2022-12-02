@@ -25,6 +25,10 @@ class VolumeController {
         try Sound.output.decreaseVolume(by: step ?? 0.15)
     }
     
+    func getMute() throws -> Bool {
+        return try Sound.output.readMute();
+    }
+    
     func setMute(_ isMuted: Bool) throws {
         try Sound.output.mute(isMuted)
     }
