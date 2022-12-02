@@ -17,4 +17,6 @@ FlMethodResponse *get_mute(AlsaCard *card);
 
 FlMethodResponse *set_mute(AlsaCard *card, gboolean muted);
 
+FlMethodResponse *toggle_mute(AlsaCard *card);
+
 #endif

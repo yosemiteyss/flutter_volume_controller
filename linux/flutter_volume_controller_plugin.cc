@@ -23,10 +23,10 @@ G_DEFINE_TYPE(FlutterVolumeControllerPlugin, flutter_volume_controller_plugin, g
 )
 
 static void flutter_volume_controller_plugin_handle_method_call(
-        FlutterVolumeControllerPlugin * self,
-        FlMethodCall * method_call) {
+        FlutterVolumeControllerPlugin *self,
+        FlMethodCall *method_call) {
     g_autoptr(FlMethodResponse)
-    response = NULL;
+            response = NULL;
     FlValue *args = fl_method_call_get_args(method_call);
     const gchar *method = fl_method_call_get_name(method_call);
 
@@ -55,13 +55,15 @@ static void flutter_volume_controller_plugin_handle_method_call(
         FlValue *is_muted_value = fl_value_lookup_string(args, ARG_IS_MUTED);
         gboolean is_muted = fl_value_get_bool(is_muted_value);
         response = set_mute(self->card, is_muted);
+    } else if (strcmp(method, METHOD_TOGGLE_MUTE) == 0) {
+        response = toggle_mute(self->card);
     }
 
     fl_method_call_respond(method_call, response, NULL);
 }
 
 static void flutter_volume_controller_plugin_dispose(GObject *object) {
-    FlutterVolumeControllerPlugin * self = FLUTTER_VOLUME_CONTROLLER_PLUGIN(object);
+    FlutterVolumeControllerPlugin *self = FLUTTER_VOLUME_CONTROLLER_PLUGIN(object);
 
     /* Dispose card instance */
     alsa_card_free(self->card);
@@ -75,7 +77,7 @@ static void flutter_volume_controller_plugin_class_init(FlutterVolumeControllerP
     G_OBJECT_CLASS(klass)->dispose = flutter_volume_controller_plugin_dispose;
 }
 
-static void on_alsa_values_changed(FlutterVolumeControllerPlugin * self) {
+static void on_alsa_values_changed(FlutterVolumeControllerPlugin *self) {
     gdouble volume;
 
     alsa_card_get_volume(self->card, &volume);
@@ -86,8 +88,8 @@ static void on_alsa_values_changed(FlutterVolumeControllerPlugin * self) {
 }
 
 static void on_alsa_event(enum alsa_event event, gpointer data) {
-    FlutterVolumeControllerPlugin *self = (FlutterVolumeControllerPlugin * )
-    data;
+    FlutterVolumeControllerPlugin *self = (FlutterVolumeControllerPlugin *)
+            data;
 
     /* Check event channel is active */
     if (!self->send_events)
@@ -109,7 +111,7 @@ static void on_alsa_event(enum alsa_event event, gpointer data) {
     }
 }
 
-static void flutter_volume_controller_plugin_init(FlutterVolumeControllerPlugin * self) {
+static void flutter_volume_controller_plugin_init(FlutterVolumeControllerPlugin *self) {
     /* Initiate the default card instance */
     self->card = alsa_card_new(NULL, NULL);
 
@@ -120,13 +122,13 @@ static void flutter_volume_controller_plugin_init(FlutterVolumeControllerPlugin 
 static void method_call_cb(FlMethodChannel *channel,
                            FlMethodCall *method_call,
                            gpointer user_data) {
-    FlutterVolumeControllerPlugin * self = FLUTTER_VOLUME_CONTROLLER_PLUGIN(user_data);
+    FlutterVolumeControllerPlugin *self = FLUTTER_VOLUME_CONTROLLER_PLUGIN(user_data);
     flutter_volume_controller_plugin_handle_method_call(self, method_call);
 }
 
 static FlMethodErrorResponse *event_listen_cb(FlEventChannel *channel, FlValue *args, gpointer user_data) {
-    FlutterVolumeControllerPlugin *self = (FlutterVolumeControllerPlugin * )
-    user_data;
+    FlutterVolumeControllerPlugin *self = (FlutterVolumeControllerPlugin *)
+            user_data;
     AlsaCard *card = self->card;
     FlValue *emit_on_start_value = fl_value_lookup_string(args, ARG_EMIT_ON_START);
 
@@ -134,11 +136,11 @@ static FlMethodErrorResponse *event_listen_cb(FlEventChannel *channel, FlValue *
 
     /* Check card is existed */
     if (card == NULL)
-        return fl_method_error_response_new(ERROR_CODE_DEFAULT, ERROR_MSG_REGISTER_LISTENER, NULL);
+        return fl_method_error_response_new(ERROR_CODE_REG_VOLUME_LISTENER, ERROR_MSG_REG_VOLUME_LISTENER, NULL);
 
     /* Start watching alsa card */
     if (alsa_card_add_watch(card) == FALSE)
-        return fl_method_error_response_new(ERROR_CODE_DEFAULT, ERROR_MSG_REGISTER_LISTENER, NULL);
+        return fl_method_error_response_new(ERROR_CODE_REG_VOLUME_LISTENER, ERROR_MSG_REG_VOLUME_LISTENER, NULL);
 
     alsa_card_install_callback(card, on_alsa_event, user_data, emit_on_start);
 
@@ -148,8 +150,8 @@ static FlMethodErrorResponse *event_listen_cb(FlEventChannel *channel, FlValue *
 }
 
 static FlMethodErrorResponse *event_cancel_cb(FlEventChannel *channel, FlValue *args, gpointer user_data) {
-    FlutterVolumeControllerPlugin *self = (FlutterVolumeControllerPlugin * )
-    user_data;
+    FlutterVolumeControllerPlugin *self = (FlutterVolumeControllerPlugin *)
+            user_data;
     AlsaCard *card = self->card;
 
     /* Stop watching alsa card */
@@ -162,7 +164,7 @@ static FlMethodErrorResponse *event_cancel_cb(FlEventChannel *channel, FlValue *
 }
 
 void flutter_volume_controller_plugin_register_with_registrar(FlPluginRegistrar *registrar) {
-    FlutterVolumeControllerPlugin * self =
+    FlutterVolumeControllerPlugin *self =
             FLUTTER_VOLUME_CONTROLLER_PLUGIN(
                     g_object_new(flutter_volume_controller_plugin_get_type(), nullptr));
 
