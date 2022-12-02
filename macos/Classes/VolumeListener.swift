@@ -31,8 +31,8 @@ class VolumeListener: NSObject, FlutterStreamHandler {
             }
         } catch {
             return FlutterError(
-                code: ErrorCode.default,
-                message: ErrorMessage.registerListener,
+                code: ErrorCode.registerVolumeListener,
+                message: ErrorMessage.registerVolumeListener,
                 details: error.localizedDescription
             )
         }
@@ -45,11 +45,7 @@ class VolumeListener: NSObject, FlutterStreamHandler {
         do {
             try Sound.output.removeVolumeChangeObserver()
         } catch {
-            return FlutterError(
-                code: ErrorCode.default,
-                message: ErrorMessage.registerListener,
-                details: error.localizedDescription
-            )
+            // No-op
         }
         
         return nil

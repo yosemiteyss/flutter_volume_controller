@@ -32,4 +32,9 @@ class VolumeController {
     func setMute(_ isMuted: Bool) throws {
         try Sound.output.mute(isMuted)
     }
+    
+    func toggleMute() throws {
+        let isMuted = try getMute()
+        try setMute(!isMuted)
+    }
 }

@@ -27,7 +27,7 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             do {
                 result(try FlutterVolumeControllerPlugin.volumeController.getVolume())
             } catch {
-                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.getVolume, details: error.localizedDescription))
+                result(FlutterError(code: ErrorCode.getVolume, message: ErrorMessage.getVolume, details: error.localizedDescription))
             }
         case MethodName.setVolume:
             do {
@@ -36,7 +36,7 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
 
                 try FlutterVolumeControllerPlugin.volumeController.setVolume(volume)
             } catch {
-                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.setVolume, details: nil))
+                result(FlutterError(code: ErrorCode.setVolume, message: ErrorMessage.setVolume, details: nil))
             }
         case MethodName.raiseVolume:
             do {
@@ -45,7 +45,7 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
 
                 try FlutterVolumeControllerPlugin.volumeController.raiseVolume(step)
             } catch {
-                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.raiseVolume, details: nil))
+                result(FlutterError(code: ErrorCode.raiseVolume, message: ErrorMessage.raiseVolume, details: nil))
             }
         case MethodName.lowerVolume:
             do {
@@ -54,13 +54,13 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
 
                 try FlutterVolumeControllerPlugin.volumeController.lowerVolume(step)
             } catch {
-                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.lowerVolume, details: nil))
+                result(FlutterError(code: ErrorCode.lowerVolume, message: ErrorMessage.lowerVolume, details: nil))
             }
         case MethodName.getMute:
             do {
                 result(try FlutterVolumeControllerPlugin.volumeController.getMute())
             } catch {
-                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.getMute, details: nil))
+                result(FlutterError(code: ErrorCode.getMute, message: ErrorMessage.getMute, details: nil))
             }
         case MethodName.setMute:
             do {
@@ -69,7 +69,13 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
 
                 try FlutterVolumeControllerPlugin.volumeController.setMute(isMuted)
             } catch {
-                result(FlutterError(code: ErrorCode.default, message: ErrorMessage.setMute, details: nil))
+                result(FlutterError(code: ErrorCode.setMute, message: ErrorMessage.setMute, details: nil))
+            }
+        case MethodName.toggleMute:
+            do {
+                try FlutterVolumeControllerPlugin.volumeController.toggleMute()
+            } catch {
+                result(FlutterError(code: ErrorCode.toggleMute, message: ErrorMessage.toggleMute, details: nil))
             }
         default:
             result(FlutterMethodNotImplemented)
