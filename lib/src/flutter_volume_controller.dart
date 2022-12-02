@@ -92,6 +92,18 @@ class FlutterVolumeController {
     });
   }
 
+  /// Toggle the volume mute state.
+  /// Use [stream] to set the audio stream type on Android.
+  static Future<void> toggleMute({
+    AudioStream stream = AudioStream.music,
+  }) async {
+    await methodChannel.invokeMethod(MethodName.toggleMute, {
+      if (Platform.isAndroid || Platform.isIOS)
+        MethodArg.showSystemUI: showSystemUI,
+      if (Platform.isAndroid) MethodArg.audioStream: stream.index
+    });
+  }
+
   /// Reduce the volume percent by a given [step] from 0.0 to 1.0.
   /// When [step] is set to null, it will uses the default system stepping value
   /// on Android. On iOS, macOS, Linux, if [step] is not defined, the default

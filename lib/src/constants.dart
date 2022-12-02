@@ -6,6 +6,7 @@ class MethodName {
   static const String setAndroidAudioStream = 'setAndroidAudioStream';
   static const String getMute = 'getMute';
   static const String setMute = 'setMute';
+  static const String toggleMute = 'toggleMute';
 }
 
 class MethodArg {
