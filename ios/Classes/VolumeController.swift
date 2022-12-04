@@ -15,7 +15,7 @@ class VolumeController {
     
     private var savedVolume: Float?
     
-    func getVolume() throws -> Float? {
+    func getVolume() throws -> Float {
         return try audioSession.getVolume()
     }
     
