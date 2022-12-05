@@ -20,22 +20,22 @@ A Flutter plugin to control system volume and listen for volume changes on diffe
 
 ### Usage
 
-#### Get current system volume
+#### Get volume level
 ```dart
 final volume = await FlutterVolumeController.getVolume();
 ```
 
-#### Set the current system volume
+#### Set volume level
 ```dart
 await FlutterVolumeController.setVolume(0.5);
 ```
 
-#### Increase system volume by a given step
+#### Increase volume level
 ```dart
 await FlutterVolumeController.raiseVolume(0.2);
 ```
 
-#### Decrease system volume by a given step
+#### Decrease volume level
 ```dart
 await FlutterVolumeController.lowerVolume(0.2);
 ```
@@ -48,6 +48,16 @@ FlutterVolumeController.showSystemUI = true;
 #### Set the default audio stream type. (For Android)
 ```dart
 await FlutterVolumeController.setAndroidAudioStream(stream: AudioStream.music);
+```
+
+### Check if the volume output is muted
+```dart
+final isMuted = await FlutterVolumeController.getMute();
+```
+
+#### Mute or unmute volume output
+```dart
+await FlutterVolumeController.setMute(true);
 ```
 
 #### Observe platform volume changes
