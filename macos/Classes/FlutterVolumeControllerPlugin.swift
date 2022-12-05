@@ -3,6 +3,7 @@ import FlutterMacOS
 
 public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
     private static let volumeController: VolumeController = VolumeController()
+    private static let volumeListener: VolumeListener = VolumeListener(volumeController: volumeController)
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let methodChannel = FlutterMethodChannel(
@@ -17,8 +18,7 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
         let instance = FlutterVolumeControllerPlugin()
         registrar.addMethodCallDelegate(instance, channel: methodChannel)
         
-        let listener = VolumeListener(volumeController: volumeController)
-        eventChannel.setStreamHandler(listener)
+        eventChannel.setStreamHandler(volumeListener)
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -32,8 +32,8 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
         case MethodName.setVolume:
             do {
                 let args = call.arguments as! [String: Any]
-                let volume = Float(args[MethodArg.volume] as! Double)
-
+                let volume = args[MethodArg.volume] as! Double
+                
                 try FlutterVolumeControllerPlugin.volumeController.setVolume(volume)
             } catch {
                 result(FlutterError(code: ErrorCode.setVolume, message: ErrorMessage.setVolume, details: nil))
@@ -41,8 +41,8 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
         case MethodName.raiseVolume:
             do {
                 let args = call.arguments as! [String: Any]
-                let step = args[MethodArg.step] as? Float
-
+                let step = args[MethodArg.step] as? Double
+                
                 try FlutterVolumeControllerPlugin.volumeController.raiseVolume(step)
             } catch {
                 result(FlutterError(code: ErrorCode.raiseVolume, message: ErrorMessage.raiseVolume, details: nil))
@@ -50,8 +50,8 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
         case MethodName.lowerVolume:
             do {
                 let args = call.arguments as! [String: Any]
-                let step = args[MethodArg.step] as? Float
-
+                let step = args[MethodArg.step] as? Double
+                
                 try FlutterVolumeControllerPlugin.volumeController.lowerVolume(step)
             } catch {
                 result(FlutterError(code: ErrorCode.lowerVolume, message: ErrorMessage.lowerVolume, details: nil))
@@ -66,7 +66,7 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             do {
                 let args = call.arguments as! [String: Any]
                 let isMuted = args[MethodArg.isMuted] as! Bool
-
+                
                 try FlutterVolumeControllerPlugin.volumeController.setMute(isMuted)
             } catch {
                 result(FlutterError(code: ErrorCode.setMute, message: ErrorMessage.setMute, details: nil))
