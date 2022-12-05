@@ -13,23 +13,23 @@ class VolumeController {
     private let volumeView: MPVolumeView = MPVolumeView()
     private let audioSession: AVAudioSession = AVAudioSession.sharedInstance()
     
-    private var savedVolume: Float?
+    private var savedVolume: Double?
     
-    func getVolume() throws -> Float {
+    func getVolume() throws -> Double {
         return try audioSession.getVolume()
     }
     
-    func setVolume(_ volume: Float, showSystemUI: Bool) {
+    func setVolume(_ volume: Double, showSystemUI: Bool) {
         setShowSystemUI(showSystemUI);
         volumeView.setVolume(volume)
     }
     
-    func raiseVolume(_ step: Float?, showSystemUI: Bool) {
+    func raiseVolume(_ step: Double?, showSystemUI: Bool) {
         setShowSystemUI(showSystemUI);
         volumeView.raiseVolume(step ?? 0.15)
     }
     
-    func lowerVolume(_ step: Float?, showSystemUI: Bool) {
+    func lowerVolume(_ step: Double?, showSystemUI: Bool) {
         setShowSystemUI(showSystemUI);
         volumeView.lowerVolume(step ?? 0.15)
     }

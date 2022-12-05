@@ -36,19 +36,19 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             }
         case MethodName.setVolume:
             let args = call.arguments as! [String: Any]
-            let volume = Float(args[MethodArg.volume] as! Double)
+            let volume = args[MethodArg.volume] as! Double
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             volumeController.setVolume(volume, showSystemUI: showSystemUI)
         case MethodName.raiseVolume:
             let args = call.arguments as! [String: Any]
-            let step = args[MethodArg.step] as? Float
+            let step = args[MethodArg.step] as? Double
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             volumeController.raiseVolume(step, showSystemUI: showSystemUI)
         case MethodName.lowerVolume:
             let args = call.arguments as! [String: Any]
-            let step = args[MethodArg.step] as? Float
+            let step = args[MethodArg.step] as? Double
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             volumeController.lowerVolume(step, showSystemUI: showSystemUI)
