@@ -52,5 +52,5 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - run: flutter config --enable-windows-desktop
       - run: flutter pub get
-      - run: cd ./example && flutter build windows
+      - run: (cd ./example) -and (flutter build windows)
       - run: echo "build success!"
