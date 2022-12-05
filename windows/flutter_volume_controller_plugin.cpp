@@ -96,7 +96,7 @@ namespace flutter_volume_controller {
 			return;
 		}
 
-		if (!volume_controller.SetVolume(static_cast<float>(*volume))) {
+		if (!volume_controller.SetVolume(*volume)) {
 			result->Error(constants::kErrCodeSetVolume, constants::kErrMsgSetVolume, nullptr);
 			return;
 		}
@@ -115,7 +115,7 @@ namespace flutter_volume_controller {
 				return;
 			}
 		}
-		else if (!volume_controller.SetVolumeUp(static_cast<float>(*step))) {
+		else if (!volume_controller.SetVolumeUp(*step)) {
 			result->Error(constants::kErrCodeRaiseVolume, constants::kErrMsgRaiseVolume, nullptr);
 			return;
 		}
@@ -134,7 +134,7 @@ namespace flutter_volume_controller {
 				return;
 			}
 		}
-		else if (!volume_controller.SetVolumeDown(static_cast<float>(*step))) {
+		else if (!volume_controller.SetVolumeDown(*step)) {
 			result->Error(constants::kErrCodeLowerVolume, constants::kErrMsgLowerVolume, nullptr);
 			return;
 		}

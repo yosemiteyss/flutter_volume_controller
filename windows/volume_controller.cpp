@@ -77,7 +77,7 @@ namespace flutter_volume_controller {
 		}
 	}
 
-	bool VolumeController::SetVolume(float volume) {
+	bool VolumeController::SetVolume(double volume) {
 		HRESULT hr = E_FAIL;
 
 		if (!endpoint_volume) {
@@ -88,7 +88,7 @@ namespace flutter_volume_controller {
 			return false;
 		}
 
-		hr = endpoint_volume->SetMasterVolumeLevelScalar(volume, NULL);
+		hr = endpoint_volume->SetMasterVolumeLevelScalar((float) volume, NULL);
 		if (FAILED(hr)) {
 			return false;
 		}
@@ -148,7 +148,7 @@ namespace flutter_volume_controller {
 		return true;
 	}
 
-	bool VolumeController::SetVolumeUp(float step) {
+	bool VolumeController::SetVolumeUp(double step) {
 		HRESULT hr = E_FAIL;
 
 		if (!endpoint_volume) {
@@ -160,10 +160,10 @@ namespace flutter_volume_controller {
 			return false;
 		}
 
-		float volume = current_volume.value();
-		float target_step = (1 - volume) < step ? 1 : volume + step;
+		double volume = current_volume.value();
+		double target_step = (1 - volume) < step ? 1 : volume + step;
 
-		hr = endpoint_volume->SetMasterVolumeLevelScalar(target_step, NULL);
+		hr = endpoint_volume->SetMasterVolumeLevelScalar((float) target_step, NULL);
 		if (FAILED(hr)) {
 			return false;
 		}
@@ -171,7 +171,7 @@ namespace flutter_volume_controller {
 		return true;
 	}
 
-	bool VolumeController::SetVolumeDown(float step) {
+	bool VolumeController::SetVolumeDown(double step) {
 		HRESULT hr = E_FAIL;
 
 		if (!endpoint_volume) {
@@ -183,10 +183,10 @@ namespace flutter_volume_controller {
 			return false;
 		}
 
-		float volume = current_volume.value();
-		float target_step = volume < step ? 0 : volume - step;
+		double volume = current_volume.value();
+		double target_step = volume < step ? 0 : volume - step;
 
-		hr = endpoint_volume->SetMasterVolumeLevelScalar(target_step, NULL);
+		hr = endpoint_volume->SetMasterVolumeLevelScalar((float) target_step, NULL);
 		if (FAILED(hr)) {
 			return false;
 		}
@@ -255,20 +255,18 @@ namespace flutter_volume_controller {
 		return SetMute(!is_muted.value());
 	}
 
-	std::optional<float> VolumeController::GetCurrentVolume() {
+	std::optional<double> VolumeController::GetCurrentVolume() {
 		HRESULT hr = E_FAIL;
-		UINT current_step, step_count;
 		float current_volume = 0.0f;
 
 		if (!endpoint_volume) {
 			return false;
 		}
 
-		hr = endpoint_volume->GetVolumeStepInfo(&current_step, &step_count);
+		hr = endpoint_volume->GetMasterVolumeLevelScalar(&current_volume);
 		if (FAILED(hr)) {
 			return std::nullopt;
 		}
-		current_volume = current_step * 1.0f / step_count;
 
 		return current_volume;
 	}
