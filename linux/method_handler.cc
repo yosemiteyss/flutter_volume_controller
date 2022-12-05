@@ -2,7 +2,7 @@
 #include "include/flutter_volume_controller/constants.h"
 
 FlMethodResponse *get_volume(AlsaCard *card) {
-    gdouble volume;
+    double volume;
 
     if (!alsa_card_get_volume(card, &volume))
         return FL_METHOD_RESPONSE(fl_method_error_response_new(ERROR_CODE_GET_VOLUME, ERROR_MSG_GET_VOLUME, NULL));
@@ -11,21 +11,21 @@ FlMethodResponse *get_volume(AlsaCard *card) {
     return FL_METHOD_RESPONSE(fl_method_success_response_new(res));
 }
 
-FlMethodResponse *set_volume(AlsaCard *card, gfloat volume) {
+FlMethodResponse *set_volume(AlsaCard *card, double volume) {
     if (!alsa_card_set_volume(card, volume, 0))
         return FL_METHOD_RESPONSE(fl_method_error_response_new(ERROR_CODE_SET_VOLUME, ERROR_MSG_SET_VOLUME, NULL));
 
     return FL_METHOD_RESPONSE(fl_method_success_response_new(NULL));
 }
 
-FlMethodResponse *raise_volume(AlsaCard *card, gfloat step) {
+FlMethodResponse *raise_volume(AlsaCard *card, double step) {
     if (!alsa_card_set_volume(card, step, 1))
         return FL_METHOD_RESPONSE(fl_method_error_response_new(ERROR_CODE_RAISE_VOLUME, ERROR_MSG_RAISE_VOLUME, NULL));
 
     return FL_METHOD_RESPONSE(fl_method_success_response_new(NULL));
 }
 
-FlMethodResponse *lower_volume(AlsaCard *card, gfloat step) {
+FlMethodResponse *lower_volume(AlsaCard *card, double step) {
     if (!alsa_card_set_volume(card, step, -1))
         return FL_METHOD_RESPONSE(fl_method_error_response_new(ERROR_CODE_LOWER_VOLUME, ERROR_MSG_LOWER_VOLUME, NULL));
 

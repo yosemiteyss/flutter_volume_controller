@@ -39,15 +39,15 @@ static void flutter_volume_controller_plugin_handle_method_call(
         response = get_volume(self->card);
     } else if (strcmp(method, METHOD_SET_VOLUME) == 0) {
         FlValue *volume_value = fl_value_lookup_string(args, ARG_VOLUME);
-        gfloat volume = (gfloat) fl_value_get_float(volume_value);
+        double volume = fl_value_get_float(volume_value);
         response = set_volume(self->card, volume);
     } else if (strcmp(method, METHOD_RAISE_VOLUME) == 0) {
         FlValue *step_value = fl_value_lookup_string(args, ARG_STEP);
-        gfloat step = !step_value ? 0.15f : (gfloat) fl_value_get_float(step_value);
+        double step = !step_value ? 0.15 : fl_value_get_float(step_value);
         response = raise_volume(self->card, step);
     } else if (strcmp(method, METHOD_LOWER_VOLUME) == 0) {
         FlValue *step_value = fl_value_lookup_string(args, ARG_STEP);
-        gfloat step = !step_value ? 0.15f : (gfloat) fl_value_get_float(step_value);
+        double step = !step_value ? 0.15 : fl_value_get_float(step_value);
         response = lower_volume(self->card, step);
     } else if (strcmp(method, METHOD_GET_MUTE) == 0) {
         response = get_mute(self->card);
@@ -78,18 +78,16 @@ static void flutter_volume_controller_plugin_class_init(FlutterVolumeControllerP
 }
 
 static void on_alsa_values_changed(FlutterVolumeControllerPlugin *self) {
-    gdouble volume;
-
+    double volume;
     alsa_card_get_volume(self->card, &volume);
 
     g_autoptr(FlValue)
-    return_value = fl_value_new_float((float) volume);
+            return_value = fl_value_new_float((float) volume);
     fl_event_channel_send(self->event_channel, return_value, NULL, NULL);
 }
 
 static void on_alsa_event(enum alsa_event event, gpointer data) {
-    FlutterVolumeControllerPlugin *self = (FlutterVolumeControllerPlugin *)
-            data;
+    FlutterVolumeControllerPlugin *self = (FlutterVolumeControllerPlugin *) data;
 
     /* Check event channel is active */
     if (!self->send_events)
@@ -169,13 +167,13 @@ void flutter_volume_controller_plugin_register_with_registrar(FlPluginRegistrar 
                     g_object_new(flutter_volume_controller_plugin_get_type(), nullptr));
 
     g_autoptr(FlStandardMethodCodec)
-    codec = fl_standard_method_codec_new();
+            codec = fl_standard_method_codec_new();
 
     /* Create method channel */
     g_autoptr(FlMethodChannel)
-    method_channel = fl_method_channel_new(fl_plugin_registrar_get_messenger(registrar),
-                                           "com.yosemiteyss.flutter_volume_controller/method",
-                                           FL_METHOD_CODEC(codec));
+            method_channel = fl_method_channel_new(fl_plugin_registrar_get_messenger(registrar),
+                                                   "com.yosemiteyss.flutter_volume_controller/method",
+                                                   FL_METHOD_CODEC(codec));
     fl_method_channel_set_method_call_handler(
             method_channel, method_call_cb, g_object_ref(self), g_object_unref);
 

@@ -690,11 +690,11 @@ alsa_card_set_mute(AlsaCard *card, gboolean muted) {
  */
 gboolean
 alsa_card_toggle_mute(AlsaCard *card) {
-    gboolean err, muted;
+    gboolean result, muted;
 
     /* Get mute */
-    if (!(err = alsa_card_is_muted(card, &muted))) {
-        return err;
+    if (!(result = alsa_card_is_muted(card, &muted))) {
+        return result;
     }
 
     /* Set mute */
@@ -709,7 +709,7 @@ alsa_card_toggle_mute(AlsaCard *card) {
  * @return TRUE if volume is read successfully, FALSE otherwise.
  */
 gboolean
-alsa_card_get_volume(AlsaCard *card, gdouble *volume) {
+alsa_card_get_volume(AlsaCard *card, double *volume) {
     return elem_get_volume(card->hctl, card->mixer_elem, volume);
 }
 
@@ -723,7 +723,7 @@ alsa_card_get_volume(AlsaCard *card, gdouble *volume) {
  * @return TRUE if volume has set successfully, FALSE otherwise.
  */
 gboolean
-alsa_card_set_volume(AlsaCard *card, gdouble value, int dir) {
+alsa_card_set_volume(AlsaCard *card, double value, int dir) {
     gboolean result;
 
     result = elem_set_volume(card->hctl, card->mixer_elem, value, dir);
@@ -754,6 +754,7 @@ alsa_card_install_callback(AlsaCard *card, AlsaCb callback, gpointer user_data, 
     card->cb_func = callback;
     card->cb_data = user_data;
     card->cb_emit_on_start = emit_on_start;
+    card->cb_first_emitted = FALSE;
 }
 
 /**
