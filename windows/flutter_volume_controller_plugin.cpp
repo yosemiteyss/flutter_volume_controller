@@ -61,6 +61,16 @@ namespace flutter_volume_controller {
 			const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
 			LowerVolumeHandler(*arguments, std::move(result));
 		}
+		else if (method_call.method_name().compare(constants::kMethodGetMute) == 0) {
+			GetMuteHandler(std::move(result));
+		}
+		else if (method_call.method_name().compare(constants::kMethodSetMute) == 0) {
+			const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+			SetMuteHandler(*arguments, std::move(result));
+		}
+		else if (method_call.method_name().compare(constants::kMethodToggleMute) == 0) {
+			ToggleMuteHandler(std::move(result));
+		}
 		else {
 			result->NotImplemented();
 		}
@@ -72,7 +82,7 @@ namespace flutter_volume_controller {
 			result->Success(flutter::EncodableValue(current_volume.value()));
 		}
 		else {
-			result->Error(constants::kErrorCode, constants::kErrorGetVolume, nullptr);
+			result->Error(constants::kErrCodeGetVolume, constants::kErrMsgGetVolume, nullptr);
 		}
 	}
 
@@ -82,12 +92,12 @@ namespace flutter_volume_controller {
 		const double* volume = std::get_if<double>(GetArgValue(arguments, constants::kArgVolume));
 
 		if (!volume) {
-			result->Error(constants::kErrorCode, constants::kErrorSetVolume, nullptr);
+			result->Error(constants::kErrCodeSetVolume, constants::kErrMsgSetVolume, nullptr);
 			return;
 		}
 
-		if (!volume_controller.SetVolume(static_cast<float>(*volume))) {
-			result->Error(constants::kErrorCode, constants::kErrorSetVolume, nullptr);
+		if (!volume_controller.SetVolume(*volume)) {
+			result->Error(constants::kErrCodeSetVolume, constants::kErrMsgSetVolume, nullptr);
 			return;
 		}
 
@@ -101,12 +111,12 @@ namespace flutter_volume_controller {
 
 		if (!step) {
 			if (!volume_controller.SetVolumeUpBySystemStep()) {
-				result->Error(constants::kErrorCode, constants::kErrorRaiseVolume, nullptr);
+				result->Error(constants::kErrCodeRaiseVolume, constants::kErrMsgRaiseVolume, nullptr);
 				return;
 			}
 		}
-		else if (!volume_controller.SetVolumeUp(static_cast<float>(*step))) {
-			result->Error(constants::kErrorCode, constants::kErrorRaiseVolume, nullptr);
+		else if (!volume_controller.SetVolumeUp(*step)) {
+			result->Error(constants::kErrCodeRaiseVolume, constants::kErrMsgRaiseVolume, nullptr);
 			return;
 		}
 
@@ -120,12 +130,50 @@ namespace flutter_volume_controller {
 
 		if (!step) {
 			if (!volume_controller.SetVolumeDownBySystemStep()) {
-				result->Error(constants::kErrorCode, constants::kErrorLowerVolume, nullptr);
+				result->Error(constants::kErrCodeLowerVolume, constants::kErrMsgLowerVolume, nullptr);
 				return;
 			}
 		}
-		else if (!volume_controller.SetVolumeDown(static_cast<float>(*step))) {
-			result->Error(constants::kErrorCode, constants::kErrorLowerVolume, nullptr);
+		else if (!volume_controller.SetVolumeDown(*step)) {
+			result->Error(constants::kErrCodeLowerVolume, constants::kErrMsgLowerVolume, nullptr);
+			return;
+		}
+
+		result->Success();
+	}
+
+	void FlutterVolumeControllerPlugin::GetMuteHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+		auto is_muted = volume_controller.GetMute();
+
+		if (is_muted.has_value()) {
+			result->Success(flutter::EncodableValue(is_muted.value()));
+		}
+		else {
+			result->Error(constants::kErrCodeGetMute, constants::kErrMsgGetMute, nullptr);
+		}
+	}
+
+	void FlutterVolumeControllerPlugin::SetMuteHandler(
+		const flutter::EncodableMap& arguments,
+		std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+		const bool* is_muted = std::get_if<bool>(GetArgValue(arguments, constants::kArgIsMuted));
+
+		if (!is_muted) {
+			result->Error(constants::kErrCodeSetMute, constants::kErrMsgSetMute, nullptr);
+			return;
+		}
+
+		if (!volume_controller.SetMute(*is_muted)) {
+			result->Error(constants::kErrCodeSetMute, constants::kErrMsgSetMute, nullptr);
+			return;
+		}
+
+		result->Success();
+	}
+
+	void FlutterVolumeControllerPlugin::ToggleMuteHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+		if (!volume_controller.ToggleMute()) {
+			result->Error(constants::kErrCodeToggleMute, constants::kErrMsgToggleMute, nullptr);
 			return;
 		}
 
@@ -146,11 +194,11 @@ namespace flutter_volume_controller {
 
 		if (!volume_controller.RegisterNotification(callback)) {
 			return std::make_unique<flutter::StreamHandlerError<flutter::EncodableValue>>(
-				constants::kErrorCode, constants::kErrorRegisterListener, nullptr);
+				constants::kErrCodeRegVolumeListener, constants::kErrMsgRegVolumeListener, nullptr);
 		}
 
 		const auto* args = std::get_if<flutter::EncodableMap>(arguments);
-		const bool* emit_on_start = std::get_if<bool>(GetArgValue(*args, constants::kEmitOnStart));
+		const bool* emit_on_start = std::get_if<bool>(GetArgValue(*args, constants::kArgEmitOnStart));
 
 		if (*emit_on_start) {
 			auto current_volume = volume_controller.GetCurrentVolume();
@@ -159,7 +207,7 @@ namespace flutter_volume_controller {
 			}
 			else {
 				return std::make_unique<flutter::StreamHandlerError<flutter::EncodableValue>>(
-					constants::kErrorCode, constants::kErrorRegisterListener, nullptr);
+					constants::kErrCodeRegVolumeListener, constants::kErrMsgRegVolumeListener, nullptr);
 			}
 		}
 

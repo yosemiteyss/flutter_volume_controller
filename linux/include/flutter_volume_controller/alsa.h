@@ -1,6 +1,6 @@
 /* alsa.h
  * The file is forked and modified from PNmixer written by Nick Lanham.
- * Source: http://github.com/nicklan/pnmixer
+ * Source: <http://github.com/nicklan/pnmixer>
  */
 
 /**
@@ -42,11 +42,13 @@ gboolean alsa_card_has_mute(AlsaCard *card);
 
 gboolean alsa_card_is_muted(AlsaCard *card, gboolean *muted);
 
+gboolean alsa_card_set_mute(AlsaCard *card, gboolean muted);
+
 gboolean alsa_card_toggle_mute(AlsaCard *card);
 
-gboolean alsa_card_get_volume(AlsaCard *card, gdouble *volume);
+gboolean alsa_card_get_volume(AlsaCard *card, double *volume);
 
-gboolean alsa_card_set_volume(AlsaCard *card, gdouble value, int dir);
+gboolean alsa_card_set_volume(AlsaCard *card, double value, int dir);
 
 GSList *alsa_list_cards();
 

@@ -1,18 +1,14 @@
 /* alsa.c
  * The file is forked and modified from PNmixer written by Nick Lanham.
- * Source: http://github.com/nicklan/pnmixer
+ * Source: <http://github.com/nicklan/pnmixer>
  */
 
 /**
  * @file alsa.c
  * Alsa audio subsystem.
- * All the alsa-related code is enclosed in here, and this is the only
- * file that uses the alsa library.
- * This is the lowest-level part of PNMixer, that's why it doesn't include
- * any other local headers. If you do so, it probably means that you're
- * starting messing up the code, so think twice.
  * @brief Alsa audio subsystem.
  */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -138,7 +134,7 @@ elem_set_volume(const char *hctl, snd_mixer_elem_t *elem, double volume, int dir
         return FALSE;
     }
 
-    if (elem_get_volume(hctl, elem, &current_volume) == FALSE) {
+    if (!elem_get_volume(hctl, elem, &current_volume)) {
         ALSA_CARD_ERR(hctl, err, "Can't get playback volume");
         return FALSE;
     }
@@ -677,17 +673,28 @@ alsa_card_is_muted(AlsaCard *card, gboolean *muted) {
 }
 
 /**
+ * Set the mute state.
+ * @param card a Card instance.
+ * @param muted the resulting mute state.
+ * @return TRUE if the muted state is read successfully, FALSE otherwise.
+ */
+gboolean
+alsa_card_set_mute(AlsaCard *card, gboolean muted) {
+    return elem_set_mute(card->hctl, card->mixer_elem, muted);
+}
+
+/**
  * Toggle the mute state.
  *
  * @param card a Card instance.
  */
 gboolean
 alsa_card_toggle_mute(AlsaCard *card) {
-    gboolean err, muted;
+    gboolean result, muted;
 
     /* Get mute */
-    if ((err = alsa_card_is_muted(card, &muted)) == FALSE) {
-        return err;
+    if (!(result = alsa_card_is_muted(card, &muted))) {
+        return result;
     }
 
     /* Set mute */
@@ -702,7 +709,7 @@ alsa_card_toggle_mute(AlsaCard *card) {
  * @return TRUE if volume is read successfully, FALSE otherwise.
  */
 gboolean
-alsa_card_get_volume(AlsaCard *card, gdouble *volume) {
+alsa_card_get_volume(AlsaCard *card, double *volume) {
     return elem_get_volume(card->hctl, card->mixer_elem, volume);
 }
 
@@ -716,7 +723,7 @@ alsa_card_get_volume(AlsaCard *card, gdouble *volume) {
  * @return TRUE if volume has set successfully, FALSE otherwise.
  */
 gboolean
-alsa_card_set_volume(AlsaCard *card, gdouble value, int dir) {
+alsa_card_set_volume(AlsaCard *card, double value, int dir) {
     gboolean result;
 
     result = elem_set_volume(card->hctl, card->mixer_elem, value, dir);
@@ -747,6 +754,7 @@ alsa_card_install_callback(AlsaCard *card, AlsaCb callback, gpointer user_data, 
     card->cb_func = callback;
     card->cb_data = user_data;
     card->cb_emit_on_start = emit_on_start;
+    card->cb_first_emitted = FALSE;
 }
 
 /**

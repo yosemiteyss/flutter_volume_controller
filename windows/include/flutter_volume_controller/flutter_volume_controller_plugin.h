@@ -42,6 +42,14 @@ namespace flutter_volume_controller {
 			const flutter::EncodableMap& arguments,
 			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
+		void GetMuteHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+		void SetMuteHandler(
+			const flutter::EncodableMap& arguments,
+			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+		void ToggleMuteHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
 		VolumeController& volume_controller;
 	};
 

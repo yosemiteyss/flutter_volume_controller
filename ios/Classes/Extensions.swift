@@ -9,31 +9,31 @@ import Foundation
 import MediaPlayer
 
 extension MPVolumeView {
-    func setVolume(_ volume: Float) {
+    func setVolume(_ volume: Double) {
         let slider = self.subviews.first(where: { $0 is UISlider }) as? UISlider
         DispatchQueue.main.async {
-            slider?.value = volume
+            slider?.value = Float(volume)
         }
     }
     
-    func raiseVolume(_ step: Float) {
+    func raiseVolume(_ step: Double) {
         let slider = self.subviews.first(where: { $0 is UISlider }) as? UISlider
         DispatchQueue.main.async {
-            slider?.value += step
+            slider?.value += Float(step)
         }
     }
     
-    func lowerVolume(_ step: Float) {
+    func lowerVolume(_ step: Double) {
         let slider = self.subviews.first(where: { $0 is UISlider }) as? UISlider
         DispatchQueue.main.async {
-            slider?.value -= step
+            slider?.value -= Float(step)
         }
     }
 }
 
 extension AVAudioSession {
-    func getVolume() throws -> Float? {
+    func getVolume() throws -> Double {
         try setActive(true)
-        return outputVolume
+        return Double(outputVolume)
     }
 }

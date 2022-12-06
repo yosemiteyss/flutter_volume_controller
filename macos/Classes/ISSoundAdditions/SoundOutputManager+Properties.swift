@@ -4,6 +4,8 @@
 //
 //  Created by Alessio Moiso on 09.03.22.
 //
+//  This file is forked and modified from ISSoundAdditions.
+//  Source: `https://github.com/InerziaSoft/ISSoundAdditions`.
 import CoreAudio
 
 public extension Sound.SoundOutputManager {

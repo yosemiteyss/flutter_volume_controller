@@ -90,16 +90,14 @@ class _MyAppState extends State<MyApp> {
                   final volume = await FlutterVolumeController.getVolume(
                     stream: _audioStream,
                   );
-                  if (mounted) {
-                    _scaffoldMessengerKey.currentState?.showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Current Volume: $volume (${_audioStream.name})',
-                        ),
-                        duration: const Duration(seconds: 2),
+                  _scaffoldMessengerKey.currentState?.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Current Volume: $volume (${_audioStream.name})',
                       ),
-                    );
-                  }
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 },
               ),
             ),
@@ -133,6 +131,50 @@ class _MyAppState extends State<MyApp> {
                     0.2,
                     stream: _audioStream,
                   );
+                },
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                child: const Text('Get mute'),
+                onPressed: () async {
+                  final isMuted = await FlutterVolumeController.getMute();
+                  _scaffoldMessengerKey.currentState?.showSnackBar(
+                    SnackBar(
+                      content: Text('Muted: $isMuted'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                child: const Text('Set mute'),
+                onPressed: () {
+                  FlutterVolumeController.setMute(
+                    true,
+                    stream: _audioStream,
+                  );
+                },
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                child: const Text('Set unmute'),
+                onPressed: () {
+                  FlutterVolumeController.setMute(
+                    false,
+                    stream: _audioStream,
+                  );
+                },
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                child: const Text('Toggle mute'),
+                onPressed: () {
+                  FlutterVolumeController.toggleMute(stream: _audioStream);
                 },
               ),
             ),

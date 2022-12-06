@@ -51,9 +51,7 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                         volumeController.getVolume(AudioStream.values()[audioStream])
                     )
                 } catch (e: Exception) {
-                    result.error(
-                        ErrorCode.DEFAULT, ErrorMessage.GET_VOLUME, e.message
-                    )
+                    result.error(ErrorCode.GET_VOLUME, ErrorMessage.GET_VOLUME, e.message)
                 }
             }
             MethodName.SET_VOLUME -> {
@@ -61,13 +59,12 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                     val volume = call.argument<Double>(MethodArg.VOLUME)!!
                     val showSystemUI = call.argument<Boolean>(MethodArg.SHOW_SYSTEM_UI)!!
                     val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
+
                     volumeController.setVolume(
                         volume, showSystemUI, AudioStream.values()[audioStream]
                     )
                 } catch (e: Exception) {
-                    result.error(
-                        ErrorCode.DEFAULT, ErrorMessage.SET_VOLUME, e.message
-                    )
+                    result.error(ErrorCode.SET_VOLUME, ErrorMessage.SET_VOLUME, e.message)
                 }
             }
             MethodName.RAISE_VOLUME -> {
@@ -75,13 +72,12 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                     val step = call.argument<Double>(MethodArg.STEP)
                     val showSystemUI = call.argument<Boolean>(MethodArg.SHOW_SYSTEM_UI)!!
                     val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
+
                     volumeController.raiseVolume(
                         step, showSystemUI, AudioStream.values()[audioStream]
                     )
                 } catch (e: Exception) {
-                    result.error(
-                        ErrorCode.DEFAULT, ErrorMessage.RAISE_VOLUME, e.message
-                    )
+                    result.error(ErrorCode.RAISE_VOLUME, ErrorMessage.RAISE_VOLUME, e.message)
                 }
             }
             MethodName.LOWER_VOLUME -> {
@@ -89,13 +85,45 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                     val step = call.argument<Double>(MethodArg.STEP)
                     val showSystemUI = call.argument<Boolean>(MethodArg.SHOW_SYSTEM_UI)!!
                     val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
+
                     volumeController.lowerVolume(
                         step, showSystemUI, AudioStream.values()[audioStream]
                     )
                 } catch (e: Exception) {
-                    result.error(
-                        ErrorCode.DEFAULT, ErrorMessage.LOWER_VOLUME, e.message
+                    result.error(ErrorCode.LOWER_VOLUME, ErrorMessage.LOWER_VOLUME, e.message)
+                }
+            }
+            MethodName.GET_MUTE -> {
+                try {
+                    val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
+                    result.success(
+                        volumeController.getMute(AudioStream.values()[audioStream])
                     )
+                } catch (e: Exception) {
+                    result.error(ErrorCode.GET_MUTE, ErrorMessage.GET_MUTE, e.message)
+                }
+            }
+            MethodName.SET_MUTE -> {
+                try {
+                    val isMuted = call.argument<Boolean>(MethodArg.IS_MUTED)!!
+                    val showSystemUI = call.argument<Boolean>(MethodArg.SHOW_SYSTEM_UI)!!
+                    val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
+
+                    volumeController.setMute(
+                        isMuted, showSystemUI, AudioStream.values()[audioStream]
+                    )
+                } catch (e: Exception) {
+                    result.error(ErrorCode.SET_MUTE, ErrorMessage.SET_MUTE, e.message)
+                }
+            }
+            MethodName.TOGGLE_MUTE -> {
+                try {
+                    val showSystemUI = call.argument<Boolean>(MethodArg.SHOW_SYSTEM_UI)!!
+                    val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
+
+                    volumeController.toggleMute(showSystemUI, AudioStream.values()[audioStream])
+                } catch (e: Exception) {
+                    result.error(ErrorCode.TOGGLE_MUTE, ErrorMessage.TOGGLE_MUTE, e.message)
                 }
             }
             MethodName.SET_ANDROID_AUDIO_STREAM -> {
@@ -105,7 +133,9 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                         AudioStream.values()[audioStream].streamType
                 } catch (e: Exception) {
                     result.error(
-                        ErrorCode.DEFAULT, ErrorMessage.LOWER_VOLUME, e.message
+                        ErrorCode.SET_ANDROID_AUDIO_STREAM,
+                        ErrorMessage.SET_ANDROID_AUDIO_STREAM,
+                        e.message
                     )
                 }
             }
@@ -136,7 +166,9 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                 events?.success(context.audioManager.getVolume(audioStream))
             }
         } catch (e: Exception) {
-            events?.error(ErrorCode.DEFAULT, ErrorMessage.REGISTER_LISTENER, e.message)
+            events?.error(
+                ErrorCode.REGISTER_VOLUME_LISTENER, ErrorMessage.REGISTER_VOLUME_LISTENER, e.message
+            )
         }
     }
 

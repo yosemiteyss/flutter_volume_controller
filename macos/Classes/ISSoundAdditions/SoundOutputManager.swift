@@ -4,6 +4,8 @@
 //
 //  Created by Alessio Moiso on 08.03.22.
 //
+//  This file is forked and modified from ISSoundAdditions.
+//  Source: `https://github.com/InerziaSoft/ISSoundAdditions`.
 import CoreAudio
 import AudioToolbox
 import Cocoa
@@ -32,7 +34,7 @@ extension Sound {
         }
         
         private var volumeListenerProc: AudioObjectPropertyListenerProc?
-        private var onVolumeChanged: ((Float) -> Void?)?
+        private var onVolumeChanged: ((Float) -> Void)?
         private var lastVolume: Float?
         
         internal init() {}
@@ -71,7 +73,10 @@ extension Sound {
         
         /// Get the volume of the system default output device.
         ///
-        /// - throws: `Errors.noDevice` if the system doesn't have a default output device; `Errors.unsupportedProperty` if the current device doesn't have a volume property; `Errors.operationFailed` if the system is unable to read the property value.
+        /// - throws:
+        /// `Errors.noDevice` if the system doesn't have a default output device;
+        /// `Errors.unsupportedProperty` if the current device doesn't have a volume property;
+        /// `Errors.operationFailed` if the system is unable to read the property value.
         /// - returns: The current volume in a range between 0 and 1.
         public func readVolume() throws -> Float {
             guard let deviceID = try retrieveDefaultOutputDevice() else {
@@ -102,7 +107,10 @@ extension Sound {
         /// Set the volume of the system default output device.
         ///
         /// - parameter newValue: The volume to set in a range between 0 and 1.
-        /// - throws: `Erors.noDevice` if the system doesn't have a default output device; `Errors.unsupportedProperty` or `Errors.immutableProperty` if the output device doesn't support setting or doesn't currently allow changes to its volume; `Errors.operationFailed` if the system is unable to apply the volume change.
+        /// - throws:
+        /// `Erors.noDevice` if the system doesn't have a default output device;
+        /// `Errors.unsupportedProperty` or `Errors.immutableProperty` if the output device doesn't support setting or doesn't currently allow changes to its volume;
+        /// `Errors.operationFailed` if the system is unable to apply the volume change.
         public func setVolume(_ newValue: Float) throws {
             guard let deviceID = try retrieveDefaultOutputDevice() else {
                 throw Errors.noDevice
@@ -141,7 +149,8 @@ extension Sound {
         
         /// Get whether the system default output device is currently muted or not.
         ///
-        /// - throws: `Errors.noDevice` if the system doesn't have a default output device;
+        /// - throws:
+        /// `Errors.noDevice` if the system doesn't have a default output device;
         /// `Errors.unsupportedProperty` if the current device doesn't have a mute property;
         /// `Errors.operationFailed` if the system is unable to read the property value.
         /// - returns: Whether the device is muted or not.
@@ -175,10 +184,11 @@ extension Sound {
         /// Mute or unmute the system default output device.
         ///
         /// - parameter isMuted: Mute or unmute.
-        /// - throws: `Errors.noDevice` if the system doesn't have a default output device;
+        /// - throws:
+        /// `Errors.noDevice` if the system doesn't have a default output device;
         /// `Errors.unsupportedProperty` or `Errors.immutableProperty` if the output device doesn't
-        /// support setting or doesn't currently allow changes to its mute property; `Errors.operationFailed`
-        /// if the system is unable to apply the change.
+        /// support setting or doesn't currently allow changes to its mute property;
+        /// `Errors.operationFailed` if the system is unable to apply the change.
         public func mute(_ isMuted: Bool) throws {
             guard let deviceID = try retrieveDefaultOutputDevice() else {
                 throw Errors.noDevice
@@ -212,6 +222,14 @@ extension Sound {
             }
         }
         
+        /// Attach a volume change observer.
+        ///
+        /// - parameter onChanged: the volume change callback.
+        /// - throws:
+        /// `Errors.noDevice` if the system doesn't have a default output device;
+        /// `Errors.unsupportedProperty` or `Errors.immutableProperty` if the output device doesn't
+        /// support setting or doesn't currently allow changes to its mute property;
+        /// `Errors.operationFailed` if the system is unable to apply the change.
         public func addVolumeChangeObserver(_ onChanged: @escaping (Float) -> Void) throws {
             guard let deviceID = try retrieveDefaultOutputDevice() else {
                 throw Errors.noDevice
@@ -257,6 +275,13 @@ extension Sound {
             }
         }
         
+        /// Remove the volume change observer.
+        ///
+        /// - throws:
+        /// `Errors.noDevice` if the system doesn't have a default output device;
+        /// `Errors.unsupportedProperty` or `Errors.immutableProperty` if the output device doesn't
+        /// support setting or doesn't currently allow changes to its mute property;
+        /// `Errors.operationFailed` if the system is unable to apply the change.
         public func removeVolumeChangeObserver() throws {
             guard let deviceID = try retrieveDefaultOutputDevice() else {
                 throw Errors.noDevice
