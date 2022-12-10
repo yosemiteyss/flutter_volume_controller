@@ -39,6 +39,8 @@ class FlutterVolumeController {
 
   /// Set the volume level. From 0.0 to 1.0.
   /// Use [stream] to set the audio stream type on Android.
+  /// Notes: Android supports 15 volume steps by default, it may not be possible
+  /// to set a fine-grained volume level.
   static Future<void> setVolume(
     double volume, {
     AudioStream stream = AudioStream.music,
