@@ -35,7 +35,6 @@ extension Sound {
         
         private var volumeListenerProc: AudioObjectPropertyListenerProc?
         private var onVolumeChanged: ((Float) -> Void)?
-        private var lastVolume: Float?
         
         internal init() {}
         
@@ -254,15 +253,12 @@ extension Sound {
                 var volume: Float = 0
                 
                 AudioObjectGetPropertyData(inObjectID, inAddresses, 0, nil, &size, &volume)
-                                
+                
                 guard let inPtr = inClientData else { return noErr }
                 let mySelf: SoundOutputManager = bridge(ptr: inPtr)
                 
                 let normalizedVolume = min(max(0, volume), 1)
-                if mySelf.lastVolume == nil || normalizedVolume != mySelf.lastVolume {
-                    mySelf.onVolumeChanged?(normalizedVolume)
-                    mySelf.lastVolume = normalizedVolume
-                }
+                mySelf.onVolumeChanged?(normalizedVolume)
                 
                 return noErr
             }
@@ -299,11 +295,10 @@ extension Sound {
             }
             
             self.onVolumeChanged = nil
-            self.lastVolume = nil
             
             guard let proc = self.volumeListenerProc else { return }
             let error = AudioObjectRemovePropertyListener(deviceID, &address, proc, UnsafeMutableRawPointer(mutating: bridge(obj: self)))
-                        
+            
             if error != noErr {
                 throw Errors.operationFailed(error)
             }

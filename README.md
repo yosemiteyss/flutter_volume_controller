@@ -33,6 +33,7 @@ final volume = await FlutterVolumeController.getVolume();
 ```
 
 #### Set Volume
+- Notes: Android supports 15 volume steps by default, it may not be possible to set a fine-grained volume level.
 ```dart
 await FlutterVolumeController.setVolume(0.5);
 ```
