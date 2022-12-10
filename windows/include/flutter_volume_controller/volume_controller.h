@@ -19,15 +19,15 @@ namespace flutter_volume_controller {
 
 		void DisposeNotification();
 
-		bool SetVolume(double volume);
+		bool SetVolume(float volume);
 
 		bool SetMaxVolume();
 
 		bool SetMinVolume();
 
-		bool SetVolumeUp(double step);
+		bool SetVolumeUp(float step);
 
-		bool SetVolumeDown(double step);
+		bool SetVolumeDown(float step);
 
 		bool SetVolumeUpBySystemStep();
 
@@ -37,7 +37,7 @@ namespace flutter_volume_controller {
 
 		bool ToggleMute();
 
-		std::optional<double> GetCurrentVolume();
+		std::optional<float> GetCurrentVolume();
 
 		std::optional<bool> GetMute();
 

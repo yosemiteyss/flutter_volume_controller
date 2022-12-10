@@ -79,7 +79,7 @@ namespace flutter_volume_controller {
 	void FlutterVolumeControllerPlugin::GetVolumeHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
 		auto current_volume = volume_controller.GetCurrentVolume();
 		if (current_volume.has_value()) {
-			result->Success(flutter::EncodableValue(current_volume.value()));
+			result->Success(flutter::EncodableValue(std::to_string(current_volume.value())));
 		}
 		else {
 			result->Error(constants::kErrCodeGetVolume, constants::kErrMsgGetVolume, nullptr);
@@ -96,7 +96,7 @@ namespace flutter_volume_controller {
 			return;
 		}
 
-		if (!volume_controller.SetVolume(*volume)) {
+		if (!volume_controller.SetVolume((float) *volume)) {
 			result->Error(constants::kErrCodeSetVolume, constants::kErrMsgSetVolume, nullptr);
 			return;
 		}
@@ -115,7 +115,7 @@ namespace flutter_volume_controller {
 				return;
 			}
 		}
-		else if (!volume_controller.SetVolumeUp(*step)) {
+		else if (!volume_controller.SetVolumeUp((float) *step)) {
 			result->Error(constants::kErrCodeRaiseVolume, constants::kErrMsgRaiseVolume, nullptr);
 			return;
 		}
@@ -134,7 +134,7 @@ namespace flutter_volume_controller {
 				return;
 			}
 		}
-		else if (!volume_controller.SetVolumeDown(*step)) {
+		else if (!volume_controller.SetVolumeDown((float) *step)) {
 			result->Error(constants::kErrCodeLowerVolume, constants::kErrMsgLowerVolume, nullptr);
 			return;
 		}
@@ -203,7 +203,7 @@ namespace flutter_volume_controller {
 		if (*emit_on_start) {
 			auto current_volume = volume_controller.GetCurrentVolume();
 			if (current_volume.has_value()) {
-				sink->Success(flutter::EncodableValue(current_volume.value()));
+				sink->Success(flutter::EncodableValue(std::to_string(current_volume.value())));
 			}
 			else {
 				return std::make_unique<flutter::StreamHandlerError<flutter::EncodableValue>>(
@@ -222,6 +222,6 @@ namespace flutter_volume_controller {
 	}
 
 	void VolumeNotificationStreamHandler::OnVolumeChanged(float volume) {
-		sink->Success(flutter::EncodableValue(volume));
+		sink->Success(flutter::EncodableValue(std::to_string(volume)));
 	}
 }  // namespace flutter_volume_controller
