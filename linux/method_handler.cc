@@ -3,11 +3,14 @@
 
 FlMethodResponse *get_volume(AlsaCard *card) {
     double volume;
+    gchar buffer[G_ASCII_DTOSTR_BUF_SIZE] = {0};
 
     if (!alsa_card_get_volume(card, &volume))
         return FL_METHOD_RESPONSE(fl_method_error_response_new(ERROR_CODE_GET_VOLUME, ERROR_MSG_GET_VOLUME, NULL));
 
-    g_autoptr(FlValue) res = fl_value_new_float(volume);
+    g_ascii_dtostr(buffer, sizeof(buffer), volume);
+
+    g_autoptr(FlValue) res = fl_value_new_string(buffer);
     return FL_METHOD_RESPONSE(fl_method_success_response_new(res));
 }
 

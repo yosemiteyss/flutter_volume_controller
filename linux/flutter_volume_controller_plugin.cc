@@ -79,10 +79,13 @@ static void flutter_volume_controller_plugin_class_init(FlutterVolumeControllerP
 
 static void on_alsa_values_changed(FlutterVolumeControllerPlugin *self) {
     double volume;
+    gchar buffer[G_ASCII_DTOSTR_BUF_SIZE] = {0};
+
     alsa_card_get_volume(self->card, &volume);
+    g_ascii_dtostr(buffer, sizeof(buffer), volume);
 
     g_autoptr(FlValue)
-            return_value = fl_value_new_float((float) volume);
+            return_value = fl_value_new_string(buffer);
     fl_event_channel_send(self->event_channel, return_value, NULL, NULL);
 }
 

@@ -121,7 +121,7 @@ static gboolean
 elem_set_volume(const char *hctl, snd_mixer_elem_t *elem, double volume, int dir) {
     int err;
     long min, max, value;
-    double current_volume, result_volume;
+    double current_volume, normalized_volume;
 
     err = snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
     if (err < 0) {
@@ -140,18 +140,17 @@ elem_set_volume(const char *hctl, snd_mixer_elem_t *elem, double volume, int dir
     }
 
     if (dir > 0) {
-        double target_volume = current_volume + volume;
-        result_volume = target_volume > 1 ? 1 : target_volume;
+        normalized_volume = (1 - current_volume) < volume ? 1 : current_volume + volume;
     } else if (dir < 0) {
-        double target_volume = current_volume - volume;
-        result_volume = target_volume < 0 ? 0 : target_volume;
+        normalized_volume = current_volume < volume ? 0 : current_volume - volume;
     } else {
-        result_volume = volume;
+        normalized_volume = MIN(MAX(0, volume), 1);
     }
 
-    value = lrint_dir(result_volume * (double) (max - min), dir) + min;
+    value = lrint_dir(normalized_volume * (double) (max - min), dir) + min;
 
     err = snd_mixer_selem_set_playback_volume_all(elem, value);
+
     if (err < 0) {
         ALSA_CARD_ERR(hctl, err, "Can't set playback volume to %ld", value);
         return FALSE;
