@@ -163,6 +163,7 @@ class FlutterVolumeController {
           MethodArg.emitOnStart: emitOnStart,
         })
         .map((volume) => volume as double)
+        .distinct()
         .listen(onChanged);
 
     _volumeListener = listener;
