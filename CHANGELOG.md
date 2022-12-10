@@ -1,3 +1,7 @@
+## 1.2.1+1
+
+* Updated set mute documentation.
+
 ## 1.2.1
 
 * Added mute functions.
