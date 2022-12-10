@@ -18,7 +18,7 @@ A Flutter plugin to control system volume and listen for volume changes on diffe
 - ✅ Windows
 - ✅ Linux
 
-### Usage
+## Usage
 
 #### Control System UI Visibility
 - Set to `true` to display system volume slider when changing volume.
@@ -62,7 +62,7 @@ final isMuted = await FlutterVolumeController.getMute();
 ```
 
 #### Set Mute
-- On Android and iOS, we set the volume to either minimum or maximum level.
+- On Android and iOS, we either set the volume to zero or revert to the previous level.
 - On macOS, Windows, Linux, we control the mute switch. Volume will be restored once it's unmuted.
 ```dart
 await FlutterVolumeController.setMute(true);

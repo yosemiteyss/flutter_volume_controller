@@ -103,7 +103,7 @@ class FlutterVolumeController {
   }
 
   /// Mute or unmute the volume.
-  /// On Android and iOS, we set the volume to either minimum or maximum level.
+  /// On Android and iOS, we either set the volume to zero or revert to the previous level.
   /// On macOS, Windows, Linux, we control the mute switch. Volume will be restored
   /// once it's unmuted.
   /// Use [stream] to set the audio stream type on Android.
