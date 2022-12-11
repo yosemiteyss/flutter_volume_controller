@@ -69,6 +69,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             
             do {
                 try SwiftFlutterVolumeControllerPlugin.volumeController.setMute(isMuted, showSystemUI: showSystemUI)
+                result(nil)
             } catch {
                 result(FlutterError(code: ErrorCode.setMute, message: ErrorMessage.setMute, details: error.localizedDescription))
             }
@@ -78,6 +79,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             
             do {
                 try SwiftFlutterVolumeControllerPlugin.volumeController.toggleMute(showSystemUI: showSystemUI)
+                result(nil)
             } catch {
                 result(FlutterError(code: ErrorCode.toggleMute, message: ErrorMessage.toggleMute, details: error.localizedDescription))
             }
