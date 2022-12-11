@@ -30,7 +30,8 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
         switch call.method {
         case MethodName.getVolume:
             do {
-                result(try SwiftFlutterVolumeControllerPlugin.volumeController.getVolume())
+                let volume = try SwiftFlutterVolumeControllerPlugin.volumeController.getVolume()
+                result(String(volume))
             } catch {
                 result(FlutterError(code: ErrorCode.getVolume, message: ErrorMessage.getVolume, details: error.localizedDescription))
             }
@@ -40,18 +41,21 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             SwiftFlutterVolumeControllerPlugin.volumeController.setVolume(volume, showSystemUI: showSystemUI)
+            result(nil)
         case MethodName.raiseVolume:
             let args = call.arguments as! [String: Any]
             let step = args[MethodArg.step] as? Double
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             SwiftFlutterVolumeControllerPlugin.volumeController.raiseVolume(step, showSystemUI: showSystemUI)
+            result(nil)
         case MethodName.lowerVolume:
             let args = call.arguments as! [String: Any]
             let step = args[MethodArg.step] as? Double
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             SwiftFlutterVolumeControllerPlugin.volumeController.lowerVolume(step, showSystemUI: showSystemUI)
+            result(nil)
         case MethodName.getMute:
             do {
                 result(try SwiftFlutterVolumeControllerPlugin.volumeController.getMute())
