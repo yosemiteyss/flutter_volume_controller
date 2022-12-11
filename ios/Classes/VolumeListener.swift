@@ -26,11 +26,12 @@ class VolumeListener: NSObject, FlutterStreamHandler {
             try audioSession.setActive(true)
             
             outputVolumeObservation = audioSession.observe(\.outputVolume) { session, _ in
-                events(session.outputVolume)
+                events(String(session.outputVolume))
             }
             
             if emitOnStart {
-                events(try audioSession.getVolume())
+                let volume = try audioSession.getVolume()
+                events(String(volume))
             }
         } catch {
             return FlutterError(

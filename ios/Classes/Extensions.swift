@@ -32,8 +32,8 @@ extension MPVolumeView {
 }
 
 extension AVAudioSession {
-    func getVolume() throws -> Double {
+    func getVolume() throws -> Float {
         try setActive(true)
-        return Double(outputVolume)
+        return outputVolume
     }
 }

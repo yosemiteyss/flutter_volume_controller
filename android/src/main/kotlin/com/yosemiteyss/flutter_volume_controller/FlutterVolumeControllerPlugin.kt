@@ -14,6 +14,9 @@ import io.flutter.plugin.common.MethodChannel.Result
 private const val METHOD_CHANNEL_NAME = "com.yosemiteyss.flutter_volume_controller/method"
 private const val EVENT_CHANNEL_NAME = "com.yosemiteyss.flutter_volume_controller/event"
 
+internal const val EXTRA_VOLUME_STREAM_TYPE = "android.media.EXTRA_VOLUME_STREAM_TYPE"
+internal const val VOLUME_CHANGED_ACTION = "android.media.VOLUME_CHANGED_ACTION"
+
 class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     EventChannel.StreamHandler {
     private lateinit var methodChannel: MethodChannel
@@ -47,9 +50,8 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
             MethodName.GET_VOLUME -> {
                 try {
                     val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
-                    result.success(
-                        volumeController.getVolume(AudioStream.values()[audioStream])
-                    )
+                    val volume = volumeController.getVolume(AudioStream.values()[audioStream])
+                    result.success(volume.toString())
                 } catch (e: Exception) {
                     result.error(ErrorCode.GET_VOLUME, ErrorMessage.GET_VOLUME, e.message)
                 }
@@ -63,6 +65,7 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                     volumeController.setVolume(
                         volume, showSystemUI, AudioStream.values()[audioStream]
                     )
+                    result.success(null)
                 } catch (e: Exception) {
                     result.error(ErrorCode.SET_VOLUME, ErrorMessage.SET_VOLUME, e.message)
                 }
@@ -76,6 +79,7 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                     volumeController.raiseVolume(
                         step, showSystemUI, AudioStream.values()[audioStream]
                     )
+                    result.success(null)
                 } catch (e: Exception) {
                     result.error(ErrorCode.RAISE_VOLUME, ErrorMessage.RAISE_VOLUME, e.message)
                 }
@@ -89,6 +93,7 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                     volumeController.lowerVolume(
                         step, showSystemUI, AudioStream.values()[audioStream]
                     )
+                    result.success(null)
                 } catch (e: Exception) {
                     result.error(ErrorCode.LOWER_VOLUME, ErrorMessage.LOWER_VOLUME, e.message)
                 }
@@ -112,6 +117,7 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                     volumeController.setMute(
                         isMuted, showSystemUI, AudioStream.values()[audioStream]
                     )
+                    result.success(null)
                 } catch (e: Exception) {
                     result.error(ErrorCode.SET_MUTE, ErrorMessage.SET_MUTE, e.message)
                 }
@@ -122,6 +128,7 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                     val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
 
                     volumeController.toggleMute(showSystemUI, AudioStream.values()[audioStream])
+                    result.success(null)
                 } catch (e: Exception) {
                     result.error(ErrorCode.TOGGLE_MUTE, ErrorMessage.TOGGLE_MUTE, e.message)
                 }
@@ -131,6 +138,7 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                     val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
                     activityPluginBinding?.activity?.volumeControlStream =
                         AudioStream.values()[audioStream].streamType
+                    result.success(null)
                 } catch (e: Exception) {
                     result.error(
                         ErrorCode.SET_ANDROID_AUDIO_STREAM,
@@ -157,13 +165,12 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
             val emitOnStart = args[MethodArg.EMIT_ON_START] as Boolean
 
             volumeBroadcastReceiver = VolumeBroadcastReceiver(events, audioStream).also {
-                context.registerReceiver(
-                    it, IntentFilter("android.media.VOLUME_CHANGED_ACTION")
-                )
+                context.registerReceiver(it, IntentFilter(VOLUME_CHANGED_ACTION))
             }
 
             if (emitOnStart) {
-                events?.success(context.audioManager.getVolume(audioStream))
+                val volume = context.audioManager.getVolume(audioStream)
+                events?.success(volume.toString())
             }
         } catch (e: Exception) {
             events?.error(

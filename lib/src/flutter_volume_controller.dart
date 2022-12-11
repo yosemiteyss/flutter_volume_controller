@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_volume_controller/src/audio_stream.dart';
 import 'package:flutter_volume_controller/src/constants.dart';
 
+/// A Flutter plugin to control system volume and listen for volume changes on different platforms.
 class FlutterVolumeController {
   const FlutterVolumeController._();
 
@@ -32,25 +33,31 @@ class FlutterVolumeController {
   static Future<double?> getVolume({
     AudioStream stream = AudioStream.music,
   }) async {
-    return await methodChannel.invokeMethod<double>(MethodName.getVolume, {
-      if (Platform.isAndroid) MethodArg.audioStream: stream.index,
-    });
+    final receivedValue = await methodChannel.invokeMethod<String>(
+      MethodName.getVolume,
+      {
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
+      },
+    );
+
+    return receivedValue != null ? double.parse(receivedValue) : null;
   }
 
   /// Set the volume level. From 0.0 to 1.0.
   /// Use [stream] to set the audio stream type on Android.
-  /// Notes: Android supports 15 volume steps by default, it may not be possible
-  /// to set a fine-grained volume level.
   static Future<void> setVolume(
     double volume, {
     AudioStream stream = AudioStream.music,
   }) async {
-    await methodChannel.invokeMethod(MethodName.setVolume, {
-      MethodArg.volume: volume,
-      if (Platform.isAndroid || Platform.isIOS)
-        MethodArg.showSystemUI: showSystemUI,
-      if (Platform.isAndroid) MethodArg.audioStream: stream.index
-    });
+    await methodChannel.invokeMethod(
+      MethodName.setVolume,
+      {
+        MethodArg.volume: volume,
+        if (Platform.isAndroid || Platform.isIOS)
+          MethodArg.showSystemUI: showSystemUI,
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+      },
+    );
   }
 
   /// Increase the volume level by [step]. From 0.0 to 1.0.
@@ -63,12 +70,15 @@ class FlutterVolumeController {
     double? step, {
     AudioStream stream = AudioStream.music,
   }) async {
-    await methodChannel.invokeMethod(MethodName.raiseVolume, {
-      if (Platform.isAndroid || Platform.isIOS)
-        MethodArg.showSystemUI: showSystemUI,
-      if (step != null) MethodArg.step: step,
-      if (Platform.isAndroid) MethodArg.audioStream: stream.index
-    });
+    await methodChannel.invokeMethod(
+      MethodName.raiseVolume,
+      {
+        if (Platform.isAndroid || Platform.isIOS)
+          MethodArg.showSystemUI: showSystemUI,
+        if (step != null) MethodArg.step: step,
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+      },
+    );
   }
 
   /// Decrease the volume level by [step]. From 0.0 to 1.0.
@@ -81,12 +91,15 @@ class FlutterVolumeController {
     double? step, {
     AudioStream stream = AudioStream.music,
   }) async {
-    await methodChannel.invokeMethod(MethodName.lowerVolume, {
-      if (Platform.isAndroid || Platform.isIOS)
-        MethodArg.showSystemUI: showSystemUI,
-      if (step != null) MethodArg.step: step,
-      if (Platform.isAndroid) MethodArg.audioStream: stream.index
-    });
+    await methodChannel.invokeMethod(
+      MethodName.lowerVolume,
+      {
+        if (Platform.isAndroid || Platform.isIOS)
+          MethodArg.showSystemUI: showSystemUI,
+        if (step != null) MethodArg.step: step,
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+      },
+    );
   }
 
   /// Check if the volume is muted.
@@ -97,9 +110,12 @@ class FlutterVolumeController {
   static Future<bool?> getMute({
     AudioStream stream = AudioStream.music,
   }) async {
-    return await methodChannel.invokeMethod<bool>(MethodName.getMute, {
-      if (Platform.isAndroid) MethodArg.audioStream: stream.index,
-    });
+    return await methodChannel.invokeMethod<bool>(
+      MethodName.getMute,
+      {
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
+      },
+    );
   }
 
   /// Mute or unmute the volume.
@@ -111,12 +127,15 @@ class FlutterVolumeController {
     bool isMuted, {
     AudioStream stream = AudioStream.music,
   }) async {
-    await methodChannel.invokeMethod(MethodName.setMute, {
-      MethodArg.isMuted: isMuted,
-      if (Platform.isAndroid || Platform.isIOS)
-        MethodArg.showSystemUI: showSystemUI,
-      if (Platform.isAndroid) MethodArg.audioStream: stream.index
-    });
+    await methodChannel.invokeMethod(
+      MethodName.setMute,
+      {
+        MethodArg.isMuted: isMuted,
+        if (Platform.isAndroid || Platform.isIOS)
+          MethodArg.showSystemUI: showSystemUI,
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+      },
+    );
   }
 
   /// Toggle between the volume mute and unmute state.
@@ -125,11 +144,14 @@ class FlutterVolumeController {
   static Future<void> toggleMute({
     AudioStream stream = AudioStream.music,
   }) async {
-    await methodChannel.invokeMethod(MethodName.toggleMute, {
-      if (Platform.isAndroid || Platform.isIOS)
-        MethodArg.showSystemUI: showSystemUI,
-      if (Platform.isAndroid) MethodArg.audioStream: stream.index
-    });
+    await methodChannel.invokeMethod(
+      MethodName.toggleMute,
+      {
+        if (Platform.isAndroid || Platform.isIOS)
+          MethodArg.showSystemUI: showSystemUI,
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+      },
+    );
   }
 
   /// Set the default audio stream on Android.
@@ -164,8 +186,8 @@ class FlutterVolumeController {
           if (Platform.isAndroid) MethodArg.audioStream: stream.index,
           MethodArg.emitOnStart: emitOnStart,
         })
-        .map((volume) => volume as double)
         .distinct()
+        .map((volume) => double.parse(volume))
         .listen(onChanged);
 
     _volumeListener = listener;

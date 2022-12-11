@@ -23,11 +23,12 @@ class VolumeListener: NSObject, FlutterStreamHandler {
             let emitOnStart = args[MethodArg.emitOnStart] as! Bool
             
             try Sound.output.addVolumeChangeObserver { volume in
-                events(volume)
+                events(String(volume))
             }
             
             if emitOnStart {
-                events(try volumeController.getVolume())
+                let volume = try volumeController.getVolume()
+                events(String(volume))
             }
         } catch {
             return FlutterError(

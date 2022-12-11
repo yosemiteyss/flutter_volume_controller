@@ -13,9 +13,9 @@ class VolumeController {
     private let volumeView: MPVolumeView = MPVolumeView()
     private let audioSession: AVAudioSession = AVAudioSession.sharedInstance()
     
-    private var savedVolume: Double?
+    private var savedVolume: Float?
     
-    func getVolume() throws -> Double {
+    func getVolume() throws -> Float {
         return try audioSession.getVolume()
     }
     
@@ -48,7 +48,7 @@ class VolumeController {
         
         // Restore to the volume level before mute.
         let volume = savedVolume ?? 0.5
-        setVolume(volume, showSystemUI: showSystemUI)
+        setVolume(Double(volume), showSystemUI: showSystemUI)
         
         savedVolume = nil
     }

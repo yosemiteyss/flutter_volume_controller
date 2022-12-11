@@ -77,7 +77,7 @@ namespace flutter_volume_controller {
 		}
 	}
 
-	bool VolumeController::SetVolume(double volume) {
+	bool VolumeController::SetVolume(float volume) {
 		HRESULT hr = E_FAIL;
 
 		if (!endpoint_volume) {
@@ -88,7 +88,9 @@ namespace flutter_volume_controller {
 			return false;
 		}
 
-		hr = endpoint_volume->SetMasterVolumeLevelScalar((float) volume, NULL);
+		float normalized_volume = std::min<float>(std::max<float>(0, volume), 1);
+		hr = endpoint_volume->SetMasterVolumeLevelScalar(normalized_volume, NULL);
+
 		if (FAILED(hr)) {
 			return false;
 		}
@@ -148,7 +150,7 @@ namespace flutter_volume_controller {
 		return true;
 	}
 
-	bool VolumeController::SetVolumeUp(double step) {
+	bool VolumeController::SetVolumeUp(float step) {
 		HRESULT hr = E_FAIL;
 
 		if (!endpoint_volume) {
@@ -160,10 +162,10 @@ namespace flutter_volume_controller {
 			return false;
 		}
 
-		double volume = current_volume.value();
-		double target_step = (1 - volume) < step ? 1 : volume + step;
+		float volume = current_volume.value();
+		float normalized_volume = (1 - volume) < step ? 1 : volume + step;
 
-		hr = endpoint_volume->SetMasterVolumeLevelScalar((float) target_step, NULL);
+		hr = endpoint_volume->SetMasterVolumeLevelScalar(normalized_volume, NULL);
 		if (FAILED(hr)) {
 			return false;
 		}
@@ -171,7 +173,7 @@ namespace flutter_volume_controller {
 		return true;
 	}
 
-	bool VolumeController::SetVolumeDown(double step) {
+	bool VolumeController::SetVolumeDown(float step) {
 		HRESULT hr = E_FAIL;
 
 		if (!endpoint_volume) {
@@ -183,10 +185,10 @@ namespace flutter_volume_controller {
 			return false;
 		}
 
-		double volume = current_volume.value();
-		double target_step = volume < step ? 0 : volume - step;
+		float volume = current_volume.value();
+		float normalized_volume = volume < step ? 0 : volume - step;
 
-		hr = endpoint_volume->SetMasterVolumeLevelScalar((float) target_step, NULL);
+		hr = endpoint_volume->SetMasterVolumeLevelScalar(normalized_volume, NULL);
 		if (FAILED(hr)) {
 			return false;
 		}
@@ -255,7 +257,7 @@ namespace flutter_volume_controller {
 		return SetMute(!is_muted.value());
 	}
 
-	std::optional<double> VolumeController::GetCurrentVolume() {
+	std::optional<float> VolumeController::GetCurrentVolume() {
 		HRESULT hr = E_FAIL;
 		float current_volume = 0.0f;
 

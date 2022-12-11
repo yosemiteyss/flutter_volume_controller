@@ -9,20 +9,20 @@ import Foundation
 import FlutterMacOS
 
 class VolumeController {
-    func getVolume() throws -> Double {
-        return Double(try Sound.output.readVolume())
+    func getVolume() throws -> Float {
+        return try Sound.output.readVolume()
     }
     
-    func setVolume(_ volume: Double) throws {
-        try Sound.output.setVolume(Float(volume))
+    func setVolume(_ volume: Float) throws {
+        try Sound.output.setVolume(volume)
     }
     
-    func raiseVolume(_ step: Double?) throws {
-        try Sound.output.increaseVolume(by: Float(step ?? 0.15))
+    func raiseVolume(_ step: Float?) throws {
+        try Sound.output.increaseVolume(by: step ?? 0.15)
     }
     
-    func lowerVolume(_ step: Double?) throws {
-        try Sound.output.decreaseVolume(by: Float(step ?? 0.15))
+    func lowerVolume(_ step: Float?) throws {
+        try Sound.output.decreaseVolume(by: step ?? 0.15)
     }
     
     func getMute() throws -> Bool {
