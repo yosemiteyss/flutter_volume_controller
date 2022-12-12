@@ -1,3 +1,7 @@
+## 1.2.2
+
+* Fixed incorrect volume level due to floating point conversion.
+
 ## 1.2.1+1
 
 * Updated set mute documentation.
