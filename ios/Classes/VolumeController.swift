@@ -5,13 +5,18 @@
 //  Created by yosemiteyss on 17/9/2022.
 //
 
-import Foundation
 import AVFoundation
+import Foundation
 import MediaPlayer
 
 class VolumeController {
-    private let volumeView: MPVolumeView = MPVolumeView()
-    private let audioSession: AVAudioSession = AVAudioSession.sharedInstance()
+    init(audioSession: AVAudioSession) {
+        self.audioSession = audioSession
+    }
+    
+    private let audioSession: AVAudioSession
+    
+    private let volumeView: MPVolumeView = .init()
     
     private var savedVolume: Float?
     
@@ -20,22 +25,22 @@ class VolumeController {
     }
     
     func setVolume(_ volume: Double, showSystemUI: Bool) {
-        setShowSystemUI(showSystemUI);
+        setShowSystemUI(showSystemUI)
         volumeView.setVolume(volume)
     }
     
     func raiseVolume(_ step: Double?, showSystemUI: Bool) {
-        setShowSystemUI(showSystemUI);
+        setShowSystemUI(showSystemUI)
         volumeView.raiseVolume(step ?? 0.15)
     }
     
     func lowerVolume(_ step: Double?, showSystemUI: Bool) {
-        setShowSystemUI(showSystemUI);
+        setShowSystemUI(showSystemUI)
         volumeView.lowerVolume(step ?? 0.15)
     }
     
     func getMute() throws -> Bool {
-        return try getVolume() == 0;
+        return try getVolume() == 0
     }
     
     func setMute(_ isMuted: Bool, showSystemUI: Bool) throws {
@@ -43,7 +48,7 @@ class VolumeController {
         if isMuted {
             savedVolume = try getVolume()
             setVolume(0, showSystemUI: showSystemUI)
-            return;
+            return
         }
         
         // Restore to the volume level before mute.
@@ -70,4 +75,3 @@ class VolumeController {
         }
     }
 }
-

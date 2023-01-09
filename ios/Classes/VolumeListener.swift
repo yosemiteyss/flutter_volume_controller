@@ -5,17 +5,20 @@
 //  Created by yosemiteyss on 18/9/2022.
 //
 
-import Foundation
 import AVFoundation
+import Foundation
 
 class VolumeListener: NSObject, FlutterStreamHandler {
-    private let audioSession: AVAudioSession = AVAudioSession.sharedInstance()
+    init(audioSession: AVAudioSession) {
+        self.audioSession = audioSession
+    }
+    
+    private let audioSession: AVAudioSession
+    
     private var outputVolumeObservation: NSKeyValueObservation?
     
     var isListening: Bool {
-        get {
-            return outputVolumeObservation != nil
-        }
+        return outputVolumeObservation != nil
     }
     
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
