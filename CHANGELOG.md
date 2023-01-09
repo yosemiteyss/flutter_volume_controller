@@ -1,3 +1,7 @@
+## 1.2.3
+* Fixed allow music playback when start listening or reading the volume. (by DerJojo11)
+  https://github.com/yosemiteyss/flutter_volume_controller/pull/32
+
 ## 1.2.2
 
 * Fixed incorrect volume level due to floating point conversion.
