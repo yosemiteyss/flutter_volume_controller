@@ -1,10 +1,10 @@
-/// Android audio stream type.
+/// Enum class mapped to Android audio stream types.
 ///
-/// [AudioStream.voiceCall] -> AudioManager.STREAM_VOICE_CALL
-/// [AudioStream.system] -> AudioManager.AudioManager.STREAM_SYSTEM
-/// [AudioStream.ring] -> AudioManager.STREAM_RING
-/// [AudioStream.music] -> AudioManager.STREAM_MUSIC
-/// [AudioStream.alarm] -> AudioManager.STREAM_ALARM
+/// [AudioStream.voiceCall] refers to AudioManager.STREAM_VOICE_CALL.
+/// [AudioStream.system] refers to AudioManager.STREAM_SYSTEM.
+/// [AudioStream.ring] refers to AudioManager.STREAM_RING.
+/// [AudioStream.music] refers to AudioManager.STREAM_MUSIC.
+/// [AudioStream.alarm] refers to AudioManager.STREAM_ALARM.
 enum AudioStream {
   voiceCall,
   system,

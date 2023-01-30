@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_volume_controller/src/audio_session_category.dart';
 import 'package:flutter_volume_controller/src/audio_stream.dart';
 import 'package:flutter_volume_controller/src/constants.dart';
 
@@ -28,10 +29,14 @@ class FlutterVolumeController {
   /// This settings only works on Android and iOS.
   static bool showSystemUI = true;
 
+  static const AudioStream _defaultAudioStream = AudioStream.music;
+  static const AudioSessionCategory _defaultAudioSessionCategory =
+      AudioSessionCategory.ambient;
+
   /// Get the current volume level. From 0.0 to 1.0.
   /// Use [stream] to set the audio stream type on Android.
   static Future<double?> getVolume({
-    AudioStream stream = AudioStream.music,
+    AudioStream stream = _defaultAudioStream,
   }) async {
     final receivedValue = await methodChannel.invokeMethod<String>(
       MethodName.getVolume,
@@ -47,7 +52,7 @@ class FlutterVolumeController {
   /// Use [stream] to set the audio stream type on Android.
   static Future<void> setVolume(
     double volume, {
-    AudioStream stream = AudioStream.music,
+    AudioStream stream = _defaultAudioStream,
   }) async {
     await methodChannel.invokeMethod(
       MethodName.setVolume,
@@ -68,7 +73,7 @@ class FlutterVolumeController {
   /// Use [stream] to set the audio stream type on Android.
   static Future<void> raiseVolume(
     double? step, {
-    AudioStream stream = AudioStream.music,
+    AudioStream stream = _defaultAudioStream,
   }) async {
     await methodChannel.invokeMethod(
       MethodName.raiseVolume,
@@ -89,7 +94,7 @@ class FlutterVolumeController {
   /// Use [stream] to set the audio stream type on Android.
   static Future<void> lowerVolume(
     double? step, {
-    AudioStream stream = AudioStream.music,
+    AudioStream stream = _defaultAudioStream,
   }) async {
     await methodChannel.invokeMethod(
       MethodName.lowerVolume,
@@ -108,7 +113,7 @@ class FlutterVolumeController {
   /// On macOS, Windows, Linux, we check if the mute switch is turned on.
   /// Use [stream] to set the audio stream type on Android.
   static Future<bool?> getMute({
-    AudioStream stream = AudioStream.music,
+    AudioStream stream = _defaultAudioStream,
   }) async {
     return await methodChannel.invokeMethod<bool>(
       MethodName.getMute,
@@ -125,7 +130,7 @@ class FlutterVolumeController {
   /// Use [stream] to set the audio stream type on Android.
   static Future<void> setMute(
     bool isMuted, {
-    AudioStream stream = AudioStream.music,
+    AudioStream stream = _defaultAudioStream,
   }) async {
     await methodChannel.invokeMethod(
       MethodName.setMute,
@@ -142,7 +147,7 @@ class FlutterVolumeController {
   /// Please refers to [setMute] for platform behaviors.
   /// Use [stream] to set the audio stream type on Android.
   static Future<void> toggleMute({
-    AudioStream stream = AudioStream.music,
+    AudioStream stream = _defaultAudioStream,
   }) async {
     await methodChannel.invokeMethod(
       MethodName.toggleMute,
@@ -158,12 +163,24 @@ class FlutterVolumeController {
   /// This method should be called to ensure that volume controls adjust the correct stream.
   /// Use [stream] to set the audio stream type on Android.
   static Future<void> setAndroidAudioStream({
-    AudioStream stream = AudioStream.music,
+    AudioStream stream = _defaultAudioStream,
   }) async {
     if (Platform.isAndroid) {
       await methodChannel.invokeMethod(
         MethodName.setAndroidAudioStream,
         {MethodArg.audioStream: stream.index},
+      );
+    }
+  }
+
+  /// Set the default audio session category on iOS.
+  static Future<void> setIOSAudioSessionCategory({
+    AudioSessionCategory category = _defaultAudioSessionCategory,
+  }) async {
+    if (Platform.isIOS) {
+      await methodChannel.invokeMethod(
+        MethodName.setIOSAudioSessionCategory,
+        {MethodArg.audioSessionCategory, category.index},
       );
     }
   }
@@ -174,7 +191,7 @@ class FlutterVolumeController {
   /// Use [stream] to set the audio stream type on Android.
   static StreamSubscription<double> addListener(
     ValueChanged<double> onChanged, {
-    AudioStream stream = AudioStream.music,
+    AudioStream stream = _defaultAudioStream,
     bool emitOnStart = true,
   }) {
     if (_volumeListener != null) {

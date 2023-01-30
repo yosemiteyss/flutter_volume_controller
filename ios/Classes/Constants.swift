@@ -5,13 +5,12 @@
 //  Created by yosemiteyss on 18/9/2022.
 //
 
-import Foundation
-
 struct MethodName {
     static let getVolume = "getVolume"
     static let setVolume = "setVolume"
     static let raiseVolume = "raiseVolume"
     static let lowerVolume = "lowerVolume"
+    static let setIOSAudioSessionCategory = "setIOSAudioSessionCategory"
     static let getMute = "getMute"
     static let setMute = "setMute"
     static let toggleMute = "toggleMute"
@@ -21,6 +20,7 @@ struct MethodArg {
     static let volume = "volume"
     static let step = "step"
     static let showSystemUI = "showSystemUI"
+    static let audioSessionCategory = "audioSessionCategory"
     static let emitOnStart = "emitOnStart"
     static let isMuted = "isMuted"
 }
