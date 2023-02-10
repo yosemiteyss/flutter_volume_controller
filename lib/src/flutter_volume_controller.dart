@@ -160,8 +160,9 @@ class FlutterVolumeController {
   }
 
   /// Set the default audio stream on Android.
-  /// This method should be called to ensure that volume controls adjust the correct stream.
+  /// Adjusts to the audio stream whose volume should be changed by the hardware volume controls.
   /// Use [stream] to set the audio stream type on Android.
+  /// Docs: https://developer.android.com/reference/android/media/AudioManager
   static Future<void> setAndroidAudioStream({
     AudioStream stream = _defaultAudioStream,
   }) async {
@@ -174,6 +175,9 @@ class FlutterVolumeController {
   }
 
   /// Set the default audio session category on iOS.
+  /// Adjusts to a different set of audio behaviors.
+  /// Use [category] to set the audio session category type on iOS.
+  /// Docs: https://developer.apple.com/documentation/avfaudio/avaudiosession/category
   static Future<void> setIOSAudioSessionCategory({
     AudioSessionCategory category = _defaultAudioSessionCategory,
   }) async {
@@ -189,6 +193,7 @@ class FlutterVolumeController {
   /// Use [emitOnStart] to control whether volume value should be emitted
   /// immediately right after the listener is attached.
   /// Use [stream] to set the audio stream type on Android.
+  /// Use [category] to set the audio session category type on iOS.
   static StreamSubscription<double> addListener(
     ValueChanged<double> onChanged, {
     AudioStream stream = _defaultAudioStream,
