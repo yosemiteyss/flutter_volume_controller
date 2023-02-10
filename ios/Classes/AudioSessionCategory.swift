@@ -7,7 +7,7 @@
 
 import AVFoundation
 
-enum AudioSessionCategory {
+enum AudioSessionCategory: CaseIterable {
     case ambient
     case multiRoute
     case playAndRecord

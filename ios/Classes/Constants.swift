@@ -34,6 +34,7 @@ struct ErrorCode {
     static let getMute = "1005"
     static let setMute = "1006"
     static let toggleMute = "1007"
+    static let setIOSAudioSessionCategory = "1009"
 }
 
 struct ErrorMessage {
@@ -45,4 +46,5 @@ struct ErrorMessage {
     static let getMute = "Failed to get mute"
     static let setMute = "Failed to set mute"
     static let toggleMute = "Failed to toggle mute"
+    static let setIOSAudioSessionCategory = "Failed to set audio session category"
 }

@@ -9,11 +9,8 @@ import AVFoundation
 import Foundation
 
 class VolumeListener: NSObject, FlutterStreamHandler {
-    init(audioSession: AVAudioSession) {
-        self.audioSession = audioSession
-    }
-    
     private let audioSession: AVAudioSession
+    private let volumeController: VolumeController
     
     private var outputVolumeObservation: NSKeyValueObservation?
     
@@ -21,20 +18,25 @@ class VolumeListener: NSObject, FlutterStreamHandler {
         return outputVolumeObservation != nil
     }
     
+    init(audioSession: AVAudioSession, volumeController: VolumeController) {
+        self.audioSession = audioSession
+        self.volumeController = volumeController
+    }
+    
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         do {
             let args = arguments as! [String: Any]
+            let category = AudioSessionCategory.allCases[args[MethodArg.audioSessionCategory] as! Int]
             let emitOnStart = args[MethodArg.emitOnStart] as! Bool
             
-            try audioSession.setActive(true)
-            
+            try volumeController.setAudioSessionCategory(category)
+
             outputVolumeObservation = audioSession.observe(\.outputVolume) { session, _ in
                 events(String(session.outputVolume))
             }
             
             if emitOnStart {
-                let volume = try audioSession.getVolume()
-                events(String(volume))
+                events(String(audioSession.outputVolume))
             }
         } catch {
             return FlutterError(
@@ -49,6 +51,7 @@ class VolumeListener: NSObject, FlutterStreamHandler {
     
     func onCancel(withArguments arguments: Any?) -> FlutterError? {
         outputVolumeObservation = nil
+        try? volumeController.deactivateAudioSession()
         return nil
     }
 }

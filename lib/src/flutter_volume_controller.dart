@@ -180,7 +180,7 @@ class FlutterVolumeController {
     if (Platform.isIOS) {
       await methodChannel.invokeMethod(
         MethodName.setIOSAudioSessionCategory,
-        {MethodArg.audioSessionCategory, category.index},
+        {MethodArg.audioSessionCategory: category.index},
       );
     }
   }
@@ -192,6 +192,7 @@ class FlutterVolumeController {
   static StreamSubscription<double> addListener(
     ValueChanged<double> onChanged, {
     AudioStream stream = _defaultAudioStream,
+    AudioSessionCategory category = _defaultAudioSessionCategory,
     bool emitOnStart = true,
   }) {
     if (_volumeListener != null) {
@@ -201,6 +202,7 @@ class FlutterVolumeController {
     final listener = eventChannel
         .receiveBroadcastStream({
           if (Platform.isAndroid) MethodArg.audioStream: stream.index,
+          if (Platform.isIOS) MethodArg.audioSessionCategory: category.index,
           MethodArg.emitOnStart: emitOnStart,
         })
         .distinct()
