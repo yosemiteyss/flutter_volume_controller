@@ -1,10 +1,16 @@
 package com.yosemiteyss.flutter_volume_controller
 
+import android.app.Activity
 import android.content.Context
 import android.content.IntentFilter
+import android.media.AudioManager
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -18,14 +24,16 @@ internal const val EXTRA_VOLUME_STREAM_TYPE = "android.media.EXTRA_VOLUME_STREAM
 internal const val VOLUME_CHANGED_ACTION = "android.media.VOLUME_CHANGED_ACTION"
 
 class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
-    EventChannel.StreamHandler {
+    EventChannel.StreamHandler, DefaultLifecycleObserver {
     private lateinit var methodChannel: MethodChannel
     private lateinit var eventChannel: EventChannel
     private lateinit var volumeController: VolumeController
     private lateinit var context: Context
 
-    private var activityPluginBinding: ActivityPluginBinding? = null
+    private var activity: Activity? = null
+    private var lifecycle: Lifecycle? = null
     private var volumeBroadcastReceiver: VolumeBroadcastReceiver? = null
+    private var observedStream: AudioStream = AudioStream.MUSIC
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
@@ -136,8 +144,7 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
             MethodName.SET_ANDROID_AUDIO_STREAM -> {
                 try {
                     val audioStream = call.argument<Int>(MethodArg.AUDIO_STREAM)!!
-                    activityPluginBinding?.activity?.volumeControlStream =
-                        AudioStream.values()[audioStream].streamType
+                    setActivityAudioStream(AudioStream.values()[audioStream])
                     result.success(null)
                 } catch (e: Exception) {
                     result.error(
@@ -164,6 +171,8 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
             val audioStream = AudioStream.values()[args[MethodArg.AUDIO_STREAM] as Int]
             val emitOnStart = args[MethodArg.EMIT_ON_START] as Boolean
 
+            setActivityAudioStream(audioStream)
+
             volumeBroadcastReceiver = VolumeBroadcastReceiver(events, audioStream).also {
                 context.registerReceiver(it, IntentFilter(VOLUME_CHANGED_ACTION))
             }
@@ -182,21 +191,45 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
     override fun onCancel(arguments: Any?) {
         volumeBroadcastReceiver?.let(context::unregisterReceiver)
         volumeBroadcastReceiver = null
+        resetActivityAudioStream()
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activityPluginBinding = binding
+        activity = binding.activity
+        lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding).apply {
+            addObserver(this@FlutterVolumeControllerPlugin)
+        }
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        activityPluginBinding = null
+        activity = null
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        activityPluginBinding = binding
+        activity = binding.activity
     }
 
     override fun onDetachedFromActivity() {
-        activityPluginBinding = null
+        activity = null
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        if (volumeBroadcastReceiver != null) {
+            resumeActivityAudioStream()
+        }
+    }
+
+    private fun setActivityAudioStream(audioStream: AudioStream) {
+        activity?.volumeControlStream = audioStream.streamType
+        observedStream = audioStream
+    }
+
+    private fun resumeActivityAudioStream() {
+        activity?.volumeControlStream = observedStream.streamType
+    }
+
+    private fun resetActivityAudioStream() {
+        activity?.volumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE
+        observedStream = AudioStream.MUSIC
     }
 }
