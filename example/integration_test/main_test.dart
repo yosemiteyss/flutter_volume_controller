@@ -1,0 +1,136 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_volume_controller/flutter_volume_controller.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() {
+    runApp(const MaterialApp());
+  });
+
+  testWidgets('should get volume', (tester) async {
+    final volume = await FlutterVolumeController.getVolume();
+    expect(volume, isNotNull);
+  });
+
+  testWidgets('should set volume', (tester) async {
+    const List<double> targets = [1.0, 0.0];
+
+    for (final target in targets) {
+      await FlutterVolumeController.setVolume(target);
+      await _insertDelay();
+
+      final actual = await FlutterVolumeController.getVolume();
+      expect(actual, target);
+    }
+  });
+
+  testWidgets('should raise volume', (tester) async {
+    const before = 0.2;
+
+    await FlutterVolumeController.setVolume(before);
+    await _insertDelay();
+
+    await FlutterVolumeController.raiseVolume(0.5);
+    await _insertDelay();
+
+    final actual = await FlutterVolumeController.getVolume();
+    expect(actual, greaterThan(before));
+  });
+
+  testWidgets('should lower volume', (tester) async {
+    const before = 0.8;
+
+    await FlutterVolumeController.setVolume(before);
+    await _insertDelay();
+
+    await FlutterVolumeController.lowerVolume(0.5);
+    await _insertDelay();
+
+    final actual = await FlutterVolumeController.getVolume();
+    expect(actual, lessThan(before));
+  });
+
+  testWidgets('should get mute', (tester) async {
+    final isMuted = await FlutterVolumeController.getMute();
+    expect(isMuted, isNotNull);
+  });
+
+  testWidgets('should set mute', (tester) async {
+    const List<bool> targets = [true, false];
+
+    for (final target in targets) {
+      await FlutterVolumeController.setMute(target);
+      await _insertDelay();
+
+      final actual = await FlutterVolumeController.getMute();
+      expect(actual, target);
+    }
+  });
+
+  testWidgets('should toggle mute', (tester) async {
+    const target = true;
+
+    await FlutterVolumeController.setMute(!target);
+    await _insertDelay();
+
+    await FlutterVolumeController.toggleMute();
+    await _insertDelay();
+
+    final actual = await FlutterVolumeController.getMute();
+    expect(actual, target);
+  });
+
+  /// TODO: add test for [FlutterVolumeController.setAndroidAudioStream].
+
+  /// TODO: add test for [FlutterVolumeController.setIOSAudioSessionCategory].
+
+  testWidgets('should receive volume event after adding listener',
+      (tester) async {
+    final List<double> targets = [0.0, 1.0, 0.0, 1.0, 0.0];
+    final List<double> actual = [];
+
+    await FlutterVolumeController.setVolume(targets[0]);
+    await _insertDelay();
+
+    FlutterVolumeController.addListener(actual.add);
+
+    for (final target in targets) {
+      await FlutterVolumeController.setVolume(target);
+      await _insertDelay();
+    }
+
+    expect(actual, targets);
+  });
+
+  testWidgets('should receive no new volume event after removing listener',
+      (tester) async {
+    final List<double> targets = [0.0, 1.0, 0.0];
+    final List<double> actual = [];
+
+    await FlutterVolumeController.setVolume(targets[0]);
+    await _insertDelay();
+
+    FlutterVolumeController.addListener(actual.add);
+
+    for (final target in targets) {
+      await FlutterVolumeController.setVolume(target);
+      await _insertDelay();
+    }
+
+    expect(actual, targets);
+
+    FlutterVolumeController.removeListener();
+
+    await FlutterVolumeController.setVolume(1.0);
+    await _insertDelay();
+
+    expect(actual, targets);
+  });
+}
+
+Future<void> _insertDelay() async {
+  await Future.delayed(const Duration(milliseconds: 50));
+}
