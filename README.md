@@ -73,12 +73,20 @@ await FlutterVolumeController.setMute(false);
 await FlutterVolumeController.toggleMute();
 ```
 
-#### Set the Audio Stream on Android
-- Support two types of audio stream: `AudioStream.system`, `AudioStream.music`.
-- This method should be called to ensure that volume controls adjust the correct stream.
+#### Set Audio Stream on Android
+- Adjusts to the audio stream whose volume should be changed by the hardware volume controls.
+- Supported streams: `AudioStream.voiceCall`, `AudioStream.system`, `AudioStream.ring`, `AudioStream.music`, `AudioStream.alarm`.
+- For more details, visit [AudioManager](https://developer.android.com/reference/android/media/AudioManager)
 ```dart
 await FlutterVolumeController.setAndroidAudioStream(stream: AudioStream.system);
-await FlutterVolumeController.setAndroidAudioStream(stream: AudioStream.music);
+```
+
+#### Set Audio Session Category on iOS
+- Adjusts to a different set of audio behaviors.
+- Supported categories: `AudioSessionCategory.ambient`, `AudioSessionCategory.multiRoute`, `AudioSessionCategory.playAndRecord`, `AudioSessionCategory.playback`, `AudioSessionCategory.record`, `AudioSessionCategory.soleAmbient`
+- For more details, visit [AVAudioSession.Category](https://developer.apple.com/documentation/avfaudio/avaudiosession/category)
+```dart
+await FlutterVolumeController.setIOSAudioSessionCategory(category: AudioSessionCategory.playback);
 ```
 
 #### Listen for Volume Changes
@@ -87,8 +95,6 @@ await FlutterVolumeController.setAndroidAudioStream(stream: AudioStream.music);
 @override
 void initState() {
   super.initState();
-  // Ensure music stream in being controlled.
-  FlutterVolumeController.setAndroidAudioStream(stream: AudioStream.music);
   FlutterVolumeController.addListener(
     (volume) {
       debugPrint('Volume changed: $volume');
