@@ -7,23 +7,32 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: Home(),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
 
+  @override
+  State<StatefulWidget> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   AudioStream _audioStream = AudioStream.music;
+  AudioSessionCategory _audioSessionCategory = AudioSessionCategory.ambient;
   double _currentVolume = 0.0;
 
   @override
   void initState() {
     super.initState();
-    FlutterVolumeController.setAndroidAudioStream(stream: AudioStream.music);
     FlutterVolumeController.addListener((volume) {
       setState(() {
         _currentVolume = volume;
@@ -39,148 +48,212 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      scaffoldMessengerKey: _scaffoldMessengerKey,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flutter Volume Controller Example'),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            if (Platform.isAndroid || Platform.isIOS)
-              Center(
-                child: ElevatedButton(
-                  child: const Text('Show or hide system ui'),
-                  onPressed: () {
-                    FlutterVolumeController.showSystemUI =
-                        !FlutterVolumeController.showSystemUI;
-                    _scaffoldMessengerKey.currentState?.showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Show system ui: ${FlutterVolumeController.showSystemUI}',
-                        ),
-                        duration: const Duration(seconds: 2),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            if (Platform.isAndroid)
-              Center(
-                child: ElevatedButton(
-                  child: const Text('Switch audio stream'),
-                  onPressed: () {
-                    _audioStream = AudioStream.values[_audioStream.index ^ 1];
-                    _scaffoldMessengerKey.currentState?.showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Audio stream: ${_audioStream.name}',
-                        ),
-                        duration: const Duration(seconds: 2),
-                      ),
-                    );
-                  },
-                ),
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Flutter Volume Controller Example'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          if (Platform.isAndroid || Platform.isIOS)
             Center(
               child: ElevatedButton(
-                child: const Text('Get Volume'),
+                child: const Text('Show or hide system ui'),
+                onPressed: () {
+                  FlutterVolumeController.showSystemUI =
+                      !FlutterVolumeController.showSystemUI;
+                  _showSnackBar(
+                    'Show system ui: ${FlutterVolumeController.showSystemUI}',
+                  );
+                },
+              ),
+            ),
+          if (Platform.isAndroid)
+            Center(
+              child: ElevatedButton(
+                child: const Text('Switch audio stream'),
                 onPressed: () async {
-                  final volume = await FlutterVolumeController.getVolume(
-                    stream: _audioStream,
-                  );
-                  _scaffoldMessengerKey.currentState?.showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Current Volume: $volume (${_audioStream.name})',
-                      ),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
+                  final stream = await _pickAndroidAudioStream(context);
+                  if (stream != null) {
+                    setState(() {
+                      _audioStream = stream;
+                    });
+                    await FlutterVolumeController.setAndroidAudioStream(
+                      stream: stream,
+                    );
+                  }
                 },
               ),
             ),
+          if (Platform.isIOS)
             Center(
               child: ElevatedButton(
-                child: const Text('Set Volume to 50%'),
-                onPressed: () {
-                  FlutterVolumeController.setVolume(
-                    0.5,
-                    stream: _audioStream,
-                  );
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton(
-                child: const Text('Raise Volume'),
-                onPressed: () {
-                  FlutterVolumeController.raiseVolume(
-                    0.2,
-                    stream: _audioStream,
-                  );
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton(
-                child: const Text('Lower Volume'),
-                onPressed: () {
-                  FlutterVolumeController.lowerVolume(
-                    0.2,
-                    stream: _audioStream,
-                  );
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton(
-                child: const Text('Get mute'),
+                child: const Text('Switch audio session category'),
                 onPressed: () async {
-                  final isMuted = await FlutterVolumeController.getMute();
-                  _scaffoldMessengerKey.currentState?.showSnackBar(
-                    SnackBar(
-                      content: Text('Muted: $isMuted'),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
+                  final category = await _pickIOSAudioSessionCategory(context);
+                  if (category != null) {
+                    setState(() {
+                      _audioSessionCategory = category;
+                    });
+                    await FlutterVolumeController.setIOSAudioSessionCategory(
+                      category: category,
+                    );
+                  }
                 },
               ),
             ),
-            Center(
-              child: ElevatedButton(
-                child: const Text('Set mute'),
-                onPressed: () {
-                  FlutterVolumeController.setMute(
-                    true,
-                    stream: _audioStream,
-                  );
-                },
-              ),
+          Center(
+            child: ElevatedButton(
+              child: const Text('Get Volume'),
+              onPressed: () async {
+                final volume = await FlutterVolumeController.getVolume(
+                  stream: _audioStream,
+                );
+                _showSnackBar('Current Volume: $volume');
+              },
             ),
-            Center(
-              child: ElevatedButton(
-                child: const Text('Set unmute'),
-                onPressed: () {
-                  FlutterVolumeController.setMute(
-                    false,
-                    stream: _audioStream,
-                  );
-                },
-              ),
+          ),
+          Center(
+            child: ElevatedButton(
+              child: const Text('Set Volume to 50%'),
+              onPressed: () {
+                FlutterVolumeController.setVolume(
+                  0.5,
+                  stream: _audioStream,
+                );
+              },
             ),
-            Center(
-              child: ElevatedButton(
-                child: const Text('Toggle mute'),
-                onPressed: () {
-                  FlutterVolumeController.toggleMute(stream: _audioStream);
-                },
-              ),
+          ),
+          Center(
+            child: ElevatedButton(
+              child: const Text('Raise Volume'),
+              onPressed: () {
+                FlutterVolumeController.raiseVolume(
+                  0.2,
+                  stream: _audioStream,
+                );
+              },
             ),
-            Text('Current Volume: $_currentVolume'),
-          ],
-        ),
+          ),
+          Center(
+            child: ElevatedButton(
+              child: const Text('Lower Volume'),
+              onPressed: () {
+                FlutterVolumeController.lowerVolume(
+                  0.2,
+                  stream: _audioStream,
+                );
+              },
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              child: const Text('Get mute'),
+              onPressed: () async {
+                final isMuted = await FlutterVolumeController.getMute();
+                _showSnackBar('Muted: $isMuted');
+              },
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              child: const Text('Set mute'),
+              onPressed: () {
+                FlutterVolumeController.setMute(
+                  true,
+                  stream: _audioStream,
+                );
+              },
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              child: const Text('Set unmute'),
+              onPressed: () {
+                FlutterVolumeController.setMute(
+                  false,
+                  stream: _audioStream,
+                );
+              },
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              child: const Text('Toggle mute'),
+              onPressed: () {
+                FlutterVolumeController.toggleMute(stream: _audioStream);
+              },
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Current Volume: $_currentVolume',
+            textAlign: TextAlign.center,
+          ),
+          if (Platform.isAndroid)
+            Text(
+              'Audio Stream: $_audioStream',
+              textAlign: TextAlign.center,
+            ),
+          if (Platform.isIOS)
+            Text(
+              'Audio Session Category: $_audioSessionCategory',
+              textAlign: TextAlign.center,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<AudioStream?> _pickAndroidAudioStream(BuildContext context) async {
+    return await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: AudioStream.values.length,
+          itemBuilder: (_, index) {
+            return ListTile(
+              title: Text(AudioStream.values[index].name),
+              onTap: () {
+                Navigator.of(context).maybePop(AudioStream.values[index]);
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<AudioSessionCategory?> _pickIOSAudioSessionCategory(
+    BuildContext context,
+  ) async {
+    return await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: AudioSessionCategory.values.length,
+          itemBuilder: (_, index) {
+            return ListTile(
+              title: Text(AudioSessionCategory.values[index].name),
+              onTap: () {
+                Navigator.of(context).maybePop(
+                  AudioSessionCategory.values[index],
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
       ),
     );
   }

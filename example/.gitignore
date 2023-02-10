@@ -48,3 +48,5 @@ app.*.map.json
 
 # CMake
 **/cmake-build-debug
+
+.fvm
