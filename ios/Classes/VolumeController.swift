@@ -78,6 +78,11 @@ class VolumeController {
         currentCategory = category.categoryType
     }
     
+    func getAudioSessionCategory() throws -> AudioSessionCategory? {
+        try audioSession.setActive(true)
+        return AudioSessionCategory.allCases.first { category in category.categoryType == audioSession.category }
+    }
+    
     func resumeAudioSession() throws {
         try audioSession.activate(with: currentCategory)
     }

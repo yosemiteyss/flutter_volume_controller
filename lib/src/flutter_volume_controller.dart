@@ -174,6 +174,17 @@ class FlutterVolumeController {
     }
   }
 
+  /// Get the current audio stream on Android.
+  static Future<AudioStream?> getAndroidAudioStream() async {
+    if (Platform.isAndroid) {
+      final index = await methodChannel
+          .invokeMethod<int>(MethodName.getAndroidAudioStream);
+      return index != null ? AudioStream.values[index] : null;
+    }
+
+    return null;
+  }
+
   /// Set the default audio session category on iOS.
   /// Adjusts to a different set of audio behaviors.
   /// Use [category] to set the audio session category type on iOS.
@@ -187,6 +198,17 @@ class FlutterVolumeController {
         {MethodArg.audioSessionCategory: category.index},
       );
     }
+  }
+
+  /// Get the current audio session category on IOS.
+  static Future<AudioSessionCategory?> getIOSAudioSessionCategory() async {
+    if (Platform.isIOS) {
+      final index = await methodChannel
+          .invokeMethod<int>(MethodName.getIOSAudioSessionCategory);
+      return index != null ? AudioSessionCategory.values[index] : null;
+    }
+
+    return null;
   }
 
   /// Listen for volume changes.

@@ -106,6 +106,13 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             } catch {
                 result(FlutterError(code: ErrorCode.setIOSAudioSessionCategory, message: ErrorMessage.setIOSAudioSessionCategory, details: error.localizedDescription))
             }
+        case MethodName.getIOSAudioSessionCategory:
+            do {
+                let category = try SwiftFlutterVolumeControllerPlugin.volumeController.getAudioSessionCategory()
+                result(category?.ordinal)
+            } catch {
+                result(FlutterError(code: ErrorCode.getIOSAudioSessionCategory, message: ErrorMessage.getIOSAudioSessionCategory, details: error.localizedDescription))
+            }
         default:
             result(FlutterMethodNotImplemented)
         }
