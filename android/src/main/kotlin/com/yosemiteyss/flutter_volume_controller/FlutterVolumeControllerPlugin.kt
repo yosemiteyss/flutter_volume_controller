@@ -154,6 +154,18 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
                     )
                 }
             }
+            MethodName.GET_ANDROID_AUDIO_STREAM -> {
+                try {
+                    val audioStream = getActivityAudioStream()
+                    result.success(audioStream?.ordinal)
+                } catch (e: Exception) {
+                    result.error(
+                        ErrorCode.GET_ANDROID_AUDIO_STREAM,
+                        ErrorMessage.GET_ANDROID_AUDIO_STREAM,
+                        e.message
+                    )
+                }
+            }
             else -> {
                 result.notImplemented()
             }
@@ -222,6 +234,10 @@ class FlutterVolumeControllerPlugin : FlutterPlugin, ActivityAware, MethodCallHa
     private fun setActivityAudioStream(audioStream: AudioStream) {
         activity?.volumeControlStream = audioStream.streamType
         observedStream = audioStream
+    }
+
+    private fun getActivityAudioStream(): AudioStream? {
+        return AudioStream.values().firstOrNull { it.streamType == activity?.volumeControlStream }
     }
 
     private fun resumeActivityAudioStream() {

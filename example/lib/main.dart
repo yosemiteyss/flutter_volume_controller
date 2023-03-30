@@ -68,7 +68,7 @@ class _HomeState extends State<Home> {
                 },
               ),
             ),
-          if (Platform.isAndroid)
+          if (Platform.isAndroid) ...[
             Center(
               child: ElevatedButton(
                 child: const Text('Switch audio stream'),
@@ -85,7 +85,18 @@ class _HomeState extends State<Home> {
                 },
               ),
             ),
-          if (Platform.isIOS)
+            Center(
+              child: ElevatedButton(
+                child: const Text('Get audio stream'),
+                onPressed: () async {
+                  final stream =
+                      await FlutterVolumeController.getAndroidAudioStream();
+                  _showSnackBar('Audio stream: $stream');
+                },
+              ),
+            ),
+          ],
+          if (Platform.isIOS) ...[
             Center(
               child: ElevatedButton(
                 child: const Text('Switch audio session category'),
@@ -102,6 +113,17 @@ class _HomeState extends State<Home> {
                 },
               ),
             ),
+            Center(
+              child: ElevatedButton(
+                child: const Text('Get audio session category'),
+                onPressed: () async {
+                  final category = await FlutterVolumeController
+                      .getIOSAudioSessionCategory();
+                  _showSnackBar('Audio session category: $category');
+                },
+              ),
+            ),
+          ],
           Center(
             child: ElevatedButton(
               child: const Text('Get Volume'),

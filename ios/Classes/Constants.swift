@@ -11,6 +11,7 @@ struct MethodName {
     static let raiseVolume = "raiseVolume"
     static let lowerVolume = "lowerVolume"
     static let setIOSAudioSessionCategory = "setIOSAudioSessionCategory"
+    static let getIOSAudioSessionCategory = "getIOSAudioSessionCategory"
     static let getMute = "getMute"
     static let setMute = "setMute"
     static let toggleMute = "toggleMute"
@@ -35,6 +36,7 @@ struct ErrorCode {
     static let setMute = "1006"
     static let toggleMute = "1007"
     static let setIOSAudioSessionCategory = "1009"
+    static let getIOSAudioSessionCategory = "1011"
 }
 
 struct ErrorMessage {
@@ -47,4 +49,5 @@ struct ErrorMessage {
     static let setMute = "Failed to set mute"
     static let toggleMute = "Failed to toggle mute"
     static let setIOSAudioSessionCategory = "Failed to set audio session category"
+    static let getIOSAudioSessionCategory = "Failed to get audio session category"
 }

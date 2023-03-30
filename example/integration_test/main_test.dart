@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:integration_test/integration_test.dart';
@@ -83,9 +85,30 @@ void main() {
     expect(actual, target);
   });
 
-  /// TODO: add test for [FlutterVolumeController.setAndroidAudioStream].
+  if (Platform.isAndroid) {
+    testWidgets('should set android audio stream', (tester) async {
+      const target = AudioStream.music;
 
-  /// TODO: add test for [FlutterVolumeController.setIOSAudioSessionCategory].
+      await FlutterVolumeController.setAndroidAudioStream(stream: target);
+      await _insertDelay();
+
+      final actual = await FlutterVolumeController.getAndroidAudioStream();
+      expect(actual, target);
+    });
+  }
+
+  if (Platform.isIOS) {
+    testWidgets('should set ios audio session category', (tester) async {
+      const target = AudioSessionCategory.playback;
+
+      await FlutterVolumeController.setIOSAudioSessionCategory(
+          category: target);
+      await _insertDelay();
+
+      final actual = await FlutterVolumeController.getIOSAudioSessionCategory();
+      expect(actual, target);
+    });
+  }
 
   testWidgets('should receive volume event after adding listener',
       (tester) async {
