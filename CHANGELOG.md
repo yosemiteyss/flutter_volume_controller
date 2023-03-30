@@ -1,3 +1,8 @@
+## 1.2.5
+* Added `getAndroidAudioStream` method.
+* Added `getIOSAudioSessionCategory` method.
+* Updated flutter_plugin_android_lifecycle plugin to 2.0.9.
+
 ## 1.2.4
 * Added `setIOSAudioSessionCategory` method.
 * Added `category` option to `addListener` method.
