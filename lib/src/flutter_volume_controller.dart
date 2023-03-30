@@ -200,7 +200,7 @@ class FlutterVolumeController {
     }
   }
 
-  /// Get the current audio session category on IOS.
+  /// Get the current audio session category on iOS.
   static Future<AudioSessionCategory?> getIOSAudioSessionCategory() async {
     if (Platform.isIOS) {
       final index = await methodChannel
