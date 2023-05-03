@@ -1,5 +1,11 @@
 package com.yosemiteyss.flutter_volume_controller
 
+object Channel {
+    const val METHOD = "com.yosemiteyss.flutter_volume_controller/method"
+    const val EVENT = "com.yosemiteyss.flutter_volume_controller/event"
+    const val KEY_ACTION = "com.yosemiteyss.flutter_volume_controller/key_action"
+}
+
 object MethodName {
     const val GET_VOLUME = "getVolume"
     const val SET_VOLUME = "setVolume"
