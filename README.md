@@ -18,6 +18,10 @@ A Flutter plugin to control system volume and listen for volume changes on diffe
 - ✅ Windows
 - ✅ Linux
 
+## Example
+#### [Custom Volume Slider](example/lib/volume_slider_example.dart)
+![volume-slider-example](screenshot/volume-slider-example.gif)
+
 ## Usage
 
 #### Control System UI Visibility
@@ -124,6 +128,10 @@ void dispose() {
 #### Listen for volume key action on Android
 - Detect volume up and down button presses on Android.
 - Before adding listener, make sure `MainActivity` is extending `FlutterVolumeControllerActivity`.
+```kotlin
+class MainActivity : FlutterVolumeControllerActivity()
+```
+
 ```dart
 @override
 void initState() {
@@ -149,4 +157,9 @@ For example, Android supports only 15 volume steps by default, the volume after 
 
 
 ## Having Bugs?
-- This package is under active development. If you find any issue, please free to report them.
+- This package is under active development. If you find any issue, please free to create an issue on Github.
+
+## Support
+- If you think this package is helpful, feel free to buy me a coffee.\
+\
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-1.svg)](https://buymeacoffee.com/yosemiteyss)
