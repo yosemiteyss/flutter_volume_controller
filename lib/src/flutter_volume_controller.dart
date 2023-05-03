@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_volume_controller/src/audio_session_category.dart';
 import 'package:flutter_volume_controller/src/audio_stream.dart';
 import 'package:flutter_volume_controller/src/constants.dart';
+import 'package:flutter_volume_controller/src/volume_key_action.dart';
 
 /// A Flutter plugin to control system volume and listen for volume changes on different platforms.
 class FlutterVolumeController {
@@ -21,8 +22,16 @@ class FlutterVolumeController {
     'com.yosemiteyss.flutter_volume_controller/event',
   );
 
+  @visibleForTesting
+  static const EventChannel keyActionChannel = EventChannel(
+    'com.yosemiteyss.flutter_volume_controller/key_action',
+  );
+
   /// Listener for volume change events.
   static StreamSubscription<double>? _volumeListener;
+
+  /// Listener for Android volume key action.
+  static StreamSubscription<VolumeKeyAction>? _keyActionListener;
 
   /// Control system UI visibility.
   /// Set to `true` to display volume slider when changing volume.
@@ -214,6 +223,7 @@ class FlutterVolumeController {
   /// Listen for volume changes.
   /// Use [emitOnStart] to control whether volume value should be emitted
   /// immediately right after the listener is attached.
+  /// Use [onChanged] to retrieve the updated volume level.
   /// Use [stream] to set the audio stream type on Android.
   /// Use [category] to set the audio session category type on iOS.
   static StreamSubscription<double> addListener(
@@ -222,6 +232,11 @@ class FlutterVolumeController {
     AudioSessionCategory category = _defaultAudioSessionCategory,
     bool emitOnStart = true,
   }) {
+    assert(
+      _keyActionListener == null,
+      'Should not attach volume listener when key action listener is in used.',
+    );
+
     if (_volumeListener != null) {
       removeListener();
     }
@@ -244,5 +259,42 @@ class FlutterVolumeController {
   static void removeListener() {
     _volumeListener?.cancel();
     _volumeListener = null;
+  }
+
+  /// Listen for volume key action on Android.
+  /// Before adding listener, make sure MainActivity is extending FlutterVolumeControllerActivity.
+  /// Use [onChanged] to retrieve the key action.
+  static StreamSubscription<VolumeKeyAction>? addAndroidKeyActionListener(
+    ValueChanged<VolumeKeyAction> onChanged,
+  ) {
+    assert(
+      _volumeListener == null,
+      'Should not attach key action listener when volume listener is in used.',
+    );
+
+    if (!Platform.isAndroid) {
+      return null;
+    }
+
+    if (_keyActionListener != null) {
+      removeAndroidKeyActionListener();
+    }
+
+    final listener = keyActionChannel
+        .receiveBroadcastStream()
+        .map(
+          (action) =>
+              action ? VolumeKeyAction.volumeUp : VolumeKeyAction.volumeDown,
+        )
+        .listen(onChanged);
+
+    _keyActionListener = listener;
+    return listener;
+  }
+
+  /// Remove the key action listener.
+  static void removeAndroidKeyActionListener() {
+    _keyActionListener?.cancel();
+    _keyActionListener = null;
   }
 }

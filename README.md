@@ -121,6 +121,27 @@ void dispose() {
 }
 ```
 
+#### Listen for volume key action on Android
+- Detect volume up and down button presses on Android.
+- Before adding listener, make sure `MainActivity` is extending `FlutterVolumeControllerActivity`.
+```dart
+@override
+void initState() {
+  super.initState();
+  FlutterVolumeController.addAndroidKeyActionListener(
+    (action) {
+      debugPrint('Volume key action: $action');
+    },
+  );
+}
+
+@override
+void dispose() {
+  FlutterVolumeController.removeAndroidKeyActionListener();
+  super.dispose();
+}
+```
+
 ## Notes
 #### Fine-grained volume control
 - Due to platform and device difference, it's normal that volume level could not be controlled precisely.
