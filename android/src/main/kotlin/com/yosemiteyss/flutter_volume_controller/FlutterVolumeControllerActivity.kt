@@ -20,14 +20,16 @@ abstract class FlutterVolumeControllerActivity : FlutterActivity(), EventChannel
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            eventSink?.success(true)
-            return true
-        }
+        if (eventSink != null) {
+            if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                eventSink?.success(true)
+                return true
+            }
 
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            eventSink?.success(false)
-            return true
+            if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+                eventSink?.success(false)
+                return true
+            }
         }
 
         return super.onKeyDown(keyCode, event)
