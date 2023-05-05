@@ -1,3 +1,8 @@
+## 1.2.6
+* Added listener for detecting android volume key presses.
+* Added volume slider example.
+* Updated flutter_plugin_android_lifecycle plugin to 2.0.14.
+
 ## 1.2.5
 * Added `getAndroidAudioStream` method.
 * Added `getIOSAudioSessionCategory` method.
