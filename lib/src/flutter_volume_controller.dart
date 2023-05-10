@@ -214,6 +214,7 @@ class FlutterVolumeController {
   /// Listen for volume changes.
   /// Use [emitOnStart] to control whether volume value should be emitted
   /// immediately right after the listener is attached.
+  /// Use [onChanged] to retrieve the updated volume level.
   /// Use [stream] to set the audio stream type on Android.
   /// Use [category] to set the audio session category type on iOS.
   static StreamSubscription<double> addListener(
