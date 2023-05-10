@@ -2,19 +2,21 @@ on:
   push:
     branches:
       - main
+      - development
       - 'release/**'
   pull_request:
     branches:
       - main
+      - development
       - 'release/**'
 
 env:
   FLUTTER_CHANNEL: 'stable'
-  FLUTTER_VERSION: '3.7.1'
+  FLUTTER_VERSION: '3.7.12'
 
 jobs:
   build_example_android:
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v2
@@ -30,20 +32,21 @@ jobs:
       - run: echo "build success!"
 
   build_example_linux:
-    runs-on: [ self-hosted, linux ]
+    runs-on: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
           flutter-version: ${{ env.FLUTTER_VERSION }}
+      - run: sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libasound2 libasound2-dev
       - run: flutter config --enable-linux-desktop
       - run: flutter pub get
       - run: cd ./example && flutter build linux
       - run: echo "build success!"
 
   build_example_windows:
-    runs-on: [ self-hosted, windows ]
+    runs-on: [ windows-latest ]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
