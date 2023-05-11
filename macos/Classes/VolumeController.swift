@@ -10,31 +10,39 @@ import FlutterMacOS
 
 class VolumeController {
     func getVolume() throws -> Float {
-        return try Sound.output.readVolume()
+        return try SoundOutputManager.shared.readVolume()
     }
     
     func setVolume(_ volume: Float) throws {
-        try Sound.output.setVolume(volume)
+        try SoundOutputManager.shared.setVolume(volume)
     }
     
     func raiseVolume(_ step: Float?) throws {
-        try Sound.output.increaseVolume(by: step ?? 0.15)
+        try SoundOutputManager.shared.increaseVolume(by: step ?? 0.15)
     }
     
     func lowerVolume(_ step: Float?) throws {
-        try Sound.output.decreaseVolume(by: step ?? 0.15)
+        try SoundOutputManager.shared.decreaseVolume(by: step ?? 0.15)
     }
     
     func getMute() throws -> Bool {
-        return try Sound.output.readMute();
+        return try SoundOutputManager.shared.readMute();
     }
     
     func setMute(_ isMuted: Bool) throws {
-        try Sound.output.mute(isMuted)
+        try SoundOutputManager.shared.mute(isMuted)
     }
     
     func toggleMute() throws {
         let isMuted = try getMute()
         try setMute(!isMuted)
+    }
+    
+    func getAudioDeviceList() throws -> [String?] {
+        let deviceList = try SoundOutputManager.shared.retrieveOutputDeviceList()
+        let deviceNames = try deviceList.map { deviceId in
+            try SoundOutputManager.shared.retrieveOutputDeviceName(deviceId)
+        }
+        return deviceNames
     }
 }

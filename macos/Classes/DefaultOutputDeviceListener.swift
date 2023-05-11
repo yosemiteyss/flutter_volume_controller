@@ -1,32 +1,26 @@
 //
-//  VolumeListener.swift
+//  DefaultOutputDeviceListener.swift
 //  flutter_volume_controller
 //
-//  Created by yosemiteyss on 18/9/2022.
+//  Created by yosemiteyss on 11/5/2023.
 //
 
 import Foundation
 import FlutterMacOS
 
-class VolumeListener: NSObject, FlutterStreamHandler {
-    private let volumeController: VolumeController
-    
-    required init(volumeController: VolumeController) {
-        self.volumeController = volumeController
-    }
+class DefaultOutputDeviceListener: NSObject, FlutterStreamHandler {
     
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         do {
             let args = arguments as! [String: Any]
             let emitOnStart = args[MethodArg.emitOnStart] as! Bool
             
-            try SoundOutputManager.shared.addVolumeChangeListener { volume in
-                events(String(volume))
-            }
+            try SoundOutputManager.shared.addDefaultOuputDeviceListener({ deviceID in
+                events(String(deviceID))
+            })
             
-            if emitOnStart {
-                let volume = try volumeController.getVolume()
-                events(String(volume))
+            if emitOnStart, let deviceID = try SoundOutputManager.shared.retrieveDefaultOutputDevice() {
+                events(String(deviceID))
             }
         } catch {
             return FlutterError(
@@ -40,7 +34,7 @@ class VolumeListener: NSObject, FlutterStreamHandler {
     }
     
     func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        try? SoundOutputManager.shared.removeVolumeChangeListener()        
+        try? SoundOutputManager.shared.removeDefaultOutputDeviceListener()
         return nil
     }
 }

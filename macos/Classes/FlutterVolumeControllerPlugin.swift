@@ -4,6 +4,7 @@ import FlutterMacOS
 public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
     private static let volumeController: VolumeController = VolumeController()
     private static let volumeListener: VolumeListener = VolumeListener(volumeController: volumeController)
+    private static let defaultOutputDeviceListener: DefaultOutputDeviceListener = DefaultOutputDeviceListener()
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let methodChannel = FlutterMethodChannel(
@@ -14,11 +15,16 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             name: "com.yosemiteyss.flutter_volume_controller/event",
             binaryMessenger: registrar.messenger
         )
+        let defaultOutputDeviceChannel = FlutterEventChannel(
+            name: "com.yosemiteyss.flutter_volume_controller/default-output-device",
+            binaryMessenger: registrar.messenger
+        )
         
         let instance = FlutterVolumeControllerPlugin()
         registrar.addMethodCallDelegate(instance, channel: methodChannel)
         
         eventChannel.setStreamHandler(volumeListener)
+        defaultOutputDeviceChannel.setStreamHandler(defaultOutputDeviceListener)
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {

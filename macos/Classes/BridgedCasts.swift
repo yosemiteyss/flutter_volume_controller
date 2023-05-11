@@ -22,4 +22,3 @@ func bridgeRetained<T : AnyObject>(obj : T) -> UnsafeRawPointer {
 func bridgeTransfer<T : AnyObject>(ptr : UnsafeRawPointer) -> T {
     return Unmanaged<T>.fromOpaque(ptr).takeRetainedValue()
 }
-

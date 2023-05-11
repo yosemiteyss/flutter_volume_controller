@@ -29,6 +29,7 @@ class _HomeState extends State<Home> {
   AudioStream _audioStream = AudioStream.music;
   AudioSessionCategory _audioSessionCategory = AudioSessionCategory.ambient;
   double _currentVolume = 0.0;
+  String? _audioDeviceId;
 
   @override
   void initState() {
@@ -44,6 +45,12 @@ class _HomeState extends State<Home> {
     FlutterVolumeController.addListener((volume) {
       setState(() {
         _currentVolume = volume;
+      });
+    });
+
+    FlutterVolumeController.addDefaultOutputDeviceListener((deviceId) {
+      setState(() {
+        _audioDeviceId = deviceId;
       });
     });
   }
@@ -228,6 +235,11 @@ class _HomeState extends State<Home> {
           if (Platform.isIOS)
             Text(
               'Audio Session Category: $_audioSessionCategory',
+              textAlign: TextAlign.center,
+            ),
+          if (Platform.isMacOS)
+            Text(
+              'Default Output Device: $_audioDeviceId',
               textAlign: TextAlign.center,
             ),
         ],

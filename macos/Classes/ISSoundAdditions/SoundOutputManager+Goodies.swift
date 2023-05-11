@@ -6,7 +6,8 @@
 //
 //  This file is forked and modified from ISSoundAdditions.
 //  Source: `https://github.com/InerziaSoft/ISSoundAdditions`.
-public extension Sound.SoundOutputManager {
+
+extension SoundOutputManager {
     /// Increase the volume of the default output device
     /// by the given amount.
     ///

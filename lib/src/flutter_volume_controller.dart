@@ -21,8 +21,16 @@ class FlutterVolumeController {
     'com.yosemiteyss.flutter_volume_controller/event',
   );
 
+  @visibleForTesting
+  static const EventChannel defaultOutputDeviceChannel = EventChannel(
+    'com.yosemiteyss.flutter_volume_controller/default-output-device',
+  );
+
   /// Listener for volume change events.
   static StreamSubscription<double>? _volumeListener;
+
+  /// Listener for default output device change events
+  static StreamSubscription<String>? _defaultOutputDeviceListener;
 
   /// Control system UI visibility.
   /// Set to `true` to display volume slider when changing volume.
@@ -272,5 +280,33 @@ class FlutterVolumeController {
   static void removeListener() {
     _volumeListener?.cancel();
     _volumeListener = null;
+  }
+
+  /// Listener for default output device changes.
+  /// Use [emitOnStart] to control whether default output device should be emitted
+  /// immediately right after the listener is attached.
+  static StreamSubscription<String> addDefaultOutputDeviceListener(
+    ValueChanged<String> onChanged, {
+    bool emitOnStart = true,
+  }) {
+    if (_defaultOutputDeviceListener != null) {
+      removeDefaultOutputDeviceListener();
+    }
+
+    final listener = defaultOutputDeviceChannel
+        .receiveBroadcastStream({
+          MethodArg.emitOnStart: emitOnStart,
+        })
+        .map((deviceId) => deviceId as String)
+        .listen(onChanged);
+
+    _defaultOutputDeviceListener = listener;
+    return listener;
+  }
+
+  /// Remove the default output device listener.
+  static void removeDefaultOutputDeviceListener() {
+    _defaultOutputDeviceListener?.cancel();
+    _defaultOutputDeviceListener = null;
   }
 }

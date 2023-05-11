@@ -6,9 +6,10 @@
 //
 //  This file is forked and modified from ISSoundAdditions.
 //  Source: `https://github.com/InerziaSoft/ISSoundAdditions`.
+
 import CoreAudio
 
-public extension Sound.SoundOutputManager {
+extension SoundOutputManager {
     /// Get the system default output device.
     ///
     /// You can use this value to interact with the device directly via
@@ -31,9 +32,7 @@ public extension Sound.SoundOutputManager {
             (try? readVolume()) ?? 0
         }
         set {
-            do {
-                try setVolume(newValue)
-            } catch { }
+            try? setVolume(newValue)
         }
     }
     
@@ -47,9 +46,7 @@ public extension Sound.SoundOutputManager {
             (try? readMute()) ?? false
         }
         set {
-            do {
-                try mute(newValue)
-            } catch { }
+            try? mute(newValue)
         }
     }
 }
