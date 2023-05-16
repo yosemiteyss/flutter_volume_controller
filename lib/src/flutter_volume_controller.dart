@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_volume_controller/src/audio_session_category.dart';
 import 'package:flutter_volume_controller/src/audio_stream.dart';
 import 'package:flutter_volume_controller/src/constants.dart';
+import 'package:flutter_volume_controller/src/output_device.dart';
 
 /// A Flutter plugin to control system volume and listen for volume changes on different platforms.
 class FlutterVolumeController {
@@ -150,7 +152,7 @@ class FlutterVolumeController {
   static Future<bool?> getMute({
     AudioStream stream = _defaultAudioStream,
   }) async {
-    return await methodChannel.invokeMethod<bool>(
+    return methodChannel.invokeMethod<bool>(
       MethodName.getMute,
       {
         if (Platform.isAndroid) MethodArg.audioStream: stream.index,
@@ -246,6 +248,50 @@ class FlutterVolumeController {
     return null;
   }
 
+  /// Get the default output device on macOS.
+  static Future<OutputDevice?> getDefaultOutputDevice() async {
+    if (Platform.isMacOS) {
+      final jsonStr = await methodChannel.invokeMethod<String>(
+        MethodName.getDefaultOutputDevice,
+      );
+      if (jsonStr == null) {
+        return null;
+      }
+
+      return OutputDevice.fromJson(json.decode(jsonStr));
+    }
+
+    return null;
+  }
+
+  /// Set the default output device on macOS.
+  static Future<void> setDefaultOutputDevice({required String deviceId}) async {
+    if (Platform.isMacOS) {
+      await methodChannel.invokeMethod(
+        MethodName.setDefaultOutputDevice,
+        {MethodArg.deviceId: deviceId},
+      );
+    }
+  }
+
+  /// Get the audio output device list on macOS.
+  static Future<List<OutputDevice>> getOutputDeviceList() async {
+    if (Platform.isMacOS) {
+      final jsonList = await methodChannel.invokeListMethod<String>(
+        MethodName.getOutputDeviceList,
+      );
+      if (jsonList == null) {
+        return const [];
+      }
+
+      return jsonList.map((jsonStr) {
+        return OutputDevice.fromJson(json.decode(jsonStr));
+      }).toList();
+    }
+
+    return const [];
+  }
+
   /// Listen for volume changes.
   /// Use [emitOnStart] to control whether volume value should be emitted
   /// immediately right after the listener is attached.
@@ -269,6 +315,7 @@ class FlutterVolumeController {
           MethodArg.emitOnStart: emitOnStart,
         })
         .distinct()
+        // ignore: unnecessary_lambdas
         .map((volume) => double.parse(volume))
         .listen(onChanged);
 

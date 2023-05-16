@@ -15,6 +15,9 @@ struct MethodName {
     static let getMute = "getMute"
     static let setMute = "setMute"
     static let toggleMute = "toggleMute"
+    static let getDefaultOutputDevice = "getDefaultOutputDevice"
+    static let setDefaultOutputDevice = "setDefaultOutputDevice"
+    static let getOutputDeviceList = "getOutputDeviceList"
 }
 
 struct MethodArg {
@@ -23,6 +26,7 @@ struct MethodArg {
     static let showSystemUI = "showSystemUI"
     static let emitOnStart = "emitOnStart"
     static let isMuted = "isMuted"
+    static let deviceId = "deviceId"
 }
 
 struct ErrorCode {
@@ -34,6 +38,9 @@ struct ErrorCode {
     static let getMute = "1005"
     static let setMute = "1006"
     static let toggleMute = "1007"
+    static let getDefaultOutputDevice = "1012"
+    static let setDefaultOutputDevice = "1013"
+    static let getOutputDeviceList = "1014"
 }
 
 struct ErrorMessage {
@@ -45,4 +52,7 @@ struct ErrorMessage {
     static let getMute = "Failed to get mute"
     static let setMute = "Failed to set mute"
     static let toggleMute = "Failed to toggle mute"
+    static let getDefaultOutputDevice = "Failed to get default output device"
+    static let setDefaultOutputDevice = "Failed to set default output device"
+    static let getOutputDeviceList = "Failed to get output device list"
 }

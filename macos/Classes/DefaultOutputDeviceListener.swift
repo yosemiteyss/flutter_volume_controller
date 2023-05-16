@@ -15,12 +15,15 @@ class DefaultOutputDeviceListener: NSObject, FlutterStreamHandler {
             let args = arguments as! [String: Any]
             let emitOnStart = args[MethodArg.emitOnStart] as! Bool
             
-            try SoundOutputManager.shared.addDefaultOuputDeviceListener({ deviceID in
-                events(String(deviceID))
+            try SoundOutputManager.shared.addDefaultOutputDeviceListener({ device in
+                let jsonStr = device.toJSONString()
+                events(jsonStr)
             })
             
-            if emitOnStart, let deviceID = try SoundOutputManager.shared.retrieveDefaultOutputDevice() {
-                events(String(deviceID))
+            if emitOnStart {
+                let device = try SoundOutputManager.shared.retrieveDefaultOutputDevice()
+                let jsonStr = device.toJSONString()
+                events(jsonStr)
             }
         } catch {
             return FlutterError(

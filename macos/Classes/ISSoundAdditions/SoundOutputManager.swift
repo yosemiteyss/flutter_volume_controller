@@ -18,7 +18,7 @@ final class SoundOutputManager {
     private init() {}
     
     private var onVolumeChanged: ((Float) -> Void)?
-    private var onDefaultOutputDeviceChanged: ((AudioDeviceID) -> Void)?
+    private var onDefaultOutputDeviceChanged: ((OutputDevice) -> Void)?
     
     private let volumeChangeListener: AudioObjectPropertyListenerProc = { inObjectID, inNumberAddresses, inAddresses, inClientData in
         var size = UInt32(MemoryLayout<Float32>.size)
@@ -39,15 +39,18 @@ final class SoundOutputManager {
     
     private let defaultOuputDeviceListener: AudioObjectPropertyListenerProc = { inObjectID, inNumberAddresses, inAddresses, inClientData in
         var size = UInt32(MemoryLayout<AudioDeviceID>.size)
-        var device = kAudioObjectUnknown
+        var deviceId = kAudioObjectUnknown
         
-        let error = AudioObjectGetPropertyData(inObjectID, inAddresses, 0, nil, &size, &device)
+        let error = AudioObjectGetPropertyData(inObjectID, inAddresses, 0, nil, &size, &deviceId)
         guard error == noErr else { return error }
         
         guard let selfPtr = inClientData else { return kAudio_ParamError }
         
         let manager: SoundOutputManager = bridge(ptr: selfPtr)
-        manager.onDefaultOutputDeviceChanged?(device)
+        let deviceName = try? manager.retrieveOutputDeviceName(deviceId)
+        let outputDevice = OutputDevice(id: String(deviceId), name: deviceName)
+        
+        manager.onDefaultOutputDeviceChanged?(outputDevice)
         
         return noErr
     }
@@ -62,25 +65,34 @@ final class SoundOutputManager {
     /// `Errors.noDevice` if no default output device can be found.
     ///
     /// - returns: the default device ID or `nil` if none is set.
-    func retrieveDefaultOutputDevice() throws -> AudioDeviceID? {
+    func retrieveDefaultOutputDeviceId() throws -> AudioDeviceID? {
         var size = UInt32(MemoryLayout<AudioDeviceID>.size)
-        var device = kAudioObjectUnknown
+        var id = kAudioObjectUnknown
         var address = PropertyAddress.defaultOutputDevice
         
         // Ensure that a default device exists.
         guard AudioObjectHasProperty(AudioObjectID(kAudioObjectSystemObject), &address) else { return nil }
         
         // Attempt to get the default output device.
-        let error = AudioObjectGetPropertyData(AudioObjectID(kAudioObjectSystemObject), &address, 0, nil, &size, &device)
+        let error = AudioObjectGetPropertyData(AudioObjectID(kAudioObjectSystemObject), &address, 0, nil, &size, &id)
         guard error == noErr else {
             throw Errors.operationFailed(error)
         }
         
-        if device == kAudioObjectUnknown {
+        if id == kAudioObjectUnknown {
             throw Errors.noDevice
         }
         
-        return device
+        return id
+    }
+    
+    func retrieveDefaultOutputDevice() throws -> OutputDevice {
+        guard let deviceID = try retrieveDefaultOutputDeviceId() else {
+            throw Errors.noDevice
+        }
+        
+        let deviceName = try retrieveOutputDeviceName(deviceID)
+        return OutputDevice(id: String(deviceID), name: deviceName)
     }
     
     /// Set the system default output device.
@@ -88,9 +100,12 @@ final class SoundOutputManager {
     /// - throws:
     /// `Errors.unsupportedProperty` if the given device doesn't have a default output device property.
     /// `Errors.operationFailed` if setting default output device is failed.
-    func setDefaultOutputDevice(_ deviceID: AudioDeviceID) throws {
+    func setDefaultOutputDevice(_ deviceID: String) throws {
+        guard var id = AudioDeviceID(deviceID) else {
+            throw Errors.noDevice
+        }
+        
         let size = UInt32(MemoryLayout<AudioDeviceID>.size)
-        var id: AudioDeviceID = deviceID
         var address = PropertyAddress.defaultOutputDevice
         
         guard AudioObjectHasProperty(AudioObjectID(kAudioObjectSystemObject), &address) else {
@@ -106,7 +121,7 @@ final class SoundOutputManager {
     /// Get a list of audio output devices.
     ///
     /// - returns: a list of audio device ids.
-    func retrieveOutputDeviceList() throws -> [AudioDeviceID] {
+    func retrieveOutputDeviceList() throws -> [OutputDevice] {
         var size: UInt32 = 0
         var address = PropertyAddress.devices
         
@@ -129,7 +144,13 @@ final class SoundOutputManager {
             throw Errors.operationFailed(error)
         }
         
-        return deviceIDs
+        // For each id, get the device name.
+        let deviceList = try deviceIDs.map { id in
+            let name = try retrieveOutputDeviceName(id)
+            return OutputDevice(id: String(id), name: name)
+        }
+        
+        return deviceList
     }
     
     func retrieveOutputDeviceName(_ deviceID: AudioDeviceID) throws -> String? {
@@ -157,7 +178,7 @@ final class SoundOutputManager {
     /// `Errors.operationFailed` if the system is unable to read the property value.
     /// - returns: The current volume in a range between 0 and 1.
     func readVolume() throws -> Float {
-        guard let deviceID = try retrieveDefaultOutputDevice() else {
+        guard let deviceID = try retrieveDefaultOutputDeviceId() else {
             throw Errors.noDevice
         }
         
@@ -186,7 +207,7 @@ final class SoundOutputManager {
     /// `Errors.unsupportedProperty` or `Errors.immutableProperty` if the output device doesn't support setting or doesn't currently allow changes to its volume;
     /// `Errors.operationFailed` if the system is unable to apply the volume change.
     func setVolume(_ newValue: Float) throws {
-        guard let deviceID = try retrieveDefaultOutputDevice() else {
+        guard let deviceID = try retrieveDefaultOutputDeviceId() else {
             throw Errors.noDevice
         }
         
@@ -226,7 +247,7 @@ final class SoundOutputManager {
     /// `Errors.operationFailed` if the system is unable to read the property value.
     /// - returns: Whether the device is muted or not.
     func readMute() throws -> Bool {
-        guard let deviceID = try retrieveDefaultOutputDevice() else {
+        guard let deviceID = try retrieveDefaultOutputDeviceId() else {
             throw Errors.noDevice
         }
         
@@ -257,7 +278,7 @@ final class SoundOutputManager {
     /// support setting or doesn't currently allow changes to its mute property;
     /// `Errors.operationFailed` if the system is unable to apply the change.
     func mute(_ isMuted: Bool) throws {
-        guard let deviceID = try retrieveDefaultOutputDevice() else {
+        guard let deviceID = try retrieveDefaultOutputDeviceId() else {
             throw Errors.noDevice
         }
         
@@ -293,7 +314,7 @@ final class SoundOutputManager {
     /// `Errors.unsupportedProperty` if the output device doesn't support setting or doesn't currently allow changes to its volume property;
     /// `Errors.operationFailed` if the system is unable to apply the change.
     func addVolumeChangeListener(_ onChanged: @escaping (Float) -> Void) throws {
-        guard let deviceID = try retrieveDefaultOutputDevice() else {
+        guard let deviceID = try retrieveDefaultOutputDeviceId() else {
             throw Errors.noDevice
         }
         
@@ -320,7 +341,7 @@ final class SoundOutputManager {
     /// `Errors.unsupportedProperty` if the output device doesn't support setting or doesn't currently allow changes to its volume property;
     /// `Errors.operationFailed` if the system is unable to apply the change.
     func removeVolumeChangeListener() throws {
-        guard let deviceID = try retrieveDefaultOutputDevice() else {
+        guard let deviceID = try retrieveDefaultOutputDeviceId() else {
             throw Errors.noDevice
         }
         
@@ -341,7 +362,7 @@ final class SoundOutputManager {
         }
     }
     
-    func addDefaultOuputDeviceListener(_ onChanged: @escaping (AudioDeviceID) -> Void) throws {
+    func addDefaultOutputDeviceListener(_ onChanged: @escaping (OutputDevice) -> Void) throws {
         var address = PropertyAddress.defaultOutputDevice
         
         guard AudioObjectHasProperty(AudioObjectID(kAudioObjectSystemObject), &address) else {

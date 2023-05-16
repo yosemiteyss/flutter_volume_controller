@@ -1,6 +1,4 @@
-class MethodName {
-  const MethodName._();
-
+abstract class MethodName {
   static const String getVolume = 'getVolume';
   static const String setVolume = 'setVolume';
   static const String raiseVolume = 'raiseVolume';
@@ -13,11 +11,12 @@ class MethodName {
   static const String setMute = 'setMute';
   static const String toggleMute = 'toggleMute';
   static const String updateShowSystemUI = 'updateShowSystemUI';
+  static const String getDefaultOutputDevice = 'getDefaultOutputDevice';
+  static const String setDefaultOutputDevice = 'setDefaultOutputDevice';
+  static const String getOutputDeviceList = 'getOutputDeviceList';
 }
 
-class MethodArg {
-  const MethodArg._();
-
+abstract class MethodArg {
   static const String volume = 'volume';
   static const String step = 'step';
   static const String showSystemUI = 'showSystemUI';
@@ -25,4 +24,5 @@ class MethodArg {
   static const String audioSessionCategory = 'audioSessionCategory';
   static const String emitOnStart = 'emitOnStart';
   static const String isMuted = 'isMuted';
+  static const String deviceId = 'deviceId';
 }

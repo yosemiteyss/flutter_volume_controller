@@ -38,11 +38,15 @@ class VolumeController {
         try setMute(!isMuted)
     }
     
-    func getAudioDeviceList() throws -> [String?] {
-        let deviceList = try SoundOutputManager.shared.retrieveOutputDeviceList()
-        let deviceNames = try deviceList.map { deviceId in
-            try SoundOutputManager.shared.retrieveOutputDeviceName(deviceId)
-        }
-        return deviceNames
+    func getDefaultOutputDevice() throws -> OutputDevice {
+        return try SoundOutputManager.shared.retrieveDefaultOutputDevice()
+    }
+    
+    func setDefaultOutputDevice(_ deviceId: String) throws {
+        try SoundOutputManager.shared.setDefaultOutputDevice(deviceId)
+    }
+    
+    func getOutputDeviceList() throws -> [OutputDevice] {
+        return try SoundOutputManager.shared.retrieveOutputDeviceList()
     }
 }

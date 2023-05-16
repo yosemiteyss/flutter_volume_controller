@@ -97,6 +97,31 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             } catch {
                 result(FlutterError(code: ErrorCode.toggleMute, message: ErrorMessage.toggleMute, details: nil))
             }
+        case MethodName.getDefaultOutputDevice:
+            do {
+                let device = try FlutterVolumeControllerPlugin.volumeController.getDefaultOutputDevice()
+                let json = device.toJSONString()
+                result(json)
+            } catch {
+                result(FlutterError(code: ErrorCode.getDefaultOutputDevice, message: ErrorMessage.getDefaultOutputDevice, details: nil))
+            }
+        case MethodName.setDefaultOutputDevice:
+            do {
+                let args = call.arguments as! [String: Any]
+                let deviceId = args[MethodArg.deviceId] as! String
+                try FlutterVolumeControllerPlugin.volumeController.setDefaultOutputDevice(deviceId)
+                result(nil)
+            } catch {
+                result(FlutterError(code: ErrorCode.setDefaultOutputDevice, message: ErrorMessage.setDefaultOutputDevice, details: nil))
+            }
+        case MethodName.getOutputDeviceList:
+            do {
+                let deviceList = try FlutterVolumeControllerPlugin.volumeController.getOutputDeviceList()
+                let jsonList = deviceList.map { device in device.toJSONString() }
+                result(jsonList)
+            } catch {
+                result(FlutterError(code: ErrorCode.getOutputDeviceList, message: ErrorMessage.getOutputDeviceList, details: nil))
+            }
         default:
             result(FlutterMethodNotImplemented)
         }
