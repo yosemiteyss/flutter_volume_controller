@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_lambdas
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -31,8 +33,8 @@ class FlutterVolumeController {
   /// Listener for volume change events.
   static StreamSubscription<double>? _volumeListener;
 
-  /// Listener for default output device change events
-  static StreamSubscription<String>? _defaultOutputDeviceListener;
+  /// Listener for default output device change events.
+  static StreamSubscription<OutputDevice>? _defaultOutputDeviceListener;
 
   /// Control system UI visibility.
   /// Set to `true` to display volume slider when changing volume.
@@ -315,7 +317,6 @@ class FlutterVolumeController {
           MethodArg.emitOnStart: emitOnStart,
         })
         .distinct()
-        // ignore: unnecessary_lambdas
         .map((volume) => double.parse(volume))
         .listen(onChanged);
 
@@ -332,8 +333,8 @@ class FlutterVolumeController {
   /// Listener for default output device changes.
   /// Use [emitOnStart] to control whether default output device should be emitted
   /// immediately right after the listener is attached.
-  static StreamSubscription<String> addDefaultOutputDeviceListener(
-    ValueChanged<String> onChanged, {
+  static StreamSubscription<OutputDevice> addDefaultOutputDeviceListener(
+    ValueChanged<OutputDevice> onChanged, {
     bool emitOnStart = true,
   }) {
     if (_defaultOutputDeviceListener != null) {
@@ -344,7 +345,7 @@ class FlutterVolumeController {
         .receiveBroadcastStream({
           MethodArg.emitOnStart: emitOnStart,
         })
-        .map((deviceId) => deviceId as String)
+        .map((device) => OutputDevice.fromJson(json.decode(device)))
         .listen(onChanged);
 
     _defaultOutputDeviceListener = listener;

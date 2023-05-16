@@ -18,7 +18,7 @@ extension SoundOutputManager {
     /// This value will return `nil` if there is currently no device selected in
     /// System Preferences > Sound > Output.
     var defaultOutputDevice: AudioDeviceID? {
-        try? retrieveDefaultOutputDeviceId()
+        try? retrieveDefaultOutputDevice().id
     }
     
     /// Get or set the volume of the default output device.
