@@ -44,7 +44,7 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
                 try FlutterVolumeControllerPlugin.volumeController.setVolume(Float(volume))
                 result(nil)
             } catch {
-                result(FlutterError(code: ErrorCode.setVolume, message: ErrorMessage.setVolume, details: nil))
+                result(FlutterError(code: ErrorCode.setVolume, message: ErrorMessage.setVolume, details: error.localizedDescription))
             }
         case MethodName.raiseVolume:
             do {
@@ -58,7 +58,7 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
                 
                 result(nil)
             } catch {
-                result(FlutterError(code: ErrorCode.raiseVolume, message: ErrorMessage.raiseVolume, details: nil))
+                result(FlutterError(code: ErrorCode.raiseVolume, message: ErrorMessage.raiseVolume, details: error.localizedDescription))
             }
         case MethodName.lowerVolume:
             do {
@@ -72,13 +72,13 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
                 
                 result(nil)
             } catch {
-                result(FlutterError(code: ErrorCode.lowerVolume, message: ErrorMessage.lowerVolume, details: nil))
+                result(FlutterError(code: ErrorCode.lowerVolume, message: ErrorMessage.lowerVolume, details: error.localizedDescription))
             }
         case MethodName.getMute:
             do {
                 result(try FlutterVolumeControllerPlugin.volumeController.getMute())
             } catch {
-                result(FlutterError(code: ErrorCode.getMute, message: ErrorMessage.getMute, details: nil))
+                result(FlutterError(code: ErrorCode.getMute, message: ErrorMessage.getMute, details: error.localizedDescription))
             }
         case MethodName.setMute:
             do {
@@ -88,14 +88,14 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
                 try FlutterVolumeControllerPlugin.volumeController.setMute(isMuted)
                 result(nil)
             } catch {
-                result(FlutterError(code: ErrorCode.setMute, message: ErrorMessage.setMute, details: nil))
+                result(FlutterError(code: ErrorCode.setMute, message: ErrorMessage.setMute, details: error.localizedDescription))
             }
         case MethodName.toggleMute:
             do {
                 try FlutterVolumeControllerPlugin.volumeController.toggleMute()
                 result(nil)
             } catch {
-                result(FlutterError(code: ErrorCode.toggleMute, message: ErrorMessage.toggleMute, details: nil))
+                result(FlutterError(code: ErrorCode.toggleMute, message: ErrorMessage.toggleMute, details: error.localizedDescription))
             }
         case MethodName.getDefaultOutputDevice:
             do {
@@ -103,7 +103,7 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
                 let json = device.toJSONString()
                 result(json)
             } catch {
-                result(FlutterError(code: ErrorCode.getDefaultOutputDevice, message: ErrorMessage.getDefaultOutputDevice, details: nil))
+                result(FlutterError(code: ErrorCode.getDefaultOutputDevice, message: ErrorMessage.getDefaultOutputDevice, details: error.localizedDescription))
             }
         case MethodName.setDefaultOutputDevice:
             do {
@@ -112,7 +112,7 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
                 try FlutterVolumeControllerPlugin.volumeController.setDefaultOutputDevice(deviceId)
                 result(nil)
             } catch {
-                result(FlutterError(code: ErrorCode.setDefaultOutputDevice, message: ErrorMessage.setDefaultOutputDevice, details: nil))
+                result(FlutterError(code: ErrorCode.setDefaultOutputDevice, message: ErrorMessage.setDefaultOutputDevice, details: error.localizedDescription))
             }
         case MethodName.getOutputDeviceList:
             do {
@@ -120,7 +120,7 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
                 let jsonList = deviceList.map { device in device.toJSONString() }
                 result(jsonList)
             } catch {
-                result(FlutterError(code: ErrorCode.getOutputDeviceList, message: ErrorMessage.getOutputDeviceList, details: nil))
+                result(FlutterError(code: ErrorCode.getOutputDeviceList, message: ErrorMessage.getOutputDeviceList, details: error.localizedDescription))
             }
         default:
             result(FlutterMethodNotImplemented)

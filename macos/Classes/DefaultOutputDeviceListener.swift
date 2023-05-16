@@ -27,8 +27,8 @@ class DefaultOutputDeviceListener: NSObject, FlutterStreamHandler {
             }
         } catch {
             return FlutterError(
-                code: ErrorCode.registerVolumeListener,
-                message: ErrorMessage.registerVolumeListener,
+                code: ErrorCode.registerDefaultOutputDeviceListener,
+                message: ErrorMessage.registerDefaultOutputDeviceListener,
                 details: error.localizedDescription
             )
         }

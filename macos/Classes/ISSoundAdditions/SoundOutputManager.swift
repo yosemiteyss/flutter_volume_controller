@@ -382,10 +382,6 @@ final class SoundOutputManager {
         var address = PropertyAddress.volumeScalar
         
         let error = AudioObjectIsPropertySettable(deviceID, &address, &writable)
-        guard error == noErr else {
-            throw Errors.operationFailed(error)
-        }
-        
-        return writable.boolValue
+        return writable.boolValue && error == noErr
     }
 }

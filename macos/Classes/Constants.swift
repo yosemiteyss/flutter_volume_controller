@@ -41,6 +41,7 @@ struct ErrorCode {
     static let getDefaultOutputDevice = "1012"
     static let setDefaultOutputDevice = "1013"
     static let getOutputDeviceList = "1014"
+    static let registerDefaultOutputDeviceListener = "1015"
 }
 
 struct ErrorMessage {
@@ -55,4 +56,5 @@ struct ErrorMessage {
     static let getDefaultOutputDevice = "Failed to get default output device"
     static let setDefaultOutputDevice = "Failed to set default output device"
     static let getOutputDeviceList = "Failed to get output device list"
+    static let registerDefaultOutputDeviceListener = "Failed to register default output device listener"
 }
