@@ -21,7 +21,7 @@ A Flutter plugin to control system volume and listen for volume changes on diffe
 ## Example
 
 #### [Custom Volume Slider](example/lib/volume_slider_example.dart)
-<img src="screenshot/volume-slider-example.gif" width="240" height="auto"/>
+<img src="https://raw.githubusercontent.com/yosemiteyss/flutter_volume_controller/main/screenshot/volume-slider-example.gif" width="240" height="auto"/>
 
 ## Usage
 
