@@ -1,3 +1,7 @@
+## 1.2.6
+* Added volume slider example.
+* Updated documentation.
+
 ## 1.2.5
 * Added `getAndroidAudioStream` method.
 * Added `getIOSAudioSessionCategory` method.
