@@ -152,6 +152,10 @@ void dispose() {
   For example, Android supports only 15 volume steps by default, the volume after being set would be
   a rounded off value.
 
+#### Audio devices without volume control
+- On desktop platforms like Windows and Linux, you may encounter PlatformExceptions if the default 
+  audio device doesn't support volume control, like an external monitor.
+
 ## Having Bugs?
 - This package is under active development. If you find any bug, please create an issue on Github.
 
