@@ -48,7 +48,7 @@ class _HomeState extends State<Home> {
       });
     });
 
-    FlutterVolumeController.addDefaultOutputDeviceListener((device) {
+    FlutterVolumeController.addOutputDeviceListener((device) {
       setState(() {
         _outputDevice = device;
       });
@@ -212,7 +212,7 @@ class _HomeState extends State<Home> {
               title: 'Get default audio device',
               onPressed: () async {
                 final device =
-                    await FlutterVolumeController.getDefaultOutputDevice();
+                    await FlutterVolumeController.getOutputDevice();
                 _showSnackBar('Default device: $device');
               },
             ),

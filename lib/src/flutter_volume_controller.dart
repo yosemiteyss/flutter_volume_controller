@@ -26,7 +26,7 @@ class FlutterVolumeController {
   );
 
   @visibleForTesting
-  static const EventChannel defaultOutputDeviceChannel = EventChannel(
+  static const EventChannel outputDeviceChannel = EventChannel(
     'com.yosemiteyss.flutter_volume_controller/default-output-device',
   );
 
@@ -34,7 +34,7 @@ class FlutterVolumeController {
   static StreamSubscription<double>? _volumeListener;
 
   /// Listener for default output device change events.
-  static StreamSubscription<OutputDevice>? _defaultOutputDeviceListener;
+  static StreamSubscription<OutputDevice>? _outputDeviceListener;
 
   /// Control system UI visibility.
   /// Set to `true` to display volume slider when changing volume.
@@ -251,7 +251,7 @@ class FlutterVolumeController {
   }
 
   /// Get the default output device on macOS.
-  static Future<OutputDevice?> getDefaultOutputDevice() async {
+  static Future<OutputDevice?> getOutputDevice() async {
     if (Platform.isMacOS) {
       final jsonStr = await methodChannel.invokeMethod<String>(
         MethodName.getDefaultOutputDevice,
@@ -267,7 +267,7 @@ class FlutterVolumeController {
   }
 
   /// Set the default output device on macOS.
-  static Future<void> setDefaultOutputDevice({required String deviceId}) async {
+  static Future<void> setOutputDevice({required String deviceId}) async {
     if (Platform.isMacOS) {
       await methodChannel.invokeMethod(
         MethodName.setDefaultOutputDevice,
@@ -333,28 +333,28 @@ class FlutterVolumeController {
   /// Listener for default output device changes.
   /// Use [emitOnStart] to control whether default output device should be emitted
   /// immediately right after the listener is attached.
-  static StreamSubscription<OutputDevice> addDefaultOutputDeviceListener(
+  static StreamSubscription<OutputDevice> addOutputDeviceListener(
     ValueChanged<OutputDevice> onChanged, {
     bool emitOnStart = true,
   }) {
-    if (_defaultOutputDeviceListener != null) {
-      removeDefaultOutputDeviceListener();
+    if (_outputDeviceListener != null) {
+      removeOutputDeviceListener();
     }
 
-    final listener = defaultOutputDeviceChannel
+    final listener = outputDeviceChannel
         .receiveBroadcastStream({
           MethodArg.emitOnStart: emitOnStart,
         })
         .map((device) => OutputDevice.fromJson(json.decode(device)))
         .listen(onChanged);
 
-    _defaultOutputDeviceListener = listener;
+    _outputDeviceListener = listener;
     return listener;
   }
 
   /// Remove the default output device listener.
-  static void removeDefaultOutputDeviceListener() {
-    _defaultOutputDeviceListener?.cancel();
-    _defaultOutputDeviceListener = null;
+  static void removeOutputDeviceListener() {
+    _outputDeviceListener?.cancel();
+    _outputDeviceListener = null;
   }
 }
