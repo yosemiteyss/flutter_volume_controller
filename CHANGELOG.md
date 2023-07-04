@@ -1,3 +1,6 @@
+## 1.2.7
+* Fixed audio session not activated with ambient state on iOS.
+
 ## 1.2.6
 * Added volume slider example.
 * Updated documentation.
