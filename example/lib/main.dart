@@ -33,6 +33,14 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (Platform.isIOS) {
+        await _loadIOSAudioSessionCategory();
+      }
+      if (Platform.isAndroid) {
+        await _loadAndroidAudioStream();
+      }
+    });
     FlutterVolumeController.addListener((volume) {
       setState(() {
         _currentVolume = volume;
@@ -278,5 +286,23 @@ class _HomeState extends State<Home> {
         duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  Future<void> _loadIOSAudioSessionCategory() async {
+    final category = await FlutterVolumeController.getIOSAudioSessionCategory();
+    if (category != null) {
+      setState(() {
+        _audioSessionCategory = category;
+      });
+    }
+  }
+
+  Future<void> _loadAndroidAudioStream() async {
+    final audioStream = await FlutterVolumeController.getAndroidAudioStream();
+    if (audioStream != null) {
+      setState(() {
+        _audioStream = _audioStream;
+      });
+    }
   }
 }
