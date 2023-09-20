@@ -1,0 +1,47 @@
+name: Publish package
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@v1
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Run tests
+        run: dart test
+
+      - name: Setup pub.dev credentials
+        run: |
+          mkdir -p ${{ runner.workspace }}/.config/dart
+          echo "$CREDENTIAL_JSON" > ${{ runner.workspace }}/.config/dart/pub-credentials.json
+          if [ -n "$XDG_CONFIG_HOME" ]; then
+            mkdir -p $XDG_CONFIG_HOME/dart
+            cp ${{ runner.workspace }}/.config/dart/pub-credentials.json $XDG_CONFIG_HOME/dart/pub-credentials.json
+          else
+            mkdir -p $HOME/.config/dart
+            cp ${{ runner.workspace }}/.config/dart/pub-credentials.json $HOME/.config/dart/pub-credentials.json
+          fi
+        env:
+          CREDENTIAL_JSON: ${{ secrets.CREDENTIAL_JSON }}
+          XDG_CONFIG_HOME: ${{ env.XDG_CONFIG_HOME }}
+
+      - name: Publish to pub.dev
+        run: dart pub publish -f
+
+      - name: Create release branch
+        uses: peterjgrainger/action-create-branch@v2.2.0
+        with:
+          branch: release/${{ github.event.release.tag_name }}
+          sha: '${{ github.event.pull_request.head.sha }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
