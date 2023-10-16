@@ -60,7 +60,7 @@ class FlutterVolumeController {
         MethodArg.volume: volume,
         if (Platform.isAndroid || Platform.isIOS)
           MethodArg.showSystemUI: showSystemUI,
-        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
       },
     );
   }
@@ -81,7 +81,7 @@ class FlutterVolumeController {
         if (Platform.isAndroid || Platform.isIOS)
           MethodArg.showSystemUI: showSystemUI,
         if (step != null) MethodArg.step: step,
-        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
       },
     );
   }
@@ -102,7 +102,7 @@ class FlutterVolumeController {
         if (Platform.isAndroid || Platform.isIOS)
           MethodArg.showSystemUI: showSystemUI,
         if (step != null) MethodArg.step: step,
-        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
       },
     );
   }
@@ -138,7 +138,7 @@ class FlutterVolumeController {
         MethodArg.isMuted: isMuted,
         if (Platform.isAndroid || Platform.isIOS)
           MethodArg.showSystemUI: showSystemUI,
-        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
       },
     );
   }
@@ -154,7 +154,7 @@ class FlutterVolumeController {
       {
         if (Platform.isAndroid || Platform.isIOS)
           MethodArg.showSystemUI: showSystemUI,
-        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
       },
     );
   }
