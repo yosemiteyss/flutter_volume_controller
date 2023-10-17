@@ -33,7 +33,7 @@ class FlutterVolumeController {
 
   @Deprecated(
     'Migrate to [FlutterVolumeController.updateShowSystemUI] instead. '
-    'This setter was deprecated >= 1.2.8.',
+    'This setter was deprecated >= 1.3.0.',
   )
   static set showSystemUI(bool isShown) {
     _showSystemUI = isShown;
