@@ -88,7 +88,7 @@ class VolumeController {
         try audioSession.setActive(false)
     }
     
-    private func setShowSystemUI(_ show: Bool) {
+    func setShowSystemUI(_ show: Bool) {
         if show {
             volumeView.frame = CGRect()
             volumeView.showsRouteButton = true

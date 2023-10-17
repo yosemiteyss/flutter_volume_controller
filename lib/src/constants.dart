@@ -12,6 +12,7 @@ class MethodName {
   static const String getMute = 'getMute';
   static const String setMute = 'setMute';
   static const String toggleMute = 'toggleMute';
+  static const String updateShowSystemUI = 'updateShowSystemUI';
 }
 
 class MethodArg {

@@ -68,8 +68,8 @@ class _HomeState extends State<Home> {
               child: ElevatedButton(
                 child: const Text('Show or hide system ui'),
                 onPressed: () {
-                  FlutterVolumeController.showSystemUI =
-                      !FlutterVolumeController.showSystemUI;
+                  FlutterVolumeController.updateShowSystemUI(
+                      !FlutterVolumeController.showSystemUI);
                   _showSnackBar(
                     'Show system ui: ${FlutterVolumeController.showSystemUI}',
                   );
