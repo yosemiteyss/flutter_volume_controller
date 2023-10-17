@@ -4,6 +4,10 @@ on:
   release:
     types: [published]
 
+env:
+  FLUTTER_CHANNEL: 'stable'
+  FLUTTER_VERSION: '3.13.4'
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -11,14 +15,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Dart SDK
-        uses: dart-lang/setup-dart@v1
+      - name: Setup Flutter SDK
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Install dependencies
-        run: dart pub get
-
-      - name: Run tests
-        run: dart test
+        run: flutter pub get
 
       - name: Setup pub.dev credentials
         run: |
