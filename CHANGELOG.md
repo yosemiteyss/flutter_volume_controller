@@ -1,3 +1,7 @@
+## 1.3.0
+* iOS: fix volume slider not shown when pressing physical buttons after `showSystemUI` is reset.
+* Deprecated: `showSystemUI` setter is deprecated and migrated to `updateShowSystemUI`.
+
 ## 1.2.7
 * Fixed audio session not activated with ambient state on iOS.
 

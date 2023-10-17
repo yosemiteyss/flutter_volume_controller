@@ -15,6 +15,7 @@ struct MethodName {
     static let getMute = "getMute"
     static let setMute = "setMute"
     static let toggleMute = "toggleMute"
+    static let updateShowSystemUI = "updateShowSystemUI"
 }
 
 struct MethodArg {

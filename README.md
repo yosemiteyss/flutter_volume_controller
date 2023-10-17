@@ -27,9 +27,10 @@ A Flutter plugin to control system volume and listen for volume changes on diffe
 
 #### Control System UI Visibility
 - Set to `true` to display system volume slider when changing volume.
-- This settings only works on Android and iOS.
+- This setting only works on Android and iOS.
+- Note: this setting doesn't control the volume slider invoked by physical buttons on Android.
 ```dart
-FlutterVolumeController.showSystemUI = true;
+await FlutterVolumeController.updateShowSystemUI(true);
 ```
 
 #### Get Volume
@@ -153,8 +154,12 @@ void dispose() {
   a rounded off value.
 
 #### Audio devices without volume control
-- On desktop platforms like Windows and Linux, you may encounter PlatformExceptions if the default 
+- On desktop platforms like Windows and Linux, you may encounter `PlatformException` if the default 
   audio device doesn't support volume control, like an external monitor.
+
+#### Controlling Android volume slider UI
+- Currently there is no trivial way to control the volume slider invoked by physical buttons on
+  Android in plugin level. You may override `FlutterActivity::onKeyDown` to customize the buttons action.
 
 ## Having Bugs?
 - This package is under active development. If you find any bug, please create an issue on Github.
