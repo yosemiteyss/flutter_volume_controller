@@ -26,12 +26,39 @@ class FlutterVolumeController {
 
   /// Control system UI visibility.
   /// Set to `true` to display volume slider when changing volume.
-  /// This settings only works on Android and iOS.
-  static bool showSystemUI = true;
+  /// This setting only works on Android and iOS.
+  static bool _showSystemUI = true;
+
+  static bool get showSystemUI => _showSystemUI;
+
+  @Deprecated(
+    'Migrate to [FlutterVolumeController.updateShowSystemUI] instead. '
+    'This setter was deprecated >= 1.3.0.',
+  )
+  static set showSystemUI(bool isShown) {
+    _showSystemUI = isShown;
+  }
 
   static const AudioStream _defaultAudioStream = AudioStream.music;
   static const AudioSessionCategory _defaultAudioSessionCategory =
       AudioSessionCategory.ambient;
+
+  /// Control system UI visibility.
+  /// Set [isShown] to `true` to display volume slider when changing volume.
+  /// This setting only works on Android and iOS.
+  /// Note: this setting doesn't control the volume slider invoked by physical
+  /// buttons on Android.
+  static Future<void> updateShowSystemUI(bool isShown) async {
+    _showSystemUI = isShown;
+    // iOS: needs to update MPVolumeView visibility, otherwise pressing physical buttons
+    // won't display volume slider after [showSystemUI] is reset to true.
+    if (Platform.isIOS) {
+      await methodChannel.invokeMethod<void>(
+        MethodName.updateShowSystemUI,
+        {MethodArg.showSystemUI: isShown},
+      );
+    }
+  }
 
   /// Get the current volume level. From 0.0 to 1.0.
   /// Use [stream] to set the audio stream type on Android.
@@ -60,7 +87,7 @@ class FlutterVolumeController {
         MethodArg.volume: volume,
         if (Platform.isAndroid || Platform.isIOS)
           MethodArg.showSystemUI: showSystemUI,
-        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
       },
     );
   }
@@ -81,7 +108,7 @@ class FlutterVolumeController {
         if (Platform.isAndroid || Platform.isIOS)
           MethodArg.showSystemUI: showSystemUI,
         if (step != null) MethodArg.step: step,
-        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
       },
     );
   }
@@ -102,7 +129,7 @@ class FlutterVolumeController {
         if (Platform.isAndroid || Platform.isIOS)
           MethodArg.showSystemUI: showSystemUI,
         if (step != null) MethodArg.step: step,
-        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
       },
     );
   }
@@ -138,7 +165,7 @@ class FlutterVolumeController {
         MethodArg.isMuted: isMuted,
         if (Platform.isAndroid || Platform.isIOS)
           MethodArg.showSystemUI: showSystemUI,
-        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
       },
     );
   }
@@ -154,7 +181,7 @@ class FlutterVolumeController {
       {
         if (Platform.isAndroid || Platform.isIOS)
           MethodArg.showSystemUI: showSystemUI,
-        if (Platform.isAndroid) MethodArg.audioStream: stream.index
+        if (Platform.isAndroid) MethodArg.audioStream: stream.index,
       },
     );
   }

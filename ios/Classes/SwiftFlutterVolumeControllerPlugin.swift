@@ -113,6 +113,11 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             } catch {
                 result(FlutterError(code: ErrorCode.getIOSAudioSessionCategory, message: ErrorMessage.getIOSAudioSessionCategory, details: error.localizedDescription))
             }
+        case MethodName.updateShowSystemUI:
+            let args = call.arguments as! [String: Any]
+            let showSystemUI = args[MethodArg.showSystemUI] as! Bool
+            SwiftFlutterVolumeControllerPlugin.volumeController.setShowSystemUI(showSystemUI)
+            result(nil)
         default:
             result(FlutterMethodNotImplemented)
         }
