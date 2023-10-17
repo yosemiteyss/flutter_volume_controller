@@ -65,7 +65,7 @@ class _VolumeSliderState extends State<VolumeSlider> {
                 value: _showSystemSlider,
                 onChanged: (value) {
                   final checked = value ?? true;
-                  FlutterVolumeController.showSystemUI = checked;
+                  FlutterVolumeController.updateShowSystemUI(checked);
                   setState(() {
                     _showSystemSlider = checked;
                   });
