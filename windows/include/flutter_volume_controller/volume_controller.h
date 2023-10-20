@@ -18,11 +18,7 @@ namespace flutter_volume_controller {
 
 		bool Init();
 
-		//bool RegisterNotification(VolumeCallback callback);
-
 		void Dispose();
-
-		//void DisposeNotification();
 
 		bool SetVolume(float volume);
 
@@ -52,16 +48,14 @@ namespace flutter_volume_controller {
 
 		std::optional<std::vector<OutputDevice>> GetOutputDeviceList();
 
+		std::optional<OutputDevice> GetOutputDevice(ComPtr<IMMDevice>& pDevice);
+
 	private:
 		VolumeController();
 
 		VolumeController(const VolumeController&) = delete;
 
 		VolumeController& operator=(const VolumeController&) = delete;
-
-		//AudioEndpointVolumeCallback* volume_notification;
-
-		std::optional<OutputDevice> GetOutputDevice(ComPtr<IMMDevice>& pDevice);
 
 		std::optional<std::string> GetAudioDeviceID(ComPtr<IMMDevice>& pDevice);
 

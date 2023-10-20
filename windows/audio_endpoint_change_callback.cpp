@@ -1,8 +1,8 @@
 #include "include/flutter_volume_controller/audio_endpoint_change_callback.h"
 
 namespace flutter_volume_controller {
-	AudioEndpointChangeCallback::AudioEndpointChangeCallback(DefaultDeviceChangedCallback pCallback)
-		: m_lRefCount(1), m_pCallback(pCallback) {
+	AudioEndpointChangeCallback::AudioEndpointChangeCallback(VolumeController& volumeController, DefaultDeviceChangedCallback pCallback)
+		: m_lRefCount(1), m_volumeController(volumeController), m_pCallback(pCallback), m_pEnumerator(NULL) {
 
 	}
 
@@ -10,8 +10,7 @@ namespace flutter_volume_controller {
 		// Check if the change is caused by audio output.
 		if (flow == eRender && role == eMultimedia) {
 			HRESULT hr;
-			IMMDeviceEnumerator* m_pEnumerator = NULL;
-			IMMDevice* pDevice = NULL;
+			ComPtr<IMMDevice> pDevice = NULL;
 
 			// Get enumerator.
 			hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&m_pEnumerator);
@@ -19,10 +18,9 @@ namespace flutter_volume_controller {
 				return S_FALSE;
 			}
 
-			// Get device.
+			// Get default device.
 			hr = m_pEnumerator->GetDevice(pwstrDefaultDeviceId, &pDevice);
 			if (FAILED(hr)) {
-				m_pEnumerator->Release();
 				return S_FALSE;
 			}
 
@@ -31,21 +29,17 @@ namespace flutter_volume_controller {
 
 			hr = pDevice->GetId(&deviceId);
 			if (FAILED(hr)) {
-				pDevice->Release();
-				m_pEnumerator->Release();
 				return S_FALSE;
 			}
 
-			if (m_pCallback == NULL) {
-				return E_INVALIDARG;
+			std::optional<OutputDevice> device = m_volumeController.GetOutputDevice(pDevice);
+
+			// TODO: Platform channel messages must be sent on the platform thread.
+			if (device.has_value()) {
+				m_pCallback(device.value());
 			}
 
-			m_pCallback(pwstrDefaultDeviceId);
-
-			// Clean up.
 			CoTaskMemFree(deviceId);
-			pDevice->Release();
-			m_pEnumerator->Release();
 		}
 
 		return S_OK;
@@ -86,5 +80,29 @@ namespace flutter_volume_controller {
 			delete this;
 		}
 		return lRefCount;
+	}
+
+	bool AudioEndpointChangeCallback::Register() {
+		HRESULT hr = E_FAIL;
+
+		hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, IID_PPV_ARGS(&m_pEnumerator));
+		if (FAILED(hr)) {
+			return false;
+		}
+
+		m_pEnumerator->RegisterEndpointNotificationCallback(this);
+
+		return true;
+	}
+
+	bool AudioEndpointChangeCallback::Cancel() {
+		HRESULT hr = E_FAIL;
+
+		hr = m_pEnumerator->UnregisterEndpointNotificationCallback(this);
+		if (FAILED(hr)) {
+			return false;
+		}
+
+		return true;
 	}
 }

@@ -50,11 +50,11 @@ class _HomeState extends State<Home> {
       });
     });
 
-    // FlutterVolumeController.addDefaultOutputDeviceListener((device) {
-    //   setState(() {
-    //     _outputDevice = device;
-    //   });
-    // });
+    FlutterVolumeController.addDefaultOutputDeviceListener((device) {
+      setState(() {
+        _outputDevice = device;
+      });
+    });
   }
 
   @override
@@ -231,7 +231,7 @@ class _HomeState extends State<Home> {
               'Audio Session Category: $_audioSessionCategory',
               textAlign: TextAlign.center,
             ),
-          if (Platform.isMacOS)
+          if (Platform.isMacOS || Platform.isWindows || Platform.isLinux)
             Text(
               '$_outputDevice',
               textAlign: TextAlign.center,

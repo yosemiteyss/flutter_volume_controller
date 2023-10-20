@@ -11,6 +11,7 @@ namespace flutter_volume_controller {
 			return E_INVALIDARG;
 		}
 
+		// TODO: Platform channel messages must be sent on the platform thread.
 		m_pCallback(pNotify->fMasterVolume);
 
 		return S_OK;

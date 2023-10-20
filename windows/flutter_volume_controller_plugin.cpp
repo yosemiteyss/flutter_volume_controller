@@ -25,6 +25,10 @@ namespace flutter_volume_controller {
 			registrar->messenger(), "com.yosemiteyss.flutter_volume_controller/event",
 			&StandardMethodCodec::GetInstance());
 
+		auto output_device_channel = std::make_unique<EventChannel<EncodableValue>>(
+			registrar->messenger(), "com.yosemiteyss.flutter_volume_controller/default-output-device",
+			&StandardMethodCodec::GetInstance());
+
 		method_channel->SetMethodCallHandler(
 			[plugin_pointer = plugin.get()](const auto& call, auto result) {
 				plugin_pointer->HandleMethodCall(call, std::move(result));
@@ -32,6 +36,9 @@ namespace flutter_volume_controller {
 
 		event_channel->SetStreamHandler(
 			std::make_unique<VolumeChangeStreamHandler>(VolumeController::GetInstance()));
+
+		output_device_channel->SetStreamHandler(
+			std::make_unique<OutputDeviceStreamHandler>(VolumeController::GetInstance()));
 
 		registrar->AddPlugin(std::move(plugin));
 	}
@@ -218,9 +225,9 @@ namespace flutter_volume_controller {
 		sink = std::move(events);
 
 		auto cb_func = std::bind(&VolumeChangeStreamHandler::OnVolumeChanged, this, std::placeholders::_1);
-        volume_callback = std::make_unique<AudioEndpointVolumeCallback>(cb_func);
+        volume_cb = std::make_unique<AudioEndpointVolumeCallback>(cb_func);
 
-		if (!volume_callback->Register()) {
+		if (!volume_cb->Register()) {
 			return std::make_unique<StreamHandlerError<EncodableValue>>(
 				constants::kErrCodeRegVolumeListener, constants::kErrMsgRegVolumeListener, nullptr);
 		}
@@ -243,12 +250,61 @@ namespace flutter_volume_controller {
 	}
 
 	std::unique_ptr<StreamHandlerError<EncodableValue>> VolumeChangeStreamHandler::OnCancelInternal(const EncodableValue* arguments) {
-		volume_callback->Cancel();
+		volume_cb->Cancel();
 		sink.reset();
 		return nullptr;
 	}
 
 	void VolumeChangeStreamHandler::OnVolumeChanged(float volume) {
 		sink->Success(EncodableValue(std::to_string(volume)));
+	}
+
+	OutputDeviceStreamHandler::OutputDeviceStreamHandler(VolumeController& volume_controller) 
+		: volume_controller(volume_controller), sink(nullptr), change_cb(nullptr) {
+
+	}
+
+	OutputDeviceStreamHandler::~OutputDeviceStreamHandler() {
+
+	}
+
+	std::unique_ptr<StreamHandlerError<EncodableValue>> OutputDeviceStreamHandler::OnListenInternal(const EncodableValue* arguments, std::unique_ptr<EventSink<EncodableValue>>&& events) {
+		sink = std::move(events);
+
+		auto cb_func = std::bind(&OutputDeviceStreamHandler::OnDefaultOutputDeviceChanged, this, std::placeholders::_1);
+		change_cb = std::make_unique<AudioEndpointChangeCallback>(volume_controller, cb_func);
+
+		if (!change_cb->Register()) {
+			// TODO: update error
+			return std::make_unique<StreamHandlerError<EncodableValue>>(
+				constants::kErrCodeRegVolumeListener, constants::kErrMsgRegVolumeListener, nullptr);
+		}
+
+		const auto* args = std::get_if<EncodableMap>(arguments);
+		const bool* emit_on_start = std::get_if<bool>(GetArgValue(*args, constants::kArgEmitOnStart));
+
+		if (*emit_on_start) {
+			auto output_device = volume_controller.GetDefaultOutputDevice();
+			if (output_device.has_value()) {
+				sink->Success(EncodableValue(output_device.value().ToJson()));
+			}
+			else {
+				// TODO: update error
+				return std::make_unique<StreamHandlerError<EncodableValue>>(
+					constants::kErrCodeRegVolumeListener, constants::kErrMsgRegVolumeListener, nullptr);
+			}
+		}
+
+		return nullptr;
+	}
+
+	std::unique_ptr<StreamHandlerError<EncodableValue>> OutputDeviceStreamHandler::OnCancelInternal(const EncodableValue* arguments) {
+		change_cb->Cancel();
+		sink.reset();
+		return nullptr;
+	}
+
+	void OutputDeviceStreamHandler::OnDefaultOutputDeviceChanged(OutputDevice device) {
+		sink->Success(EncodableValue(device.ToJson()));
 	}
 }  // namespace flutter_volume_controller

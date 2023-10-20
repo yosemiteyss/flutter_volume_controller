@@ -1,16 +1,21 @@
 #ifndef AUDIO_ENDPOINT_CHANGE_CALLBACK_H_
 #define AUDIO_ENDPOINT_CHANGE_CALLBACK_H_
 
+#include "volume_controller.h"
+
 #include <functional>
-#include <mmdeviceapi.h>
 #include <endpointvolume.h>
+#include <mmdeviceapi.h>
+#include <wrl/client.h>
+
+using namespace Microsoft::WRL;
 
 namespace flutter_volume_controller {
-	typedef std::function<void (LPCWSTR deviceId)> DefaultDeviceChangedCallback;
+	typedef std::function<void (OutputDevice device)> DefaultDeviceChangedCallback;
 
 	class AudioEndpointChangeCallback : public IMMNotificationClient {
 	public:
-		AudioEndpointChangeCallback(DefaultDeviceChangedCallback pCallback);
+		AudioEndpointChangeCallback(VolumeController& volumeController, DefaultDeviceChangedCallback pCallback);
 
 		STDMETHODIMP OnDefaultDeviceChanged(EDataFlow flow, ERole role, LPCWSTR pwstrDefaultDeviceId) override;
 
@@ -28,9 +33,18 @@ namespace flutter_volume_controller {
 
 		STDMETHODIMP_(ULONG) Release() override;
 
+		bool Register();
+
+		bool Cancel();
+
 	private:
 		LONG m_lRefCount = 1;
+
+		VolumeController& m_volumeController;
+
 		DefaultDeviceChangedCallback m_pCallback;
+
+		ComPtr<IMMDeviceEnumerator> m_pEnumerator;
 	};
 }
 

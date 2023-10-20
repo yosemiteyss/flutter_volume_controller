@@ -3,6 +3,7 @@
 
 #include "volume_controller.h"
 #include "audio_endpoint_volume_callback.h"
+#include "audio_endpoint_change_callback.h"
 
 #include <flutter/method_channel.h>
 #include <flutter/event_channel.h>
@@ -70,7 +71,28 @@ namespace flutter_volume_controller {
 
 		std::unique_ptr<EventSink<EncodableValue>> sink;
 
-		std::unique_ptr<AudioEndpointVolumeCallback> volume_callback;
+		std::unique_ptr<AudioEndpointVolumeCallback> volume_cb;
+	};
+
+	class OutputDeviceStreamHandler : public StreamHandler<EncodableValue> {
+	public:
+		OutputDeviceStreamHandler(VolumeController& volume_controller);
+
+		virtual ~OutputDeviceStreamHandler();
+
+	protected:
+		std::unique_ptr<StreamHandlerError<EncodableValue>> OnListenInternal(const EncodableValue* arguments, std::unique_ptr<EventSink<EncodableValue>>&& events) override;
+
+		std::unique_ptr<StreamHandlerError<EncodableValue>> OnCancelInternal(const EncodableValue* arguments) override;
+
+		void OnDefaultOutputDeviceChanged(OutputDevice device_id);
+
+	private:
+		VolumeController& volume_controller;
+
+		std::unique_ptr<EventSink<EncodableValue>> sink;
+
+		std::unique_ptr<AudioEndpointChangeCallback> change_cb;
 	};
 }  // namespace flutter_volume_controller
 
