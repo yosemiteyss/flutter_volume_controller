@@ -1,23 +1,28 @@
 #ifndef VOLUME_CONTROLLER_H_
 #define VOLUME_CONTROLLER_H_
 
-#include "volume_notification.h"
+#include "output_device.h"
 
 #include <endpointvolume.h>
 #include <optional>
+#include <mmdeviceapi.h>
+#include <string>
+#include <wrl/client.h>
+
+using namespace Microsoft::WRL;
 
 namespace flutter_volume_controller {
 	class VolumeController {
 	public:
 		static VolumeController& GetInstance();
 
-		bool RegisterController();
+		bool Init();
 
-		bool RegisterNotification(VolumeCallback callback);
+		//bool RegisterNotification(VolumeCallback callback);
 
-		void DisposeController();
+		void Dispose();
 
-		void DisposeNotification();
+		//void DisposeNotification();
 
 		bool SetVolume(float volume);
 
@@ -25,21 +30,27 @@ namespace flutter_volume_controller {
 
 		bool SetMinVolume();
 
-		bool SetVolumeUp(float step);
+		bool RaiseVolume(float step);
 
-		bool SetVolumeDown(float step);
+		bool LowerVolume(float step);
 
-		bool SetVolumeUpBySystemStep();
+		bool RaiseVolume();
 
-		bool SetVolumeDownBySystemStep();
+		bool LowerVolume();
 
-		bool SetMute(bool is_mute);
+		bool SetMute(bool isMuted);
 
 		bool ToggleMute();
 
-		std::optional<float> GetCurrentVolume();
+		std::optional<float> GetVolume();
 
 		std::optional<bool> GetMute();
+
+		std::optional<OutputDevice> GetDefaultOutputDevice();
+
+		bool setDefaultOutputDevice(LPCWSTR pwstrDeviceId);
+
+		std::optional<std::vector<OutputDevice>> GetOutputDeviceList();
 
 	private:
 		VolumeController();
@@ -48,9 +59,19 @@ namespace flutter_volume_controller {
 
 		VolumeController& operator=(const VolumeController&) = delete;
 
-		IAudioEndpointVolume* endpoint_volume;
+		//AudioEndpointVolumeCallback* volume_notification;
 
-		VolumeNotification* volume_notification;
+		std::optional<OutputDevice> GetOutputDevice(ComPtr<IMMDevice>& pDevice);
+
+		std::optional<std::string> GetAudioDeviceID(ComPtr<IMMDevice>& pDevice);
+
+		std::optional<std::string> GetAudioDeviceName(ComPtr<IMMDevice>& pDevice);
+
+		HRESULT SetDefaultAudioPlaybackDevice(LPCWSTR pwstrDeviceId);
+
+		bool InitializeAudio(ComPtr<IMMDevice>& pDevice, ComPtr<IAudioEndpointVolume>& m_pEndpointVolume);
+
+		ComPtr<IMMDeviceEnumerator> m_pEnumerator;
 	};
 }
 

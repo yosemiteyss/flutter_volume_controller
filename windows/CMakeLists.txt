@@ -15,8 +15,10 @@ set(PLUGIN_NAME "flutter_volume_controller_plugin")
 # Any new source files that you add to the plugin should be added here.
 list(APPEND PLUGIN_SOURCES
   "flutter_volume_controller_plugin.cpp"
-  "volume_notification.cpp"
   "volume_controller.cpp"
+  "output_device.cpp"
+  "audio_endpoint_volume_callback.cpp"
+  "audio_endpoint_change_callback.cpp"
 )
 
 # Define the plugin library target. Its name must not be changed (see comment

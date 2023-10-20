@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_lambdas
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -10,6 +8,7 @@ import 'package:flutter_volume_controller/src/audio_session_category.dart';
 import 'package:flutter_volume_controller/src/audio_stream.dart';
 import 'package:flutter_volume_controller/src/constants.dart';
 import 'package:flutter_volume_controller/src/output_device.dart';
+import 'package:flutter_volume_controller/src/platform.dart';
 
 /// A Flutter plugin to control system volume and listen for volume changes on different platforms.
 class FlutterVolumeController {
@@ -26,7 +25,7 @@ class FlutterVolumeController {
   );
 
   @visibleForTesting
-  static const EventChannel outputDeviceChannel = EventChannel(
+  static const EventChannel defaultOutputDeviceChannel = EventChannel(
     'com.yosemiteyss.flutter_volume_controller/default-output-device',
   );
 
@@ -250,48 +249,54 @@ class FlutterVolumeController {
     return null;
   }
 
-  /// Get the default output device on macOS.
-  static Future<OutputDevice?> getOutputDevice() async {
-    if (Platform.isMacOS) {
-      final jsonStr = await methodChannel.invokeMethod<String>(
-        MethodName.getDefaultOutputDevice,
-      );
-      if (jsonStr == null) {
-        return null;
-      }
-
-      return OutputDevice.fromJson(json.decode(jsonStr));
+  /// Get the default output device on desktop.
+  static Future<OutputDevice?> getDefaultOutputDevice() async {
+    if (!isDesktopPlatform) {
+      return null;
     }
 
-    return null;
-  }
+    final jsonStr = await methodChannel.invokeMethod<String>(
+      MethodName.getDefaultOutputDevice,
+    );
 
-  /// Set the default output device on macOS.
-  static Future<void> setOutputDevice({required String deviceId}) async {
-    if (Platform.isMacOS) {
-      await methodChannel.invokeMethod(
-        MethodName.setDefaultOutputDevice,
-        {MethodArg.deviceId: deviceId},
-      );
+    if (jsonStr == null) {
+      return null;
     }
+
+    return OutputDevice.fromJson(jsonDecode(jsonStr));
   }
 
-  /// Get the audio output device list on macOS.
+  /// Set the default output device on desktop.
+  static Future<void> setDefaultOutputDevice({required String deviceId}) async {
+    if (!isDesktopPlatform) {
+      return;
+    }
+
+    await methodChannel.invokeMethod(
+      MethodName.setDefaultOutputDevice,
+      {MethodArg.deviceId: deviceId},
+    );
+  }
+
+  /// Get the audio output device list on desktop.
   static Future<List<OutputDevice>> getOutputDeviceList() async {
-    if (Platform.isMacOS) {
-      final jsonList = await methodChannel.invokeListMethod<String>(
-        MethodName.getOutputDeviceList,
-      );
-      if (jsonList == null) {
-        return const [];
-      }
-
-      return jsonList.map((jsonStr) {
-        return OutputDevice.fromJson(json.decode(jsonStr));
-      }).toList();
+    if (!isDesktopPlatform) {
+      return const [];
     }
 
-    return const [];
+    final jsonList = await methodChannel.invokeMethod<String>(
+      MethodName.getOutputDeviceList,
+    );
+
+    if (jsonList == null) {
+      return const [];
+    }
+
+    final List<dynamic> devices = jsonDecode(jsonList);
+
+    return devices.map((device) {
+      return OutputDevice.fromJson(device);
+    }).toList();
   }
 
   /// Listen for volume changes.
@@ -333,19 +338,19 @@ class FlutterVolumeController {
   /// Listener for default output device changes.
   /// Use [emitOnStart] to control whether default output device should be emitted
   /// immediately right after the listener is attached.
-  static StreamSubscription<OutputDevice> addOutputDeviceListener(
+  static StreamSubscription<OutputDevice> addDefaultOutputDeviceListener(
     ValueChanged<OutputDevice> onChanged, {
     bool emitOnStart = true,
   }) {
     if (_outputDeviceListener != null) {
-      removeOutputDeviceListener();
+      removeDefaultOutputDeviceListener();
     }
 
-    final listener = outputDeviceChannel
+    final listener = defaultOutputDeviceChannel
         .receiveBroadcastStream({
           MethodArg.emitOnStart: emitOnStart,
         })
-        .map((device) => OutputDevice.fromJson(json.decode(device)))
+        .map((device) => OutputDevice.fromJson(jsonDecode(device)))
         .listen(onChanged);
 
     _outputDeviceListener = listener;
@@ -353,7 +358,7 @@ class FlutterVolumeController {
   }
 
   /// Remove the default output device listener.
-  static void removeOutputDeviceListener() {
+  static void removeDefaultOutputDeviceListener() {
     _outputDeviceListener?.cancel();
     _outputDeviceListener = null;
   }

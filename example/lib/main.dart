@@ -34,6 +34,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (Platform.isIOS) {
         await _loadIOSAudioSessionCategory();
@@ -42,17 +43,18 @@ class _HomeState extends State<Home> {
         await _loadAndroidAudioStream();
       }
     });
+
     FlutterVolumeController.addListener((volume) {
       setState(() {
         _currentVolume = volume;
       });
     });
 
-    FlutterVolumeController.addOutputDeviceListener((device) {
-      setState(() {
-        _outputDevice = device;
-      });
-    });
+    // FlutterVolumeController.addDefaultOutputDeviceListener((device) {
+    //   setState(() {
+    //     _outputDevice = device;
+    //   });
+    // });
   }
 
   @override
@@ -71,22 +73,11 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.all(20),
         children: [
           if (Platform.isAndroid || Platform.isIOS)
-            Center(
-              child: ElevatedButton(
-                child: const Text('Show or hide system ui'),
-                onPressed: () {
-                  FlutterVolumeController.updateShowSystemUI(
-                      !FlutterVolumeController.showSystemUI);
-                  _showSnackBar(
-                    'Show system ui: ${FlutterVolumeController.showSystemUI}',
-                  );
-                },
-              ),
             _ActionItem(
               title: 'Show or hide system ui',
               onPressed: () {
-                FlutterVolumeController.showSystemUI =
-                    !FlutterVolumeController.showSystemUI;
+                FlutterVolumeController.updateShowSystemUI(
+                    !FlutterVolumeController.showSystemUI);
                 _showSnackBar(
                   'Show system ui: ${FlutterVolumeController.showSystemUI}',
                 );
@@ -207,12 +198,12 @@ class _HomeState extends State<Home> {
               FlutterVolumeController.toggleMute(stream: _audioStream);
             },
           ),
-          if (Platform.isMacOS) ...[
+          if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) ...[
             _ActionItem(
               title: 'Get default audio device',
               onPressed: () async {
                 final device =
-                    await FlutterVolumeController.getOutputDevice();
+                    await FlutterVolumeController.getDefaultOutputDevice();
                 _showSnackBar('Default device: $device');
               },
             ),

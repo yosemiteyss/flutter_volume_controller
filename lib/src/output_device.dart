@@ -1,8 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'output_device.g.dart';
-
-@JsonSerializable()
 class OutputDevice {
   const OutputDevice({
     required this.id,
@@ -10,17 +5,28 @@ class OutputDevice {
     required this.volumeControl,
   });
 
-  factory OutputDevice.fromJson(Map<String, dynamic> json) =>
-      _$OutputDeviceFromJson(json);
+  factory OutputDevice.fromJson(dynamic json) {
+    return OutputDevice(
+      id: json['id'] as String,
+      name: json['name'] as String?,
+      volumeControl: json['volumeControl'] as bool,
+    );
+  }
 
   final String id;
   final String? name;
   final bool volumeControl;
 
-  Map<String, dynamic> toJson() => _$OutputDeviceToJson(this);
-
   @override
   String toString() {
     return 'Output Device: id: $id, name: $name, volumeControl: $volumeControl';
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'volumeControl': volumeControl,
+    };
   }
 }

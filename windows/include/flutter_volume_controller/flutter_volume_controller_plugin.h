@@ -2,6 +2,7 @@
 #define FLUTTER_PLUGIN_FLUTTER_VOLUME_CONTROLLER_PLUGIN_H_
 
 #include "volume_controller.h"
+#include "audio_endpoint_volume_callback.h"
 
 #include <flutter/method_channel.h>
 #include <flutter/event_channel.h>
@@ -9,11 +10,13 @@
 #include <flutter/plugin_registrar_windows.h>
 #include <memory>
 
+using namespace flutter;
+
 namespace flutter_volume_controller {
 
-	class FlutterVolumeControllerPlugin : public flutter::Plugin {
+	class FlutterVolumeControllerPlugin : public Plugin {
 	public:
-		static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
+		static void RegisterWithRegistrar(PluginRegistrarWindows* registrar);
 
 		FlutterVolumeControllerPlugin();
 
@@ -24,57 +27,51 @@ namespace flutter_volume_controller {
 		FlutterVolumeControllerPlugin& operator=(const FlutterVolumeControllerPlugin&) = delete;
 
 	private:
-		void HandleMethodCall(
-			const flutter::MethodCall<flutter::EncodableValue>& method_call,
-			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void HandleMethodCall(const MethodCall<EncodableValue>& method_call, std::unique_ptr<MethodResult<EncodableValue>> result);
 
-		void GetVolumeHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void GetVolume(std::unique_ptr<MethodResult<EncodableValue>> result);
 
-		void SetVolumeHandler(
-			const flutter::EncodableMap& arguments,
-			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void SetVolume(const EncodableMap& arguments, std::unique_ptr<MethodResult<EncodableValue>> result);
 
-		void RaiseVolumeHandler(
-			const flutter::EncodableMap& arguments,
-			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void RaiseVolume(const EncodableMap& arguments, std::unique_ptr<MethodResult<EncodableValue>> result);
 
-		void LowerVolumeHandler(
-			const flutter::EncodableMap& arguments,
-			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void LowerVolume(const EncodableMap& arguments, std::unique_ptr<MethodResult<EncodableValue>> result);
 
-		void GetMuteHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void GetMute(std::unique_ptr<MethodResult<EncodableValue>> result);
 
-		void SetMuteHandler(
-			const flutter::EncodableMap& arguments,
-			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void SetMute(const EncodableMap& arguments, std::unique_ptr<MethodResult<EncodableValue>> result);
 
-		void ToggleMuteHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void ToggleMute(std::unique_ptr<MethodResult<EncodableValue>> result);
+
+		void GetDefaultOutputDevice(std::unique_ptr<MethodResult<EncodableValue>> result);
+
+		void SetDefaultOutputDevice(const EncodableMap& arguments, std::unique_ptr<MethodResult<EncodableValue>> result);
+
+		void GetOutputDeviceList(std::unique_ptr<MethodResult<EncodableValue>> result);
 
 		VolumeController& volume_controller;
 	};
 
-	class VolumeNotificationStreamHandler : public flutter::StreamHandler<flutter::EncodableValue> {
+	class VolumeChangeStreamHandler : public StreamHandler<EncodableValue> {
 	public:
-		VolumeNotificationStreamHandler(VolumeController& volume_controller);
+		VolumeChangeStreamHandler(VolumeController& volume_controller);
 
-		virtual ~VolumeNotificationStreamHandler();
+		virtual ~VolumeChangeStreamHandler();
 
 	protected:
-		std::unique_ptr<flutter::StreamHandlerError<flutter::EncodableValue>> OnListenInternal(
-			const flutter::EncodableValue* arguments,
-			std::unique_ptr<flutter::EventSink<flutter::EncodableValue>>&& events) override;
+		std::unique_ptr<StreamHandlerError<EncodableValue>> OnListenInternal(const EncodableValue* arguments, std::unique_ptr<EventSink<EncodableValue>>&& events) override;
 
-		std::unique_ptr<flutter::StreamHandlerError<flutter::EncodableValue>> OnCancelInternal(
-			const flutter::EncodableValue* arguments) override;
+		std::unique_ptr<StreamHandlerError<EncodableValue>> OnCancelInternal(const EncodableValue* arguments) override;
 
 		void OnVolumeChanged(float volume);
 
 	private:
 		VolumeController& volume_controller;
 
-		std::unique_ptr<flutter::EventSink<flutter::EncodableValue>> sink;
-	};
+		std::unique_ptr<EventSink<EncodableValue>> sink;
 
+		std::unique_ptr<AudioEndpointVolumeCallback> volume_callback;
+	};
 }  // namespace flutter_volume_controller
 
 #endif  // FLUTTER_PLUGIN_FLUTTER_VOLUME_CONTROLLER_PLUGIN_H_

@@ -1,27 +1,29 @@
-#include "include/flutter_volume_controller/flutter_volume_controller_plugin.h"
+#include "include/flutter_volume_controller/audio_endpoint_volume_callback.h"
 #include "include/flutter_volume_controller/constants.h"
+#include "include/flutter_volume_controller/flutter_volume_controller_plugin.h"
+
+#include <algorithm>
 
 namespace flutter_volume_controller {
 
-	const flutter::EncodableValue* GetArgValue(const flutter::EncodableMap& map, const char* key) {
-		auto it = map.find(flutter::EncodableValue(key));
+	const EncodableValue* GetArgValue(const EncodableMap& map, const char* key) {
+		auto it = map.find(EncodableValue(key));
 		if (it == map.end()) {
 			return nullptr;
 		}
 		return &(it->second);
 	}
 
-	void FlutterVolumeControllerPlugin::RegisterWithRegistrar(
-		flutter::PluginRegistrarWindows* registrar) {
+	void FlutterVolumeControllerPlugin::RegisterWithRegistrar(PluginRegistrarWindows* registrar) {
 		auto plugin = std::make_unique<FlutterVolumeControllerPlugin>();
 
-		auto method_channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+		auto method_channel = std::make_unique<MethodChannel<EncodableValue>>(
 			registrar->messenger(), "com.yosemiteyss.flutter_volume_controller/method",
-			&flutter::StandardMethodCodec::GetInstance());
+			&StandardMethodCodec::GetInstance());
 
-		auto event_channel = std::make_unique<flutter::EventChannel<flutter::EncodableValue>>(
+		auto event_channel = std::make_unique<EventChannel<EncodableValue>>(
 			registrar->messenger(), "com.yosemiteyss.flutter_volume_controller/event",
-			&flutter::StandardMethodCodec::GetInstance());
+			&StandardMethodCodec::GetInstance());
 
 		method_channel->SetMethodCallHandler(
 			[plugin_pointer = plugin.get()](const auto& call, auto result) {
@@ -29,66 +31,68 @@ namespace flutter_volume_controller {
 			});
 
 		event_channel->SetStreamHandler(
-			std::make_unique<VolumeNotificationStreamHandler>(VolumeController::GetInstance()));
+			std::make_unique<VolumeChangeStreamHandler>(VolumeController::GetInstance()));
 
 		registrar->AddPlugin(std::move(plugin));
 	}
 
 	FlutterVolumeControllerPlugin::FlutterVolumeControllerPlugin() : volume_controller(VolumeController::GetInstance()) {
-		volume_controller.RegisterController();
+		CoInitialize(NULL);
+		volume_controller.Init();
 	}
 
 	FlutterVolumeControllerPlugin::~FlutterVolumeControllerPlugin() {
-		volume_controller.DisposeController();
+		CoUninitialize();
 	}
 
-	void FlutterVolumeControllerPlugin::HandleMethodCall(
-		const flutter::MethodCall<flutter::EncodableValue>& method_call,
-		std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-
+	void FlutterVolumeControllerPlugin::HandleMethodCall(const MethodCall<EncodableValue>& method_call, std::unique_ptr<MethodResult<EncodableValue>> result) {
 		if (method_call.method_name().compare(constants::kMethodGetVolume) == 0) {
-			GetVolumeHandler(std::move(result));
+			GetVolume(std::move(result));
 		}
 		else if (method_call.method_name().compare(constants::kMethodSetVolume) == 0) {
-			const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-			SetVolumeHandler(*arguments, std::move(result));
+			const auto* arguments = std::get_if<EncodableMap>(method_call.arguments());
+			SetVolume(*arguments, std::move(result));
 		}
 		else if (method_call.method_name().compare(constants::kMethodRaiseVolume) == 0) {
-			const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-			RaiseVolumeHandler(*arguments, std::move(result));
+			const auto* arguments = std::get_if<EncodableMap>(method_call.arguments());
+			RaiseVolume(*arguments, std::move(result));
 		}
 		else if (method_call.method_name().compare(constants::kMethodLowerVolume) == 0) {
-			const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-			LowerVolumeHandler(*arguments, std::move(result));
+			const auto* arguments = std::get_if<EncodableMap>(method_call.arguments());
+			LowerVolume(*arguments, std::move(result));
 		}
 		else if (method_call.method_name().compare(constants::kMethodGetMute) == 0) {
-			GetMuteHandler(std::move(result));
+			GetMute(std::move(result));
 		}
 		else if (method_call.method_name().compare(constants::kMethodSetMute) == 0) {
-			const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-			SetMuteHandler(*arguments, std::move(result));
+			const auto* arguments = std::get_if<EncodableMap>(method_call.arguments());
+			SetMute(*arguments, std::move(result));
 		}
 		else if (method_call.method_name().compare(constants::kMethodToggleMute) == 0) {
-			ToggleMuteHandler(std::move(result));
+			ToggleMute(std::move(result));
+		}
+		else if (method_call.method_name().compare(constants::kGetDefaultOutputDevice) == 0) {
+			GetDefaultOutputDevice(std::move(result));
+		}
+		else if (method_call.method_name().compare(constants::kGetOutputDeviceList) == 0) {
+			GetOutputDeviceList(std::move(result));
 		}
 		else {
 			result->NotImplemented();
 		}
 	}
 
-	void FlutterVolumeControllerPlugin::GetVolumeHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-		auto current_volume = volume_controller.GetCurrentVolume();
+	void FlutterVolumeControllerPlugin::GetVolume(std::unique_ptr<MethodResult<EncodableValue>> result) {
+		auto current_volume = volume_controller.GetVolume();
 		if (current_volume.has_value()) {
-			result->Success(flutter::EncodableValue(std::to_string(current_volume.value())));
+			result->Success(EncodableValue(std::to_string(current_volume.value())));
 		}
 		else {
 			result->Error(constants::kErrCodeGetVolume, constants::kErrMsgGetVolume, nullptr);
 		}
 	}
 
-	void FlutterVolumeControllerPlugin::SetVolumeHandler(
-		const flutter::EncodableMap& arguments,
-		std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+	void FlutterVolumeControllerPlugin::SetVolume(const EncodableMap& arguments, std::unique_ptr<MethodResult<EncodableValue>> result) {
 		const double* volume = std::get_if<double>(GetArgValue(arguments, constants::kArgVolume));
 
 		if (!volume) {
@@ -96,7 +100,7 @@ namespace flutter_volume_controller {
 			return;
 		}
 
-		if (!volume_controller.SetVolume((float) *volume)) {
+		if (!volume_controller.SetVolume((float)*volume)) {
 			result->Error(constants::kErrCodeSetVolume, constants::kErrMsgSetVolume, nullptr);
 			return;
 		}
@@ -104,18 +108,16 @@ namespace flutter_volume_controller {
 		result->Success();
 	}
 
-	void FlutterVolumeControllerPlugin::RaiseVolumeHandler(
-		const flutter::EncodableMap& arguments,
-		std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+	void FlutterVolumeControllerPlugin::RaiseVolume(const EncodableMap& arguments, std::unique_ptr<MethodResult<EncodableValue>> result) {
 		const double* step = std::get_if<double>(GetArgValue(arguments, constants::kArgStep));
 
 		if (!step) {
-			if (!volume_controller.SetVolumeUpBySystemStep()) {
+			if (!volume_controller.RaiseVolume()) {
 				result->Error(constants::kErrCodeRaiseVolume, constants::kErrMsgRaiseVolume, nullptr);
 				return;
 			}
 		}
-		else if (!volume_controller.SetVolumeUp((float) *step)) {
+		else if (!volume_controller.RaiseVolume((float)*step)) {
 			result->Error(constants::kErrCodeRaiseVolume, constants::kErrMsgRaiseVolume, nullptr);
 			return;
 		}
@@ -123,18 +125,16 @@ namespace flutter_volume_controller {
 		result->Success();
 	}
 
-	void FlutterVolumeControllerPlugin::LowerVolumeHandler(
-		const flutter::EncodableMap& arguments,
-		std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+	void FlutterVolumeControllerPlugin::LowerVolume(const EncodableMap& arguments, std::unique_ptr<MethodResult<EncodableValue>> result) {
 		const double* step = std::get_if<double>(GetArgValue(arguments, constants::kArgStep));
 
 		if (!step) {
-			if (!volume_controller.SetVolumeDownBySystemStep()) {
+			if (!volume_controller.LowerVolume()) {
 				result->Error(constants::kErrCodeLowerVolume, constants::kErrMsgLowerVolume, nullptr);
 				return;
 			}
 		}
-		else if (!volume_controller.SetVolumeDown((float) *step)) {
+		else if (!volume_controller.LowerVolume((float)*step)) {
 			result->Error(constants::kErrCodeLowerVolume, constants::kErrMsgLowerVolume, nullptr);
 			return;
 		}
@@ -142,20 +142,18 @@ namespace flutter_volume_controller {
 		result->Success();
 	}
 
-	void FlutterVolumeControllerPlugin::GetMuteHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+	void FlutterVolumeControllerPlugin::GetMute(std::unique_ptr<MethodResult<EncodableValue>> result) {
 		auto is_muted = volume_controller.GetMute();
 
 		if (is_muted.has_value()) {
-			result->Success(flutter::EncodableValue(is_muted.value()));
+			result->Success(EncodableValue(is_muted.value()));
 		}
 		else {
 			result->Error(constants::kErrCodeGetMute, constants::kErrMsgGetMute, nullptr);
 		}
 	}
 
-	void FlutterVolumeControllerPlugin::SetMuteHandler(
-		const flutter::EncodableMap& arguments,
-		std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+	void FlutterVolumeControllerPlugin::SetMute(const EncodableMap& arguments, std::unique_ptr<MethodResult<EncodableValue>> result) {
 		const bool* is_muted = std::get_if<bool>(GetArgValue(arguments, constants::kArgIsMuted));
 
 		if (!is_muted) {
@@ -171,7 +169,7 @@ namespace flutter_volume_controller {
 		result->Success();
 	}
 
-	void FlutterVolumeControllerPlugin::ToggleMuteHandler(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+	void FlutterVolumeControllerPlugin::ToggleMute(std::unique_ptr<MethodResult<EncodableValue>> result) {
 		if (!volume_controller.ToggleMute()) {
 			result->Error(constants::kErrCodeToggleMute, constants::kErrMsgToggleMute, nullptr);
 			return;
@@ -180,33 +178,63 @@ namespace flutter_volume_controller {
 		result->Success();
 	}
 
-	VolumeNotificationStreamHandler::VolumeNotificationStreamHandler(
-		VolumeController& volume_controller) : volume_controller(volume_controller), sink(nullptr) {}
+	void FlutterVolumeControllerPlugin::GetDefaultOutputDevice(std::unique_ptr<MethodResult<EncodableValue>> result) {
+		auto output_device = volume_controller.GetDefaultOutputDevice();
 
-	VolumeNotificationStreamHandler::~VolumeNotificationStreamHandler() {}
+		if (output_device.has_value()) {
+			result->Success(EncodableValue(output_device->ToJson()));
+		}
+		else {
+			result->Error(constants::kErrCodeGetDefaultOutputDevice, constants::kErrMsgGetDefaultOutputDevice, nullptr);
+		}
+	}
 
-	std::unique_ptr<flutter::StreamHandlerError<flutter::EncodableValue>> VolumeNotificationStreamHandler::OnListenInternal(
-		const flutter::EncodableValue* arguments,
-		std::unique_ptr<flutter::EventSink<flutter::EncodableValue>>&& events) {
+	void FlutterVolumeControllerPlugin::SetDefaultOutputDevice(const EncodableMap& arguments, std::unique_ptr<MethodResult<EncodableValue>> result) {
+		// TODO: SetDefaultOutputDeviceHandler
+	}
+
+	void FlutterVolumeControllerPlugin::GetOutputDeviceList(std::unique_ptr<MethodResult<EncodableValue>> result) {
+		std::optional<std::vector<OutputDevice>> devices = volume_controller.GetOutputDeviceList();
+
+		if (devices.has_value()) {
+			std::string devices_json = OutputDevice::ToJsonList(devices.value());
+			result->Success(EncodableValue(devices_json));
+		}
+		else {
+			result->Error(constants::kErrCodeGetOutputDeviceList, constants::kErrMsgGetOutputDeviceList, nullptr);
+		}
+	}
+
+	VolumeChangeStreamHandler::VolumeChangeStreamHandler(VolumeController& volume_controller)
+		: volume_controller(volume_controller), sink(nullptr) {
+
+	}
+
+	VolumeChangeStreamHandler::~VolumeChangeStreamHandler() {
+
+	}
+
+	std::unique_ptr<StreamHandlerError<EncodableValue>> VolumeChangeStreamHandler::OnListenInternal(const EncodableValue* arguments, std::unique_ptr<EventSink<EncodableValue>>&& events) {
 		sink = std::move(events);
-		
-		auto callback = std::bind(&VolumeNotificationStreamHandler::OnVolumeChanged, this, std::placeholders::_1);
 
-		if (!volume_controller.RegisterNotification(callback)) {
-			return std::make_unique<flutter::StreamHandlerError<flutter::EncodableValue>>(
+		auto cb_func = std::bind(&VolumeChangeStreamHandler::OnVolumeChanged, this, std::placeholders::_1);
+        volume_callback = std::make_unique<AudioEndpointVolumeCallback>(cb_func);
+
+		if (!volume_callback->Register()) {
+			return std::make_unique<StreamHandlerError<EncodableValue>>(
 				constants::kErrCodeRegVolumeListener, constants::kErrMsgRegVolumeListener, nullptr);
 		}
 
-		const auto* args = std::get_if<flutter::EncodableMap>(arguments);
+		const auto* args = std::get_if<EncodableMap>(arguments);
 		const bool* emit_on_start = std::get_if<bool>(GetArgValue(*args, constants::kArgEmitOnStart));
 
 		if (*emit_on_start) {
-			auto current_volume = volume_controller.GetCurrentVolume();
+			auto current_volume = volume_controller.GetVolume();
 			if (current_volume.has_value()) {
-				sink->Success(flutter::EncodableValue(std::to_string(current_volume.value())));
+				sink->Success(EncodableValue(std::to_string(current_volume.value())));
 			}
 			else {
-				return std::make_unique<flutter::StreamHandlerError<flutter::EncodableValue>>(
+				return std::make_unique<StreamHandlerError<EncodableValue>>(
 					constants::kErrCodeRegVolumeListener, constants::kErrMsgRegVolumeListener, nullptr);
 			}
 		}
@@ -214,14 +242,13 @@ namespace flutter_volume_controller {
 		return nullptr;
 	}
 
-	std::unique_ptr<flutter::StreamHandlerError<flutter::EncodableValue>> VolumeNotificationStreamHandler::OnCancelInternal(
-		const flutter::EncodableValue* arguments) {
-		volume_controller.DisposeNotification();
+	std::unique_ptr<StreamHandlerError<EncodableValue>> VolumeChangeStreamHandler::OnCancelInternal(const EncodableValue* arguments) {
+		volume_callback->Cancel();
 		sink.reset();
 		return nullptr;
 	}
 
-	void VolumeNotificationStreamHandler::OnVolumeChanged(float volume) {
-		sink->Success(flutter::EncodableValue(std::to_string(volume)));
+	void VolumeChangeStreamHandler::OnVolumeChanged(float volume) {
+		sink->Success(EncodableValue(std::to_string(volume)));
 	}
 }  // namespace flutter_volume_controller

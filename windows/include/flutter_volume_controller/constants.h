@@ -10,6 +10,8 @@ namespace flutter_volume_controller {
 		constexpr char kMethodGetMute[] = "getMute";
 		constexpr char kMethodSetMute[] = "setMute";
 		constexpr char kMethodToggleMute[] = "toggleMute";
+		constexpr char kGetDefaultOutputDevice[] = "getDefaultOutputDevice";
+		constexpr char kGetOutputDeviceList[] = "getOutputDeviceList";
 
 		constexpr char kArgVolume[] = "volume";
 		constexpr char kArgStep[] = "step";
@@ -24,6 +26,8 @@ namespace flutter_volume_controller {
 		constexpr char kErrCodeGetMute[] = "1005";
 		constexpr char kErrCodeSetMute[] = "1006";
 		constexpr char kErrCodeToggleMute[] = "1007";
+		constexpr char kErrCodeGetDefaultOutputDevice[] = "1012";
+		constexpr char kErrCodeGetOutputDeviceList[] = "1014";
 
 		constexpr char kErrMsgGetVolume[] = "Failed to get volume";
 		constexpr char kErrMsgSetVolume[] = "Failed to set volume";
@@ -33,6 +37,8 @@ namespace flutter_volume_controller {
 		constexpr char kErrMsgGetMute[] = "Failed to get mute";
 		constexpr char kErrMsgSetMute[] = "Failed to set mute";
 		constexpr char kErrMsgToggleMute[] = "Failed to toggle mute";
+		constexpr char kErrMsgGetDefaultOutputDevice[] = "Failed to get default output device";
+		constexpr char kErrMsgGetOutputDeviceList[] = "Failed to get output device list";
 	}
 }
 
