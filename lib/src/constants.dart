@@ -11,9 +11,10 @@ abstract class MethodName {
   static const String setMute = 'setMute';
   static const String toggleMute = 'toggleMute';
   static const String updateShowSystemUI = 'updateShowSystemUI';
-  static const String getDefaultOutputDevice = 'getDefaultOutputDevice';
-  static const String setDefaultOutputDevice = 'setDefaultOutputDevice';
-  static const String getOutputDeviceList = 'getOutputDeviceList';
+  static const String getDefaultAudioDevice = 'getDefaultAudioDevice';
+  static const String setDefaultAudioDevice = 'setDefaultAudioDevice';
+  static const String getAudioDeviceList = 'getAudioDeviceList';
+  static const String setOutputMonoMode = 'setOutputMonoMode';
 }
 
 abstract class MethodArg {
@@ -25,4 +26,6 @@ abstract class MethodArg {
   static const String emitOnStart = 'emitOnStart';
   static const String isMuted = 'isMuted';
   static const String deviceId = 'deviceId';
+  static const String deviceType = 'deviceType';
+  static const String isMonoMode = 'isMonoMode';
 }

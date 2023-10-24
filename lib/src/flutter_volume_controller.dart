@@ -4,10 +4,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_volume_controller/src/audio_device.dart';
+import 'package:flutter_volume_controller/src/audio_device_type.dart';
 import 'package:flutter_volume_controller/src/audio_session_category.dart';
 import 'package:flutter_volume_controller/src/audio_stream.dart';
 import 'package:flutter_volume_controller/src/constants.dart';
-import 'package:flutter_volume_controller/src/output_device.dart';
 import 'package:flutter_volume_controller/src/platform.dart';
 
 /// A Flutter plugin to control system volume and listen for volume changes on different platforms.
@@ -25,15 +26,18 @@ class FlutterVolumeController {
   );
 
   @visibleForTesting
-  static const EventChannel defaultOutputDeviceChannel = EventChannel(
-    'com.yosemiteyss.flutter_volume_controller/default-output-device',
+  static const EventChannel defaultAudioDeviceChannel = EventChannel(
+    'com.yosemiteyss.flutter_volume_controller/default-audio-device',
   );
 
   /// Listener for volume change events.
   static StreamSubscription<double>? _volumeListener;
 
-  /// Listener for default output device change events.
-  static StreamSubscription<OutputDevice>? _outputDeviceListener;
+  /// Listener for default input device changes.
+  static StreamSubscription<AudioDevice>? _defaultInputDeviceListener;
+
+  /// Listener for default output device changes.
+  static StreamSubscription<AudioDevice>? _defaultOutputDeviceListener;
 
   /// Control system UI visibility.
   /// Set to `true` to display volume slider when changing volume.
@@ -249,43 +253,55 @@ class FlutterVolumeController {
     return null;
   }
 
-  /// Get the default output device on desktop.
-  static Future<OutputDevice?> getDefaultOutputDevice() async {
+  /// Get the default audio device on desktop.
+  /// Use [deviceType] to specify the audio device type.
+  static Future<AudioDevice?> getDefaultAudioDevice(
+    AudioDeviceType deviceType,
+  ) async {
     if (!isDesktopPlatform) {
       return null;
     }
 
     final jsonStr = await methodChannel.invokeMethod<String>(
-      MethodName.getDefaultOutputDevice,
+      MethodName.getDefaultAudioDevice,
+      {MethodArg.deviceType: deviceType.value},
     );
 
     if (jsonStr == null) {
       return null;
     }
 
-    return OutputDevice.fromJson(jsonDecode(jsonStr));
+    return AudioDevice.fromJson(jsonDecode(jsonStr));
   }
 
-  /// Set the default output device on desktop.
-  static Future<void> setDefaultOutputDevice({required String deviceId}) async {
+  /// Set the default audio device on desktop.
+  /// Use [deviceType] to specify the audio device type.
+  static Future<void> setDefaultAudioDevice({
+    required String deviceId,
+    required AudioDeviceType deviceType,
+  }) async {
     if (!isDesktopPlatform) {
       return;
     }
 
     await methodChannel.invokeMethod(
-      MethodName.setDefaultOutputDevice,
-      {MethodArg.deviceId: deviceId},
+      MethodName.setDefaultAudioDevice,
+      {MethodArg.deviceId: deviceId, MethodArg.deviceType: deviceType.value},
     );
   }
 
   /// Get the audio output device list on desktop.
-  static Future<List<OutputDevice>> getOutputDeviceList() async {
+  /// Use [deviceType] to specify the audio device type.
+  static Future<List<AudioDevice>> getAudioDeviceList(
+    AudioDeviceType deviceType,
+  ) async {
     if (!isDesktopPlatform) {
       return const [];
     }
 
     final jsonList = await methodChannel.invokeMethod<String>(
-      MethodName.getOutputDeviceList,
+      MethodName.getAudioDeviceList,
+      {MethodArg.deviceType: deviceType.value},
     );
 
     if (jsonList == null) {
@@ -295,8 +311,20 @@ class FlutterVolumeController {
     final List<dynamic> devices = jsonDecode(jsonList);
 
     return devices.map((device) {
-      return OutputDevice.fromJson(device);
+      return AudioDevice.fromJson(device);
     }).toList();
+  }
+
+  /// Set mono mode for the given audio output device.
+  static Future<void> setOutputMonoMode({required String deviceId}) {
+    if (!isDesktopPlatform) {
+      return Future.value();
+    }
+
+    return methodChannel.invokeMethod(
+      MethodName.setOutputMonoMode,
+      {MethodArg.deviceId: deviceId},
+    );
   }
 
   /// Listen for volume changes.
@@ -311,9 +339,7 @@ class FlutterVolumeController {
     AudioSessionCategory category = _defaultAudioSessionCategory,
     bool emitOnStart = true,
   }) {
-    if (_volumeListener != null) {
-      removeListener();
-    }
+    removeListener();
 
     final listener = eventChannel
         .receiveBroadcastStream({
@@ -322,6 +348,7 @@ class FlutterVolumeController {
           MethodArg.emitOnStart: emitOnStart,
         })
         .distinct()
+        // ignore: unnecessary_lambdas
         .map((volume) => double.parse(volume))
         .listen(onChanged);
 
@@ -335,31 +362,52 @@ class FlutterVolumeController {
     _volumeListener = null;
   }
 
-  /// Listener for default output device changes.
+  /// Listener for default audio device changes.
   /// Use [emitOnStart] to control whether default output device should be emitted
   /// immediately right after the listener is attached.
-  static StreamSubscription<OutputDevice> addDefaultOutputDeviceListener(
-    ValueChanged<OutputDevice> onChanged, {
+  /// Use [deviceType] to specify the audio device type.
+  static StreamSubscription<AudioDevice> addDefaultAudioDeviceListener(
+    ValueChanged<AudioDevice> onChanged, {
+    required AudioDeviceType deviceType,
     bool emitOnStart = true,
   }) {
-    if (_outputDeviceListener != null) {
-      removeDefaultOutputDeviceListener();
-    }
+    removeDefaultDeviceListener(deviceType);
 
-    final listener = defaultOutputDeviceChannel
+    final listener = defaultAudioDeviceChannel
         .receiveBroadcastStream({
           MethodArg.emitOnStart: emitOnStart,
+          MethodArg.deviceType: deviceType.value,
         })
-        .map((device) => OutputDevice.fromJson(jsonDecode(device)))
+        .map((device) => AudioDevice.fromJson(jsonDecode(device)))
         .listen(onChanged);
 
-    _outputDeviceListener = listener;
+    _defaultInputDeviceListener = listener;
     return listener;
   }
 
-  /// Remove the default output device listener.
-  static void removeDefaultOutputDeviceListener() {
-    _outputDeviceListener?.cancel();
-    _outputDeviceListener = null;
+  /// Remove the default audio device listener.
+  static void removeDefaultDeviceListener([AudioDeviceType? deviceType]) {
+    void removeInputDeviceListener() {
+      _defaultInputDeviceListener?.cancel();
+      _defaultInputDeviceListener = null;
+    }
+
+    void removeOutputDeviceListener() {
+      _defaultOutputDeviceListener?.cancel();
+      _defaultOutputDeviceListener = null;
+    }
+
+    switch (deviceType) {
+      case AudioDeviceType.input:
+        removeInputDeviceListener();
+        break;
+      case AudioDeviceType.output:
+        removeOutputDeviceListener();
+        break;
+      default:
+        removeInputDeviceListener();
+        removeOutputDeviceListener();
+        break;
+    }
   }
 }

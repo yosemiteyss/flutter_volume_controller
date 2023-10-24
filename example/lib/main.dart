@@ -29,7 +29,8 @@ class _HomeState extends State<Home> {
   AudioStream _audioStream = AudioStream.music;
   AudioSessionCategory _audioSessionCategory = AudioSessionCategory.ambient;
   double _currentVolume = 0.0;
-  OutputDevice? _outputDevice;
+  AudioDevice? _outputDevice;
+  AudioDevice? _inputDevice;
 
   @override
   void initState() {
@@ -50,16 +51,25 @@ class _HomeState extends State<Home> {
       });
     });
 
-    FlutterVolumeController.addDefaultOutputDeviceListener((device) {
+    // Listen for output device switched events.
+    FlutterVolumeController.addDefaultAudioDeviceListener((device) {
       setState(() {
         _outputDevice = device;
       });
-    });
+    }, deviceType: AudioDeviceType.output);
+
+    // Listen for input device switched events.
+    FlutterVolumeController.addDefaultAudioDeviceListener((device) {
+      setState(() {
+        _inputDevice = device;
+      });
+    }, deviceType: AudioDeviceType.input);
   }
 
   @override
   void dispose() {
     FlutterVolumeController.removeListener();
+    FlutterVolumeController.removeDefaultDeviceListener();
     super.dispose();
   }
 
@@ -200,19 +210,39 @@ class _HomeState extends State<Home> {
           ),
           if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) ...[
             _ActionItem(
-              title: 'Get default audio device',
+              title: 'Get default output device',
               onPressed: () async {
                 final device =
-                    await FlutterVolumeController.getDefaultOutputDevice();
-                _showSnackBar('Default device: $device');
+                    await FlutterVolumeController.getDefaultAudioDevice(
+                        AudioDeviceType.output);
+                _showSnackBar('Default output: $device');
+              },
+            ),
+            _ActionItem(
+              title: 'Get default input device',
+              onPressed: () async {
+                final device =
+                    await FlutterVolumeController.getDefaultAudioDevice(
+                        AudioDeviceType.input);
+                _showSnackBar('Default input: $device');
               },
             ),
             _ActionItem(
               title: 'Get output device list',
               onPressed: () async {
                 final deviceList =
-                    await FlutterVolumeController.getOutputDeviceList();
-                _showSnackBar('Device list: $deviceList');
+                    await FlutterVolumeController.getAudioDeviceList(
+                        AudioDeviceType.output);
+                _showSnackBar('Output devices: $deviceList');
+              },
+            ),
+            _ActionItem(
+              title: 'Get input device list',
+              onPressed: () async {
+                final deviceList =
+                    await FlutterVolumeController.getAudioDeviceList(
+                        AudioDeviceType.input);
+                _showSnackBar('Input devices: $deviceList');
               },
             ),
           ],
@@ -231,11 +261,16 @@ class _HomeState extends State<Home> {
               'Audio Session Category: $_audioSessionCategory',
               textAlign: TextAlign.center,
             ),
-          if (Platform.isMacOS || Platform.isWindows || Platform.isLinux)
+          if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) ...[
             Text(
               '$_outputDevice',
               textAlign: TextAlign.center,
             ),
+            Text(
+              '$_inputDevice',
+              textAlign: TextAlign.center,
+            ),
+          ],
         ],
       ),
     );
