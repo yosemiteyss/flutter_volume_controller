@@ -147,6 +147,10 @@ void dispose() {
 
 ## Notes
 
+#### Volume controls doesn't work on iOS simulator
+- On iOS, volume control uses `MPVolumeView` internally which does not works on simulator. Please uses physical
+device for testing.
+
 #### Fine-grained volume control
 - Due to platform and device difference, it's normal that volume level could not be controlled
   precisely.
