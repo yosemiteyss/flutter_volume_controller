@@ -1,3 +1,8 @@
+## 1.3.1
+* Update minimum dart sdk version to 2.19.0.
+* Android: update `flutter_plugin_android_lifecycle` to 2.0.17.
+* Android: fix gradle namespace issue with AGP 8.
+
 ## 1.3.0
 * iOS: fix volume slider not shown when pressing physical buttons after `showSystemUI` is reset.
 * Deprecated: `showSystemUI` setter is deprecated and migrated to `updateShowSystemUI`.
