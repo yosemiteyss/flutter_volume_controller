@@ -4,13 +4,13 @@ version: 1.3.0
 homepage: https://github.com/yosemiteyss/flutter_volume_controller
 
 environment:
-  sdk: ">=2.17.6 <4.0.0"
+  sdk: ">=2.19.0 <4.0.0"
   flutter: ">=2.5.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_plugin_android_lifecycle: ^2.0.9
+  flutter_plugin_android_lifecycle: ^2.0.17
 
 dev_dependencies:
   flutter_test:
