@@ -88,10 +88,16 @@ await FlutterVolumeController.toggleMute();
 
 #### Set Audio Stream on Android
 - Adjusts to the audio stream whose volume should be changed by the hardware volume controls.
-- Supported streams: `AudioStream.voiceCall`, `AudioStream.system`, `AudioStream.ring`
-  , `AudioStream.music`, `AudioStream.alarm`.
-- For more details,
-  visit [AudioManager](https://developer.android.com/reference/android/media/AudioManager)
+- Supported streams:
+  - `AudioStream.accessibility`
+  - `AudioStream.alarm`
+  - `AudioStream.dtmf`
+  - `AudioStream.music`
+  - `AudioStream.notification`
+  - `AudioStream.ring`
+  - `AudioStream.system`
+  - `AudioStream.voiceCall`
+- For more details, visit [AudioManager](https://developer.android.com/reference/android/media/AudioManager).
 
 ```dart
 await FlutterVolumeController.setAndroidAudioStream(stream: AudioStream.system);
@@ -106,11 +112,15 @@ final stream = await FlutterVolumeController.getAndroidAudioStream();
 
 #### Set Audio Session Category on iOS
 - Adjusts to a different set of audio behaviors.
-- Supported categories: `AudioSessionCategory.ambient`, `AudioSessionCategory.multiRoute`
-  , `AudioSessionCategory.playAndRecord`, `AudioSessionCategory.playback`
-  , `AudioSessionCategory.record`, `AudioSessionCategory.soleAmbient`
+- Supported categories: 
+  - `AudioSessionCategory.ambient`
+  - `AudioSessionCategory.multiRoute`
+  - `AudioSessionCategory.playAndRecord`
+  - `AudioSessionCategory.playback`
+  - `AudioSessionCategory.record`
+  - `AudioSessionCategory.soleAmbient`
 - For more details,
-  visit [AVAudioSession.Category](https://developer.apple.com/documentation/avfaudio/avaudiosession/category)
+  visit [AVAudioSession.Category](https://developer.apple.com/documentation/avfaudio/avaudiosession/category).
 
 ```dart
 await FlutterVolumeController.setIOSAudioSessionCategory(category: AudioSessionCategory.playback);
