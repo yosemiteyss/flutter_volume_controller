@@ -6,7 +6,7 @@ on:
 
 env:
   FLUTTER_CHANNEL: 'stable'
-  FLUTTER_VERSION: '3.13.4'
+  FLUTTER_VERSION: '3.19.3'
 
 jobs:
   publish:
