@@ -49,5 +49,4 @@ app.*.map.json
 
 # CMake
 **/cmake-build-debug*
-
-.fvm/flutter_sdk
+.fvm
