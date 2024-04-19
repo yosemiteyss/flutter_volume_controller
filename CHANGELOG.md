@@ -1,3 +1,6 @@
+## 1.3.2
+* iOS: fix AudioSessionCategory reset to ambient.
+
 ## 1.3.1
 * Update minimum dart sdk version to 2.19.0.
 * Android: update `flutter_plugin_android_lifecycle` to 2.0.17.

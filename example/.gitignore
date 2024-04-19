@@ -48,4 +48,5 @@ app.*.map.json
 /android/app/release
 
 # CMake
-**/cmake-build-debug
+**/cmake-build-debug*
+.fvm

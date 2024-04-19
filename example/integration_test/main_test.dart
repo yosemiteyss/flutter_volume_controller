@@ -152,6 +152,49 @@ void main() {
 
     expect(actual, targets);
   });
+
+  if (Platform.isIOS) {
+    testWidgets(
+        'should keeps iOS AudioSessionCategory the same after get volume',
+        (tester) async {
+      await FlutterVolumeController.setIOSAudioSessionCategory(
+          category: AudioSessionCategory.playback);
+      final before = await FlutterVolumeController.getIOSAudioSessionCategory();
+
+      await FlutterVolumeController.getVolume();
+      final after = await FlutterVolumeController.getIOSAudioSessionCategory();
+
+      expect(after, before);
+    });
+  }
+
+  if (Platform.isIOS) {
+    testWidgets('should keeps iOS AudioSessionCategory the same after get mute',
+        (tester) async {
+      await FlutterVolumeController.setIOSAudioSessionCategory(
+          category: AudioSessionCategory.playback);
+      final before = await FlutterVolumeController.getIOSAudioSessionCategory();
+
+      await FlutterVolumeController.getMute();
+      final after = await FlutterVolumeController.getIOSAudioSessionCategory();
+
+      expect(after, before);
+    });
+  }
+
+  if (Platform.isIOS) {
+    testWidgets('should keeps iOS AudioSessionCategory the same after set mute',
+        (tester) async {
+      await FlutterVolumeController.setIOSAudioSessionCategory(
+          category: AudioSessionCategory.playback);
+      final before = await FlutterVolumeController.getIOSAudioSessionCategory();
+
+      await FlutterVolumeController.setMute(true);
+      final after = await FlutterVolumeController.getIOSAudioSessionCategory();
+
+      expect(after, before);
+    });
+  }
 }
 
 Future<void> _insertDelay() async {
