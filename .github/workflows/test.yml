@@ -1,3 +1,5 @@
+name: Build and Test
+
 on:
   push:
     branches:
@@ -12,7 +14,7 @@ on:
 
 env:
   FLUTTER_CHANNEL: 'stable'
-  FLUTTER_VERSION: '3.19.6'
+  FLUTTER_VERSION: '3.24.4'
 
 jobs:
   build_example_android:
