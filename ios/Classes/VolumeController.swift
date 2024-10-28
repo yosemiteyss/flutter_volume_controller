@@ -11,20 +11,18 @@ import MediaPlayer
 
 class VolumeController {
     private static let defaultStep: Double = 0.15
-    private static let defaultCategory: AVAudioSession.Category = AVAudioSession.Category.ambient
     
     private let audioSession: AVAudioSession
     private let volumeView: MPVolumeView = .init()
     
-    private var savedVolume: Float?
-    private var currentCategory: AVAudioSession.Category = defaultCategory
+    private var volumeBeforeMute: Float?
     
     init(audioSession: AVAudioSession) {
         self.audioSession = audioSession
     }
     
     func getVolume() throws -> Float {
-        try resumeAudioSession()
+        try audioSession.setActive(true)
         let volume = audioSession.outputVolume
         return volume
     }
@@ -45,24 +43,22 @@ class VolumeController {
     }
     
     func getMute() throws -> Bool {
-        try resumeAudioSession()
-        return audioSession.outputVolume == 0
+        let volume = try getVolume()
+        return volume == 0
     }
     
-    func setMute(_ isMuted: Bool, showSystemUI: Bool) throws {
-        try resumeAudioSession()
-        
-        // Save current volume level before mute.
-        if isMuted {
-            savedVolume = audioSession.outputVolume
+    func setMute(_ isMute: Bool, showSystemUI: Bool) throws {
+        if isMute {
+            // Save current volume level before mute.
+            volumeBeforeMute = try getVolume()
             try setVolume(0, showSystemUI: showSystemUI)
-            return
+        } else {
+            // Restore previous volume level when unmute.
+            if let volume = volumeBeforeMute {
+                try setVolume(Double(volume), showSystemUI: showSystemUI)
+                volumeBeforeMute = nil
+            }
         }
-        
-        // Restore to the volume level before mute.
-        let volume = Double(savedVolume ?? 0.5)
-        try setVolume(volume, showSystemUI: showSystemUI)
-        savedVolume = nil
     }
     
     func toggleMute(showSystemUI: Bool) throws {
@@ -71,20 +67,19 @@ class VolumeController {
     }
     
     func setAudioSessionCategory(_ category: AudioSessionCategory) throws {
-        try audioSession.activate(with: category.categoryType)
-        currentCategory = category.categoryType
+        try audioSession.setCategory(category.categoryType)
+        try audioSession.setActive(true)
     }
     
     func getAudioSessionCategory() throws -> AudioSessionCategory? {
         return AudioSessionCategory.allCases.first { category in category.categoryType == audioSession.category }
     }
     
-    func resumeAudioSession() throws {
-        try audioSession.activate(with: currentCategory)
+    func activateAudioSession() throws {
+        try audioSession.setActive(true)
     }
     
     func deactivateAudioSession() throws {
-        currentCategory = VolumeController.defaultCategory
         try audioSession.setActive(false)
     }
     

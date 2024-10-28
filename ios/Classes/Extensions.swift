@@ -31,13 +31,6 @@ extension MPVolumeView {
     }
 }
 
-extension AVAudioSession {
-    func activate(with category: AVAudioSession.Category) throws {
-        try setCategory(category)
-        try setActive(true)
-    }
-}
-
 extension CaseIterable where Self: Equatable {
     var ordinal: Self.AllCases.Index {
         return Self.allCases.firstIndex(of: self)!

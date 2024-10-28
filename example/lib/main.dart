@@ -27,7 +27,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   AudioStream _audioStream = AudioStream.music;
-  AudioSessionCategory _audioSessionCategory = AudioSessionCategory.ambient;
+  AudioSessionCategory? _audioSessionCategory;
   double _currentVolume = 0.0;
   bool _showSystemUI = true;
 

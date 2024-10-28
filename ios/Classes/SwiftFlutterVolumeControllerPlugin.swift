@@ -128,7 +128,7 @@ extension SwiftFlutterVolumeControllerPlugin: FlutterApplicationLifeCycleDelegat
     public func applicationWillEnterForeground(_ application: UIApplication) {
         let isListening = SwiftFlutterVolumeControllerPlugin.volumeListener.isListening
         if isListening {
-            try? SwiftFlutterVolumeControllerPlugin.volumeController.resumeAudioSession()
+            try? SwiftFlutterVolumeControllerPlugin.volumeController.activateAudioSession()
         }
     }
 }
