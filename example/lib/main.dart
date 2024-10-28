@@ -29,6 +29,7 @@ class _HomeState extends State<Home> {
   AudioStream _audioStream = AudioStream.music;
   AudioSessionCategory _audioSessionCategory = AudioSessionCategory.ambient;
   double _currentVolume = 0.0;
+  bool _showSystemUI = true;
 
   @override
   void initState() {
@@ -67,12 +68,12 @@ class _HomeState extends State<Home> {
             Center(
               child: ElevatedButton(
                 child: const Text('Show or hide system ui'),
-                onPressed: () {
-                  FlutterVolumeController.updateShowSystemUI(
+                onPressed: () async {
+                  await FlutterVolumeController.updateShowSystemUI(
                       !FlutterVolumeController.showSystemUI);
-                  _showSnackBar(
-                    'Show system ui: ${FlutterVolumeController.showSystemUI}',
-                  );
+                  setState(() {
+                    _showSystemUI = FlutterVolumeController.showSystemUI;
+                  });
                 },
               ),
             ),
@@ -228,6 +229,11 @@ class _HomeState extends State<Home> {
           if (Platform.isIOS)
             Text(
               'Audio Session Category: $_audioSessionCategory',
+              textAlign: TextAlign.center,
+            ),
+          if (Platform.isAndroid || Platform.isIOS)
+            Text(
+              'Show System UI: $_showSystemUI',
               textAlign: TextAlign.center,
             ),
         ],
