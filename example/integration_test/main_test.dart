@@ -126,6 +126,8 @@ void main() {
     }
 
     expect(actual, targets);
+
+    FlutterVolumeController.removeListener();
   });
 
   testWidgets('should receive no new volume event after removing listener',
@@ -154,8 +156,7 @@ void main() {
   });
 
   if (Platform.isIOS) {
-    testWidgets(
-        'should keeps iOS AudioSessionCategory the same after get volume',
+    testWidgets('should keep audio session category after get volume',
         (tester) async {
       await FlutterVolumeController.setIOSAudioSessionCategory(
           category: AudioSessionCategory.playback);
@@ -169,7 +170,7 @@ void main() {
   }
 
   if (Platform.isIOS) {
-    testWidgets('should keeps iOS AudioSessionCategory the same after get mute',
+    testWidgets('should keep audio session category after get mute',
         (tester) async {
       await FlutterVolumeController.setIOSAudioSessionCategory(
           category: AudioSessionCategory.playback);
@@ -183,7 +184,7 @@ void main() {
   }
 
   if (Platform.isIOS) {
-    testWidgets('should keeps iOS AudioSessionCategory the same after set mute',
+    testWidgets('should keep audio session category after set mute',
         (tester) async {
       await FlutterVolumeController.setIOSAudioSessionCategory(
           category: AudioSessionCategory.playback);
@@ -194,9 +195,23 @@ void main() {
 
       expect(after, before);
     });
+
+    testWidgets(
+        'should keep audio session category after returning from background',
+        (tester) async {
+      const before = AudioSessionCategory.playback;
+      await FlutterVolumeController.setIOSAudioSessionCategory(
+          category: before);
+
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+
+      final after = await FlutterVolumeController.getIOSAudioSessionCategory();
+      expect(after, before);
+    });
   }
 }
 
 Future<void> _insertDelay() async {
-  await Future.delayed(const Duration(milliseconds: 50));
+  await Future.delayed(const Duration(milliseconds: 100));
 }
