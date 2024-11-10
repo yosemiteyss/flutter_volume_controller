@@ -89,7 +89,7 @@ await FlutterVolumeController.toggleMute();
 #### Set Audio Stream on Android
 - Adjusts to the audio stream whose volume should be changed by the hardware volume controls.
 - Supported streams: `AudioStream.voiceCall`, `AudioStream.system`, `AudioStream.ring`
-  , `AudioStream.music`, `AudioStream.alarm`.
+  , `AudioStream.music`, `AudioStream.alarm`, `AudioStream.notification`.
 - For more details,
   visit [AudioManager](https://developer.android.com/reference/android/media/AudioManager)
 
