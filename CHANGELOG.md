@@ -1,3 +1,8 @@
+## 1.3.3
+* iOS: updated audio session category handling.
+* Android: added support for STREAM_NOTIFICATION.
+* Updated example.
+
 ## 1.3.2
 * iOS: fix AudioSessionCategory reset to ambient.
 
