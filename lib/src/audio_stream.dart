@@ -5,10 +5,12 @@
 /// [AudioStream.ring] refers to AudioManager.STREAM_RING.
 /// [AudioStream.music] refers to AudioManager.STREAM_MUSIC.
 /// [AudioStream.alarm] refers to AudioManager.STREAM_ALARM.
+/// [AudioStream.notification] refers to AudioManager.STREAM_NOTIFICATION.
 enum AudioStream {
   voiceCall,
   system,
   ring,
   music,
   alarm,
+  notification,
 }

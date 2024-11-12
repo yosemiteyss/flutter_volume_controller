@@ -7,7 +7,8 @@ enum class AudioStream {
     SYSTEM,
     RING,
     MUSIC,
-    ALARM;
+    ALARM,
+    NOTIFICATION;
 
     val streamType: Int
         get() {
@@ -17,6 +18,7 @@ enum class AudioStream {
                 RING -> AudioManager.STREAM_RING
                 MUSIC -> AudioManager.STREAM_MUSIC
                 ALARM -> AudioManager.STREAM_ALARM
+                NOTIFICATION -> AudioManager.STREAM_NOTIFICATION
             }
         }
 }
