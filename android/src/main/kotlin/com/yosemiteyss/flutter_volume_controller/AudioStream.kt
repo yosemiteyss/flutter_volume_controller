@@ -8,7 +8,8 @@ enum class AudioStream {
     RING,
     MUSIC,
     ALARM,
-    NOTIFICATION;
+    NOTIFICATION,
+    BLUETOOTH_SCO;
 
     val streamType: Int
         get() {
@@ -19,6 +20,7 @@ enum class AudioStream {
                 MUSIC -> AudioManager.STREAM_MUSIC
                 ALARM -> AudioManager.STREAM_ALARM
                 NOTIFICATION -> AudioManager.STREAM_NOTIFICATION
+                BLUETOOTH_SCO -> 6 // Legacy value for BLUETOOTH_SCO
             }
         }
 }

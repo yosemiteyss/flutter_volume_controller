@@ -13,4 +13,5 @@ enum AudioStream {
   music,
   alarm,
   notification,
+  bluetoothSco,
 }
