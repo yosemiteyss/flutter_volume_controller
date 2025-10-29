@@ -1,3 +1,6 @@
+## 1.3.4
+* Android: added AudioStream.bluetoothSco.
+
 ## 1.3.3
 * iOS: updated audio session category handling.
 * Android: added support for STREAM_NOTIFICATION.
