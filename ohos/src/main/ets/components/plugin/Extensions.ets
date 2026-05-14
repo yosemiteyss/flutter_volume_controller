@@ -1,5 +1,5 @@
 import { AVVolumePanel } from '@kit.AudioKit'
-import { BuilderNode, NodeController, UIContext, window } from '@kit.ArkUI'
+import { BuilderNode, NodeController, UIContext } from '@kit.ArkUI'
 import { common } from '@kit.AbilityKit';
 
 interface VolumeConfig {
@@ -38,18 +38,13 @@ export class VolumePanelNode extends NodeController {
 
   constructor(ctx?: common.UIAbilityContext) {
     super();
-    this.node = new BuilderNode(UIContext.resolveUIContext());
-    this.node.build(wrapBuilder<[VolumeParams]>(VolumePanel), this.volumeParams);
-    // window.getLastWindow(ctx).then((window) => {
-    //   try {
-    //     this.node = new BuilderNode(window.getUIContext());
-    //     this.node.build(wrapBuilder<[VolumeParams]>(VolumePanel), this.volumeParams);
-    //   } catch (e) {
-    //     console.log(e)
-    //   }
-    // }).catch((err: BusinessError) => {
-    //   console.error(`Failed to obtain the top window. Cause code: ${err.code}, message: ${err.message}`);
-    // });
+    const windowStage = ctx?.windowStage;
+    try {
+      const ctx = windowStage?.getMainWindowSync().getUIContext();
+      this.node = new BuilderNode(ctx!);
+      this.node.build(wrapBuilder<[VolumeParams]>(VolumePanel), this.volumeParams);
+    } catch (e) {
+    }
   }
 
   makeNode(uiContext: UIContext): FrameNode | null {
