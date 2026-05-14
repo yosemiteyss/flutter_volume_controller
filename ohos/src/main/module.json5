@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "flutter_volume_controller",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}

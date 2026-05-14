@@ -64,7 +64,7 @@ class _HomeState extends State<Home> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          if (Platform.isAndroid || Platform.isIOS)
+          if (Platform.isAndroid || Platform.isIOS || Platform.operatingSystem == 'ohos')
             Center(
               child: ElevatedButton(
                 child: const Text('Show or hide system ui'),

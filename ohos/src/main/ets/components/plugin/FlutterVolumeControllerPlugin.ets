@@ -1,0 +1,130 @@
+import {
+  AbilityAware,
+  AbilityPluginBinding,
+  FlutterPlugin,
+  FlutterPluginBinding,
+  MethodCall,
+  MethodCallHandler,
+  MethodChannel,
+  MethodResult,
+} from '@ohos/flutter_ohos';
+import { common } from '@kit.AbilityKit';
+import { VolumePanelNode } from './Extensions';
+import { ErrorCode, ErrorMessage, MethodArg, MethodName } from './Constants';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { VolumeController } from './VolumeController';
+
+const METHOD_CHANNEL_NAME = "com.yosemiteyss.flutter_volume_controller/method"
+const EVENT_CHANNEL_NAME = "com.yosemiteyss.flutter_volume_controller/event"
+
+/** FlutterVolumeControllerPlugin **/
+export default class FlutterVolumeControllerPlugin implements FlutterPlugin, MethodCallHandler, AbilityAware {
+  private channel?: MethodChannel;
+  private context?: common.UIAbilityContext;
+  private volumePanel?: VolumePanelNode;
+  private volumeController?: VolumeController;
+
+  onAttachedToAbility(binding: AbilityPluginBinding): void {
+    this.context = binding.getAbility().context;
+  }
+
+  onDetachedFromAbility(): void {
+  }
+
+  getUniqueClassName(): string {
+    return "FlutterVolumeControllerPlugin"
+  }
+
+  onAttachedToEngine(binding: FlutterPluginBinding): void {
+    this.channel = new MethodChannel(binding.getBinaryMessenger(), METHOD_CHANNEL_NAME);
+    this.channel.setMethodCallHandler(this)
+  }
+
+  onDetachedFromEngine(binding: FlutterPluginBinding): void {
+    this.channel?.setMethodCallHandler(null)
+  }
+
+  onMethodCall(call: MethodCall, result: MethodResult): void {
+    this.initVolumePanel();
+    switch (call.method) {
+      case MethodName.GET_VOLUME:
+        try {
+          const volume = this.volumeController?.getVolume();
+          result.success(volume?.toString());
+        } catch (e) {
+          result.error(ErrorCode.GET_VOLUME, ErrorMessage.GET_VOLUME, (e as BusinessError).message)
+        }
+        break;
+      case MethodName.SET_VOLUME:
+        try {
+          const volume = Number(call.argument(MethodArg.VOLUME));
+          this.volumeController?.setVolume(volume);
+        } catch (e) {
+          result.error(ErrorCode.SET_VOLUME, ErrorMessage.SET_VOLUME, (e as BusinessError).message)
+        }
+        result.success(null);
+        break;
+      case MethodName.RAISE_VOLUME:
+        try {
+          const step: number | null = call.argument(MethodArg.STEP);
+          this.volumeController?.raiseVolume(step);
+        } catch (e) {
+          result.error(ErrorCode.RAISE_VOLUME, ErrorMessage.RAISE_VOLUME, (e as BusinessError).message)
+        }
+        result.success(null);
+        break;
+      case MethodName.LOWER_VOLUME:
+        try {
+          const step: number | null = call.argument(MethodArg.STEP);
+          this.volumeController?.lowerVolume(step);
+        } catch (e) {
+          result.error(ErrorCode.LOWER_VOLUME, ErrorMessage.LOWER_VOLUME, (e as BusinessError).message)
+        }
+        result.success(null);
+        break;
+      case MethodName.GET_MUTE:
+        try {
+          result.success(this.volumeController?.getMute());
+        } catch (e) {
+          result.error(ErrorCode.GET_MUTE, ErrorMessage.GET_MUTE, (e as BusinessError).message)
+        }
+        break;
+      case MethodName.SET_MUTE:
+        try {
+          const muted = Boolean(call.argument(MethodArg.IS_MUTED));
+          this.volumeController?.setMute(muted);
+        } catch (e) {
+          result.error(ErrorCode.SET_MUTE, ErrorMessage.SET_MUTE, (e as BusinessError).message)
+        }
+        result.success(null);
+        break;
+      case MethodName.TOGGLE_MUTE:
+        try {
+          this.volumeController?.toggleMute();
+        } catch (e) {
+          result.error(ErrorCode.TOGGLE_MUTE, ErrorMessage.TOGGLE_MUTE, (e as BusinessError).message)
+        }
+        result.success(null);
+        break;
+      case MethodName.UPDATE_SHOW_SYSTEM_UI:
+        try {
+          const show = Boolean(call.argument(MethodArg.SHOW_SYSTEM_UI));
+          this.volumeController?.updateShowSystemUI(show);
+        } catch (e) {
+          result.error(ErrorCode.TOGGLE_MUTE, ErrorMessage.TOGGLE_MUTE, (e as BusinessError).message)
+        }
+        result.success(null);
+        break;
+      default:
+        result.notImplemented();
+        break;
+    }
+  }
+
+  private initVolumePanel() {
+    if (!this.volumePanel && !this.volumeController) {
+      this.volumePanel = new VolumePanelNode(this.context);
+      this.volumeController = new VolumeController(this.volumePanel);
+    }
+  }
+}

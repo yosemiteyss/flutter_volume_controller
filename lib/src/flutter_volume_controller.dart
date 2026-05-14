@@ -45,14 +45,14 @@ class FlutterVolumeController {
 
   /// Control system UI visibility.
   /// Set [isShown] to `true` to display volume slider when changing volume.
-  /// This setting only works on Android and iOS.
+  /// This setting only works on Android, iOS and ohos.
   /// Note: this setting doesn't control the volume slider invoked by physical
   /// buttons on Android.
   static Future<void> updateShowSystemUI(bool isShown) async {
     _showSystemUI = isShown;
     // iOS: needs to update MPVolumeView visibility, otherwise pressing physical buttons
     // won't display volume slider after [showSystemUI] is reset to true.
-    if (Platform.isIOS) {
+    if (Platform.isIOS || Platform.operatingSystem == 'ohos') {
       await methodChannel.invokeMethod<void>(
         MethodName.updateShowSystemUI,
         {MethodArg.showSystemUI: isShown},
@@ -93,7 +93,7 @@ class FlutterVolumeController {
   }
 
   /// Increase the volume level by [step]. From 0.0 to 1.0.
-  /// On Android and Windows, when [step] is set to null, it will uses the
+  /// On Android, Windows and ohos, when [step] is set to null, it will uses the
   /// default system stepping value.
   /// On iOS, macOS, Linux, if [step] is not defined, the default
   /// stepping value is set to 0.15.
@@ -114,7 +114,7 @@ class FlutterVolumeController {
   }
 
   /// Decrease the volume level by [step]. From 0.0 to 1.0.
-  /// On Android and Windows, when [step] is set to null, it will uses the
+  /// On Android, Windows and ohos, when [step] is set to null, it will uses the
   /// default system stepping value.
   /// On iOS, macOS, Linux, if [step] is not defined, the default
   /// stepping value is set to 0.15.
@@ -135,7 +135,7 @@ class FlutterVolumeController {
   }
 
   /// Check if the volume is muted.
-  /// On Android and iOS, we check if the current volume level is already
+  /// On Android, iOS and ohos, we check if the current volume level is already
   /// dropped to zero.
   /// On macOS, Windows, Linux, we check if the mute switch is turned on.
   /// Use [stream] to set the audio stream type on Android.
@@ -151,7 +151,7 @@ class FlutterVolumeController {
   }
 
   /// Mute or unmute the volume.
-  /// On Android and iOS, we either set the volume to zero or revert to the previous level.
+  /// On Android, iOS and ohos, we either set the volume to zero or revert to the previous level.
   /// On macOS, Windows, Linux, we control the mute switch. Volume will be restored
   /// once it's unmuted.
   /// Use [stream] to set the audio stream type on Android.
