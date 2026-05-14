@@ -56,14 +56,14 @@ export class VolumePanelNode extends NodeController {
    */
   changeVolume(vol: number) {
     if (this.node) {
-      this.volumeParams.volume = vol;
+      this.volumeParams.volume = Math.round(vol);
       this.node.update(this.volumeParams);
     }
   }
 
   changeShowSystemUI(show: boolean) {
     if (this.node) {
-      this.volumeParams.showSystemUI = show
+      this.volumeParams.showSystemUI = show;
       this.node.update(this.volumeParams);
     }
   }
