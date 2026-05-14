@@ -47,7 +47,7 @@ export class VolumePanelNode extends NodeController {
     }
   }
 
-  makeNode(uiContext: UIContext): FrameNode | null {
+  makeNode(_: UIContext): FrameNode | null {
     return this.node ? this.node.getFrameNode() : null;
   }
 

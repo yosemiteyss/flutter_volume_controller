@@ -1,6 +1,7 @@
 import {
   AbilityAware,
   AbilityPluginBinding,
+  EventChannel,
   FlutterPlugin,
   FlutterPluginBinding,
   MethodCall,
@@ -13,16 +14,19 @@ import { VolumePanelNode } from './Extensions';
 import { ErrorCode, ErrorMessage, MethodArg, MethodName } from './Constants';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { VolumeController } from './VolumeController';
+import { VolumeStreamHandler } from './VolumeStreamHandler';
 
 const METHOD_CHANNEL_NAME = "com.yosemiteyss.flutter_volume_controller/method"
 const EVENT_CHANNEL_NAME = "com.yosemiteyss.flutter_volume_controller/event"
 
 /** FlutterVolumeControllerPlugin **/
 export default class FlutterVolumeControllerPlugin implements FlutterPlugin, MethodCallHandler, AbilityAware {
-  private channel?: MethodChannel;
+  private methodChannel?: MethodChannel;
+  private eventChannel?: EventChannel;
   private context?: common.UIAbilityContext;
   private volumePanel?: VolumePanelNode;
   private volumeController?: VolumeController;
+  private volumeStreamHandler: VolumeStreamHandler = new VolumeStreamHandler();
 
   onAttachedToAbility(binding: AbilityPluginBinding): void {
     this.context = binding.getAbility().context;
@@ -36,12 +40,15 @@ export default class FlutterVolumeControllerPlugin implements FlutterPlugin, Met
   }
 
   onAttachedToEngine(binding: FlutterPluginBinding): void {
-    this.channel = new MethodChannel(binding.getBinaryMessenger(), METHOD_CHANNEL_NAME);
-    this.channel.setMethodCallHandler(this)
+    this.methodChannel = new MethodChannel(binding.getBinaryMessenger(), METHOD_CHANNEL_NAME);
+    this.methodChannel.setMethodCallHandler(this)
+    this.eventChannel = new EventChannel(binding.getBinaryMessenger(), EVENT_CHANNEL_NAME);
+    this.eventChannel.setStreamHandler(this.volumeStreamHandler);
   }
 
   onDetachedFromEngine(binding: FlutterPluginBinding): void {
-    this.channel?.setMethodCallHandler(null)
+    this.methodChannel?.setMethodCallHandler(null);
+    this.eventChannel?.setStreamHandler(null);
   }
 
   onMethodCall(call: MethodCall, result: MethodResult): void {
