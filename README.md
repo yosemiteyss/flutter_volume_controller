@@ -166,6 +166,10 @@ device for testing.
 - Currently there is no trivial way to control the volume slider invoked by physical buttons on
   Android in plugin level. You may override `FlutterActivity::onKeyDown` to customize the buttons action.
 
+#### HarmonyOS compatible SDK version
+- HarmonyOS uses [AudioVolumeManager #getVolumeByStream](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/arkts-apis-audio-audiovolumemanager#getvolumebystream20)
+  API to get system volume, which requires SDK version later than 6.0.0(20).
+
 ## Having Bugs?
 - This package is under active development. If you find any bug, please create an issue on GitHub.
 
