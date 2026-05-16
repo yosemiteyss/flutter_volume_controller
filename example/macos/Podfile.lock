@@ -14,7 +14,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral
 
 SPEC CHECKSUMS:
-  flutter_volume_controller: ae08bf0838e4901f299781c3ab5056dfab0c2f74
+  flutter_volume_controller: a2df0f7bd6032155fc517fd3989617f02c2c278b
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
 
 PODFILE CHECKSUM: 0d3963a09fc94f580682bd88480486da345dc3f0
