@@ -31,3 +31,5 @@ flutter:
         pluginClass: FlutterVolumeControllerPluginCApi
       linux:
         pluginClass: FlutterVolumeControllerPlugin
+      ohos:
+        pluginClass: FlutterVolumeControllerPlugin
