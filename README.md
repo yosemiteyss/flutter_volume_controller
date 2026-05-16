@@ -17,6 +17,7 @@ A Flutter plugin to control system volume and listen for volume changes on diffe
 - ✅ macOS
 - ✅ Windows
 - ✅ Linux
+- ✅ ohos
 
 ## Swift Package Manager Support
 
@@ -34,7 +35,7 @@ This plugin supports Swift Package Manager (SPM) on Apple platforms:
 
 #### Control System UI Visibility
 - Set to `true` to display system volume slider when changing volume.
-- This setting only works on Android and iOS.
+- This setting only works on Android, iOS and ohos.
 - Note: this setting doesn't control the volume slider invoked by physical buttons on Android.
 ```dart
 await FlutterVolumeController.updateShowSystemUI(true);
@@ -51,7 +52,7 @@ await FlutterVolumeController.setVolume(0.5);
 ```
 
 #### Increase Volume
-- On Android and Windows, when `step` is set to null, it will uses the default system stepping
+- On Android, Windows and ohos, when `step` is set to null, it will use the default system stepping
   value.
 - On iOS, macOS, Linux, if `step` is undefined, the default stepping value is set to `0.15`.
 
@@ -61,7 +62,7 @@ await FlutterVolumeController.raiseVolume(null);
 ```
 
 #### Decrease Volume
-- On Android and Windows, when `step` is set to null, it will uses the default system stepping
+- On Android, Windows and ohos, when `step` is set to null, it will use the default system stepping
   value.
 - On iOS, macOS, Linux, if `step` is undefined, the default stepping value is set to `0.15`.
 
@@ -71,7 +72,7 @@ await FlutterVolumeController.lowerVolume(null);
 ```
 
 #### Check Mute
-- On Android and iOS, we check if the current volume level is already dropped to zero.
+- On Android, iOS and ohos, we check if the current volume level is already dropped to zero.
 - On macOS, Windows, Linux, we check if the mute switch is turned on.
 
 ```dart
@@ -79,7 +80,7 @@ final isMuted = await FlutterVolumeController.getMute();
 ```
 
 #### Set Mute
-- On Android and iOS, we either set the volume to zero or revert to the previous level.
+- On Android, iOS and ohos, we either set the volume to zero or revert to the previous level.
 - On macOS, Windows, Linux, we control the mute switch. Volume will be restored once it's unmuted.
 
 ```dart
@@ -172,8 +173,12 @@ device for testing.
 - Currently there is no trivial way to control the volume slider invoked by physical buttons on
   Android in plugin level. You may override `FlutterActivity::onKeyDown` to customize the buttons action.
 
+#### HarmonyOS compatible SDK version
+- HarmonyOS uses [AudioVolumeManager #getVolumeByStream](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/arkts-apis-audio-audiovolumemanager#getvolumebystream20)
+  API to get system volume, which requires SDK version later than 6.0.0(20).
+
 ## Having Bugs?
-- This package is under active development. If you find any bug, please create an issue on Github.
+- This package is under active development. If you find any bug, please create an issue on GitHub.
 
 ## Support
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-1.svg)](https://buymeacoffee.com/yosemiteyss)

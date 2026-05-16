@@ -1,11 +1,11 @@
 # This file tracks properties of this Flutter project.
 # Used by Flutter tool to assess capabilities and perform upgrades etc.
 #
-# This file should be version controlled.
+# This file should be version controlled and should not be manually edited.
 
 version:
-  revision: 6928314d505d2bb4777be05e45d7808a5aa91d2a
-  channel: stable
+  revision: "362063b89cbc7c56a45f568f2f08876987b2701e"
+  channel: "[user-branch]"
 
 project_type: plugin
 
@@ -13,23 +13,26 @@ project_type: plugin
 migration:
   platforms:
     - platform: root
-      create_revision: 6928314d505d2bb4777be05e45d7808a5aa91d2a
-      base_revision: 6928314d505d2bb4777be05e45d7808a5aa91d2a
+      create_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
+      base_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
     - platform: android
-      create_revision: 6928314d505d2bb4777be05e45d7808a5aa91d2a
-      base_revision: 6928314d505d2bb4777be05e45d7808a5aa91d2a
+      create_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
+      base_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
     - platform: ios
-      create_revision: 6928314d505d2bb4777be05e45d7808a5aa91d2a
-      base_revision: 6928314d505d2bb4777be05e45d7808a5aa91d2a
+      create_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
+      base_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
     - platform: linux
-      create_revision: f1875d570e39de09040c8f79aa13cc56baab8db1
-      base_revision: f1875d570e39de09040c8f79aa13cc56baab8db1
+      create_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
+      base_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
     - platform: macos
-      create_revision: 6928314d505d2bb4777be05e45d7808a5aa91d2a
-      base_revision: 6928314d505d2bb4777be05e45d7808a5aa91d2a
+      create_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
+      base_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
     - platform: windows
-      create_revision: 6928314d505d2bb4777be05e45d7808a5aa91d2a
-      base_revision: 6928314d505d2bb4777be05e45d7808a5aa91d2a
+      create_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
+      base_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
+    - platform: ohos
+      create_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
+      base_revision: 362063b89cbc7c56a45f568f2f08876987b2701e
 
   # User provided section
 
