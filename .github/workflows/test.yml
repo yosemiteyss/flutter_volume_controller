@@ -13,7 +13,7 @@ on:
 
 env:
   FLUTTER_CHANNEL: 'stable'
-  FLUTTER_VERSION: '3.24.4'
+  FLUTTER_VERSION: '3.41.9'
 
 jobs:
   build_example_android:

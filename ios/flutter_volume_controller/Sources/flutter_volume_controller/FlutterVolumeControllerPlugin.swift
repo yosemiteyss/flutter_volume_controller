@@ -2,7 +2,7 @@ import AVFoundation
 import Flutter
 import UIKit
 
-public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
+public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
     private static let audioSession: AVAudioSession = AVAudioSession.sharedInstance()
     private static let volumeController: VolumeController = .init(audioSession: audioSession)
     private static let volumeListener: VolumeListener = .init(audioSession: audioSession, volumeController: volumeController)
@@ -17,7 +17,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             binaryMessenger: registrar.messenger()
         )
         
-        let instance = SwiftFlutterVolumeControllerPlugin()
+        let instance = FlutterVolumeControllerPlugin()
         registrar.addMethodCallDelegate(instance, channel: methodChannel)
         
         eventChannel.setStreamHandler(volumeListener)
@@ -29,7 +29,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
         switch call.method {
         case MethodName.getVolume:
             do {
-                let volume = try SwiftFlutterVolumeControllerPlugin.volumeController.getVolume()
+                let volume = try FlutterVolumeControllerPlugin.volumeController.getVolume()
                 result(String(volume))
             } catch {
                 result(FlutterError(code: ErrorCode.getVolume, message: ErrorMessage.getVolume, details: error.localizedDescription))
@@ -40,7 +40,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             do {
-                try SwiftFlutterVolumeControllerPlugin.volumeController.setVolume(volume, showSystemUI: showSystemUI)
+                try FlutterVolumeControllerPlugin.volumeController.setVolume(volume, showSystemUI: showSystemUI)
                 result(nil)
             } catch {
                 result(FlutterError(code: ErrorCode.setVolume, message: ErrorMessage.setVolume, details: error.localizedDescription))
@@ -51,7 +51,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             do {
-                try SwiftFlutterVolumeControllerPlugin.volumeController.raiseVolume(step, showSystemUI: showSystemUI)
+                try FlutterVolumeControllerPlugin.volumeController.raiseVolume(step, showSystemUI: showSystemUI)
                 result(nil)
             } catch {
                 result(FlutterError(code: ErrorCode.raiseVolume, message: ErrorMessage.raiseVolume, details: error.localizedDescription))
@@ -62,7 +62,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             do {
-                try SwiftFlutterVolumeControllerPlugin.volumeController.lowerVolume(step, showSystemUI: showSystemUI)
+                try FlutterVolumeControllerPlugin.volumeController.lowerVolume(step, showSystemUI: showSystemUI)
                 result(nil)
             } catch {
                 result(FlutterError(code: ErrorCode.lowerVolume, message: ErrorMessage.lowerVolume, details: error.localizedDescription))
@@ -70,7 +70,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             
         case MethodName.getMute:
             do {
-                result(try SwiftFlutterVolumeControllerPlugin.volumeController.getMute())
+                result(try FlutterVolumeControllerPlugin.volumeController.getMute())
             } catch {
                 result(FlutterError(code: ErrorCode.getMute, message: ErrorMessage.getMute, details: error.localizedDescription))
             }
@@ -80,7 +80,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             do {
-                try SwiftFlutterVolumeControllerPlugin.volumeController.setMute(isMuted, showSystemUI: showSystemUI)
+                try FlutterVolumeControllerPlugin.volumeController.setMute(isMuted, showSystemUI: showSystemUI)
                 result(nil)
             } catch {
                 result(FlutterError(code: ErrorCode.setMute, message: ErrorMessage.setMute, details: error.localizedDescription))
@@ -90,7 +90,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
             
             do {
-                try SwiftFlutterVolumeControllerPlugin.volumeController.toggleMute(showSystemUI: showSystemUI)
+                try FlutterVolumeControllerPlugin.volumeController.toggleMute(showSystemUI: showSystemUI)
                 result(nil)
             } catch {
                 result(FlutterError(code: ErrorCode.toggleMute, message: ErrorMessage.toggleMute, details: error.localizedDescription))
@@ -101,14 +101,14 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             let category = AudioSessionCategory.allCases[index]
             
             do {
-                try SwiftFlutterVolumeControllerPlugin.volumeController.setAudioSessionCategory(category)
+                try FlutterVolumeControllerPlugin.volumeController.setAudioSessionCategory(category)
                 result(nil)
             } catch {
                 result(FlutterError(code: ErrorCode.setIOSAudioSessionCategory, message: ErrorMessage.setIOSAudioSessionCategory, details: error.localizedDescription))
             }
         case MethodName.getIOSAudioSessionCategory:
             do {
-                let category = try SwiftFlutterVolumeControllerPlugin.volumeController.getAudioSessionCategory()
+                let category = try FlutterVolumeControllerPlugin.volumeController.getAudioSessionCategory()
                 result(category?.ordinal)
             } catch {
                 result(FlutterError(code: ErrorCode.getIOSAudioSessionCategory, message: ErrorMessage.getIOSAudioSessionCategory, details: error.localizedDescription))
@@ -116,7 +116,7 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
         case MethodName.updateShowSystemUI:
             let args = call.arguments as! [String: Any]
             let showSystemUI = args[MethodArg.showSystemUI] as! Bool
-            SwiftFlutterVolumeControllerPlugin.volumeController.setShowSystemUI(showSystemUI)
+            FlutterVolumeControllerPlugin.volumeController.setShowSystemUI(showSystemUI)
             result(nil)
         default:
             result(FlutterMethodNotImplemented)
@@ -124,11 +124,11 @@ public class SwiftFlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
     }
 }
 
-extension SwiftFlutterVolumeControllerPlugin: FlutterApplicationLifeCycleDelegate {
+extension FlutterVolumeControllerPlugin: FlutterApplicationLifeCycleDelegate {
     public func applicationWillEnterForeground(_ application: UIApplication) {
-        let isListening = SwiftFlutterVolumeControllerPlugin.volumeListener.isListening
+        let isListening = FlutterVolumeControllerPlugin.volumeListener.isListening
         if isListening {
-            try? SwiftFlutterVolumeControllerPlugin.volumeController.activateAudioSession()
+            try? FlutterVolumeControllerPlugin.volumeController.activateAudioSession()
         }
     }
 }

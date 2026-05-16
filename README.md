@@ -19,6 +19,13 @@ A Flutter plugin to control system volume and listen for volume changes on diffe
 - ✅ Linux
 - ✅ ohos
 
+## Swift Package Manager Support
+
+This plugin supports Swift Package Manager (SPM) on Apple platforms:
+
+- ✅ iOS
+- ✅ macOS
+
 ## Example
 
 #### [Custom Volume Slider](example/lib/volume_slider_example.dart)
