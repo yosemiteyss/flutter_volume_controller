@@ -1,3 +1,8 @@
+## 2.0.0
+* Added Swift Package Manager support for iOS and macOS.
+* Added HarmonyOS (OHOS) support.
+* Updated minimum supported SDK version to Flutter 3.24.0.
+
 ## 1.3.4
 * Android: added AudioStream.bluetoothSco.
 
