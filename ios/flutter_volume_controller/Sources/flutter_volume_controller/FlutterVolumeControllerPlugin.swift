@@ -23,6 +23,9 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
         eventChannel.setStreamHandler(volumeListener)
         
         registrar.addApplicationDelegate(instance)
+        if #available(iOS 13.0, *) {
+            registrar.addSceneDelegate(instance)
+        }
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -122,13 +125,23 @@ public class FlutterVolumeControllerPlugin: NSObject, FlutterPlugin {
             result(FlutterMethodNotImplemented)
         }
     }
+
+    private func activateAudioSessionIfListening() {
+        if FlutterVolumeControllerPlugin.volumeListener.isListening {
+            try? FlutterVolumeControllerPlugin.volumeController.activateAudioSession()
+        }
+    }
 }
 
 extension FlutterVolumeControllerPlugin: FlutterApplicationLifeCycleDelegate {
     public func applicationWillEnterForeground(_ application: UIApplication) {
-        let isListening = FlutterVolumeControllerPlugin.volumeListener.isListening
-        if isListening {
-            try? FlutterVolumeControllerPlugin.volumeController.activateAudioSession()
-        }
+        activateAudioSessionIfListening()
+    }
+}
+
+@available(iOS 13.0, *)
+extension FlutterVolumeControllerPlugin: FlutterSceneLifeCycleDelegate {
+    public func sceneWillEnterForeground(_ scene: UIScene) {
+        activateAudioSessionIfListening()
     }
 }

@@ -91,7 +91,18 @@ class VolumeController {
         } else {
             volumeView.frame = CGRect(x: -1000, y: -1000, width: 1, height: 1)
             volumeView.showsRouteButton = false
-            UIApplication.shared.keyWindow?.insertSubview(volumeView, at: 0)
+            resolveHostWindow()?.insertSubview(volumeView, at: 0)
         }
+    }
+
+    private func resolveHostWindow() -> UIWindow? {
+        if #available(iOS 13.0, *) {
+            let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+            return windowScenes.lazy
+                .flatMap(\.windows)
+                .first(where: \.isKeyWindow) ?? windowScenes.lazy.flatMap(\.windows).first
+        }
+
+        return UIApplication.shared.delegate?.window ?? nil
     }
 }
