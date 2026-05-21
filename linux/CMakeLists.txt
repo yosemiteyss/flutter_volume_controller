@@ -17,7 +17,6 @@ set(PLUGIN_NAME "flutter_volume_controller_plugin")
 # Any new source files that you add to the plugin should be added here.
 add_library(${PLUGIN_NAME} SHARED
         flutter_volume_controller_plugin.cc
-        support_log.cc
         alsa.cc
         method_handler.cc
         )

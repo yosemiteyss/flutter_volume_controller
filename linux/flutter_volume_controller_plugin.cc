@@ -143,9 +143,9 @@ static FlMethodErrorResponse *event_listen_cb(FlEventChannel *channel, FlValue *
     if (alsa_card_add_watch(card) == FALSE)
         return fl_method_error_response_new(ERROR_CODE_REG_VOLUME_LISTENER, ERROR_MSG_REG_VOLUME_LISTENER, NULL);
 
-    alsa_card_install_callback(card, on_alsa_event, user_data, emit_on_start);
-
     self->send_events = TRUE;
+
+    alsa_card_install_callback(card, on_alsa_event, user_data, emit_on_start);
 
     return NULL;
 }
