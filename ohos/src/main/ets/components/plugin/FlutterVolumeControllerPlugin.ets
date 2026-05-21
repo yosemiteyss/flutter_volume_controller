@@ -30,9 +30,15 @@ export default class FlutterVolumeControllerPlugin implements FlutterPlugin, Met
 
   onAttachedToAbility(binding: AbilityPluginBinding): void {
     this.context = binding.getAbility().context;
+    this.volumePanel = new VolumePanelNode(this.context);
+    this.volumeController = new VolumeController(this.volumePanel);
   }
 
   onDetachedFromAbility(): void {
+    this.volumePanel?.dispose();
+    this.volumePanel = undefined;
+    this.volumeController = undefined;
+    this.context = undefined;
   }
 
   getUniqueClassName(): string {
@@ -52,7 +58,6 @@ export default class FlutterVolumeControllerPlugin implements FlutterPlugin, Met
   }
 
   onMethodCall(call: MethodCall, result: MethodResult): void {
-    this.initVolumePanel();
     switch (call.method) {
       case MethodName.GET_VOLUME:
         try {
@@ -125,13 +130,6 @@ export default class FlutterVolumeControllerPlugin implements FlutterPlugin, Met
       default:
         result.notImplemented();
         break;
-    }
-  }
-
-  private initVolumePanel() {
-    if (!this.volumePanel && !this.volumeController) {
-      this.volumePanel = new VolumePanelNode(this.context);
-      this.volumeController = new VolumeController(this.volumePanel);
     }
   }
 }
