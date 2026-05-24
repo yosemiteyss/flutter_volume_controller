@@ -14,7 +14,7 @@ export class VolumeStreamHandler implements StreamHandler {
       const argsMap = args as Map<string, Object>;
       const emitOnStart = argsMap.get(MethodArg.EMIT_ON_START) as boolean;
 
-      this.audioVolumeManager.on('streamVolumeChange', audio.StreamUsage.STREAM_USAGE_MOVIE, (event) => {
+      this.audioVolumeManager.on('streamVolumeChange', this.streamUsage, (event) => {
         events.success((1 / this.maxVolume * event.volume).toString());
       });
 
