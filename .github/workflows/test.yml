@@ -43,17 +43,42 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
+      - name: Cache OpenHarmony Flutter SDK
+        id: cache_ohos_flutter
+        uses: actions/cache@v4
+        with:
+          path: ~/flutter-ohos
+          key: ${{ runner.os }}-ohos-flutter-${{ env.OHOS_FLUTTER_VERSION }}
       - name: Setup OpenHarmony Flutter SDK
+        if: steps.cache_ohos_flutter.outputs.cache-hit != 'true'
         run: |
           git clone --branch "${OHOS_FLUTTER_VERSION}" --single-branch https://gitcode.com/openharmony-tpc/flutter_flutter.git "${HOME}/flutter-ohos"
+      - name: Add OpenHarmony Flutter to PATH
+        run: |
           echo "${HOME}/flutter-ohos/bin" >> "$GITHUB_PATH"
       - name: Setup OpenHarmony SDK
         uses: openharmony-rs/setup-ohos-sdk@v1.0.0
         with:
           version: ${{ env.OHOS_SDK_VERSION }}
+      - name: Export OpenHarmony SDK environment
+        run: |
+          echo "HOS_SDK_HOME=${OHOS_BASE_SDK_HOME}" >> "$GITHUB_ENV"
+          echo "OHOS_SDK_HOME=${OHOS_BASE_SDK_HOME}" >> "$GITHUB_ENV"
       - name: Add OHOS tools to PATH
         run: |
           echo "${OHOS_BASE_SDK_HOME}/toolchains/ohpm/bin" >> "$GITHUB_PATH"
+#      - name: Cache Dart pub packages
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.pub-cache
+#          key: ${{ runner.os }}-pub-cache-${{ env.FLUTTER_VERSION }}-${{ hashFiles('pubspec.yaml', 'example/pubspec.yaml', 'example/pubspec.lock') }}
+#      - name: Cache OHPM dependencies
+#        uses: actions/cache@v4
+#        with:
+#          path: |
+#            ~/.ohpm
+#            example/ohos/oh_modules
+#          key: ${{ runner.os }}-ohpm-cache-${{ env.OHOS_SDK_VERSION }}-${{ hashFiles('example/ohos/oh-package.json5', 'example/ohos/entry/oh-package.json5', 'example/ohos/hvigor/hvigor-config.json5') }}
       - name: Install Flutter dependencies
         run: flutter pub get
       - name: Install OHOS dependencies
