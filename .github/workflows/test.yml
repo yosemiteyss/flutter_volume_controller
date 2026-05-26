@@ -1,15 +1,9 @@
 name: Build and Test
 
 on:
-  push:
-    branches:
-      - main
-      - 'release/**'
   pull_request:
     branches:
       - main
-      - development
-      - 'release/**'
 
 env:
   FLUTTER_CHANNEL: 'stable'
@@ -60,13 +54,18 @@ jobs:
         uses: openharmony-rs/setup-ohos-sdk@v1.0.0
         with:
           version: ${{ env.OHOS_SDK_VERSION }}
+          fixup-path: true
       - name: Export OpenHarmony SDK environment
         run: |
-          echo "HOS_SDK_HOME=${OHOS_BASE_SDK_HOME}" >> "$GITHUB_ENV"
-          echo "OHOS_SDK_HOME=${OHOS_BASE_SDK_HOME}" >> "$GITHUB_ENV"
+          echo "HOS_SDK_HOME=${OHOS_NDK_HOME}" >> "$GITHUB_ENV"
+          echo "OHOS_SDK_HOME=${OHOS_NDK_HOME}" >> "$GITHUB_ENV"
+          echo "HDC_HOME=${OHOS_NDK_HOME}/toolchains" >> "$GITHUB_ENV"
       - name: Add OHOS tools to PATH
         run: |
-          echo "${OHOS_BASE_SDK_HOME}/toolchains/ohpm/bin" >> "$GITHUB_PATH"
+          echo "${OHOS_NDK_HOME}/toolchains/ohpm/bin" >> "$GITHUB_PATH"
+      - name: Configure Flutter OHOS SDK
+        run: |
+          flutter config --ohos-sdk="${OHOS_NDK_HOME}"
 #      - name: Cache Dart pub packages
 #        uses: actions/cache@v4
 #        with:
