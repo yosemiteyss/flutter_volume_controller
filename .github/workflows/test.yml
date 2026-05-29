@@ -1,19 +1,14 @@
 name: Build and Test
 
 on:
-  push:
-    branches:
-      - main
-      - 'release/**'
   pull_request:
     branches:
       - main
-      - development
-      - 'release/**'
 
 env:
   FLUTTER_CHANNEL: 'stable'
   FLUTTER_VERSION: '3.41.9'
+  OHOS_FLUTTER_VERSION: 'oh-3.41.9-dev'
 
 jobs:
   build_example_android:
@@ -28,9 +23,38 @@ jobs:
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
           flutter-version: ${{ env.FLUTTER_VERSION }}
-      - run: flutter pub get
-      - run: cd ./example && flutter build apk
-      - run: echo "build success!"
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build Android example
+        run: cd ./example && flutter build apk
+      - name: Print build success
+        run: echo "build success!"
+
+  build_example_ohos:
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: Setup HarmonyOS toolchain
+        uses: ErBWs/setup-ohos@v1
+        with:
+          version: latest
+          cache: true
+      - name: Setup OpenHarmony Flutter SDK
+        run: |
+          git clone --branch "${OHOS_FLUTTER_VERSION}" --single-branch https://gitcode.com/openharmony-tpc/flutter_flutter.git $GITHUB_WORKSPACE/flutter
+          echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
+      - name: Install Flutter dependencies
+        run: flutter pub get
+      - name: Install OHOS dependencies
+        run: cd ./example/ohos && ohpm install
+      - name: Build OHOS example
+        run: cd ./example && flutter build hap
+      - name: Print build success
+        run: echo "build success!"
 
   build_example_linux:
     runs-on: [ ubuntu-latest ]
@@ -40,11 +64,16 @@ jobs:
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
           flutter-version: ${{ env.FLUTTER_VERSION }}
-      - run: sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libasound2t64 libasound2-dev
-      - run: flutter config --enable-linux-desktop
-      - run: flutter pub get
-      - run: cd ./example && flutter build linux
-      - run: echo "build success!"
+      - name: Install Linux build dependencies
+        run: sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libasound2t64 libasound2-dev
+      - name: Enable Linux desktop
+        run: flutter config --enable-linux-desktop
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build Linux example
+        run: cd ./example && flutter build linux
+      - name: Print build success
+        run: echo "build success!"
 
   build_example_windows:
     runs-on: [ windows-latest ]
@@ -54,10 +83,14 @@ jobs:
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
           flutter-version: ${{ env.FLUTTER_VERSION }}
-      - run: flutter config --enable-windows-desktop
-      - run: flutter pub get
-      - run: (cd ./example) -and (flutter build windows)
-      - run: echo "build success!"
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build Windows example
+        run: (cd ./example) -and (flutter build windows)
+      - name: Print build success
+        run: echo "build success!"
 
   build_example_ios:
     runs-on: [ macos-latest ]
@@ -67,9 +100,12 @@ jobs:
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
           flutter-version: ${{ env.FLUTTER_VERSION }}
-      - run: flutter pub get
-      - run: cd ./example && flutter build ios --no-codesign
-      - run: echo "build success!"
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build iOS example
+        run: cd ./example && flutter build ios --no-codesign
+      - name: Print build success
+        run: echo "build success!"
 
   build_example_macos:
     runs-on: [ macos-latest ]
@@ -79,7 +115,11 @@ jobs:
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
           flutter-version: ${{ env.FLUTTER_VERSION }}
-      - run: flutter config --enable-macos-desktop
-      - run: flutter pub get
-      - run: cd ./example && flutter build macos
-      - run: echo "build success!"
+      - name: Enable macOS desktop
+        run: flutter config --enable-macos-desktop
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build macOS example
+        run: cd ./example && flutter build macos
+      - name: Print build success
+        run: echo "build success!"
