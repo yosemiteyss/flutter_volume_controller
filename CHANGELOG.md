@@ -1,3 +1,6 @@
+## 2.0.1
+* ohos: fix cannot set volume on first attempt.
+
 ## 2.0.0
 * Added Swift Package Manager support for iOS and macOS.
 * Added HarmonyOS (OHOS) support.
