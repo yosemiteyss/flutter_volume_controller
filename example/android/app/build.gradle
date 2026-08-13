@@ -29,8 +29,8 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.yosemiteyss.flutter_volume_controller_example"
-    compileSdk = 35
-    ndkVersion = "26.3.11579264"
+    compileSdk = 36
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
