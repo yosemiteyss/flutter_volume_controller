@@ -7,8 +7,8 @@ on:
 
 env:
   FLUTTER_CHANNEL: 'stable'
-  FLUTTER_VERSION: '3.41.9'
-  OHOS_FLUTTER_VERSION: 'oh-3.41.9-dev'
+  FLUTTER_VERSION: '3.44.9'
+  OHOS_FLUTTER_VERSION: 'oh-3.44.9-dev'
 
 jobs:
   build_example_android:
