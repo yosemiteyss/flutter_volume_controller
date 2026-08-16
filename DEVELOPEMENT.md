@@ -12,12 +12,12 @@ fvm flutter pub get
 
 ```bash
 fvm fork add hos https://gitcode.com/openharmony-tpc/flutter_flutter.git
-fvm install hos/oh-3.41.9-dev
-fvm use hos/oh-3.41.9-dev
+fvm install hos/oh-3.41.9-release
+fvm use hos/oh-3.41.9-release
 ```
 
 ```bash
-OH_SDK=/Users/kevin/fvm/versions/hos/oh-3.41.9-dev
+OH_SDK=/Users/{user}/fvm/versions/hos/oh-3.41.9-release
 export FLUTTER_OHOS_STORAGE_BASE_URL=https://flutter-ohos.obs.cn-south-1.myhuaweicloud.com
 fvm flutter precache --ohos --force -v
 cd ./example/ohos && ohpm install
