@@ -1,3 +1,9 @@
+## 2.0.2
+* Update minimum flutter sdk to 3.35.0.
+* android: add built-in kotlin support.
+* android: update compileSdk to 36.
+* ohos: pin compatible ohos sdk 
+
 ## 2.0.1
 * ohos: fix cannot set volume on first attempt.
 
